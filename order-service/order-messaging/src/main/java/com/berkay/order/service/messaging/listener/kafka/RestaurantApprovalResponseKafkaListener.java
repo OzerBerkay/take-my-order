@@ -22,6 +22,9 @@ import static com.berkay.order.service.domain.entity.Order.FAILURE_MESSAGE_DELIM
 @Component
 public class RestaurantApprovalResponseKafkaListener implements KafkaConsumer<RestaurantApprovalResponseAvroModel> {
 
+    private final RestaurantApprovalResponseMessageListener restaurantApprovalResponseMessageListener;
+    private final OrderMessagingDataMapper orderMessagingDataMapper;
+
     public RestaurantApprovalResponseKafkaListener(RestaurantApprovalResponseMessageListener
                                                            restaurantApprovalResponseMessageListener,
                                                    OrderMessagingDataMapper orderMessagingDataMapper) {
