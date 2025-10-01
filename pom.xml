@@ -12,7 +12,7 @@
 	<artifactId>take-my-order</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>food-ordering-system</name>
+    <name>take-my-order</name>
 	<description>Food Ordering System</description>
 	<url/>
 	<licenses>
