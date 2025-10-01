@@ -16,12 +16,11 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
   private static final long serialVersionUID = 3978313729351604636L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantApprovalResponseAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"sagaId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"orderApprovalStatus\",\"type\":{\"type\":\"enum\",\"name\":\"OrderApprovalStatus\",\"symbols\":[\"APPROVED\",\"REJECTED\"]}},{\"name\":\"failureMessages\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantApprovalResponseAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"sagaId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"orderApprovalStatus\",\"type\":{\"type\":\"enum\",\"name\":\"OrderApprovalStatus\",\"symbols\":[\"APPROVED\",\"REJECTED\"]}},{\"name\":\"failureMessages\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
   static {
-    MODEL$.addLogicalTypeConversion(new org.apache.avro.Conversions.UUIDConversion());
     MODEL$.addLogicalTypeConversion(new org.apache.avro.data.TimeConversions.TimestampMillisConversion());
   }
 
@@ -76,10 +75,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     return DECODER.decode(b);
   }
 
-  private java.util.UUID id;
-  private java.util.UUID sagaId;
-  private java.util.UUID restaurantId;
-  private java.util.UUID orderId;
+  private java.lang.String id;
+  private java.lang.String sagaId;
+  private java.lang.String restaurantId;
+  private java.lang.String orderId;
   private java.time.Instant createdAt;
   private com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
   private java.util.List<java.lang.String> failureMessages;
@@ -101,7 +100,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * @param orderApprovalStatus The new value for orderApprovalStatus
    * @param failureMessages The new value for failureMessages
    */
-  public RestaurantApprovalResponseAvroModel(java.util.UUID id, java.util.UUID sagaId, java.util.UUID restaurantId, java.util.UUID orderId, java.time.Instant createdAt, com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages) {
+  public RestaurantApprovalResponseAvroModel(java.lang.String id, java.lang.String sagaId, java.lang.String restaurantId, java.lang.String orderId, java.time.Instant createdAt, com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages) {
     this.id = id;
     this.sagaId = sagaId;
     this.restaurantId = restaurantId;
@@ -134,10 +133,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
 
   private static final org.apache.avro.Conversion<?>[] conversions =
       new org.apache.avro.Conversion<?>[] {
-      new org.apache.avro.Conversions.UUIDConversion(),
-      new org.apache.avro.Conversions.UUIDConversion(),
-      new org.apache.avro.Conversions.UUIDConversion(),
-      new org.apache.avro.Conversions.UUIDConversion(),
+      null,
+      null,
+      null,
+      null,
       new org.apache.avro.data.TimeConversions.TimestampMillisConversion(),
       null,
       null,
@@ -154,10 +153,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: id = (java.util.UUID)value$; break;
-    case 1: sagaId = (java.util.UUID)value$; break;
-    case 2: restaurantId = (java.util.UUID)value$; break;
-    case 3: orderId = (java.util.UUID)value$; break;
+    case 0: id = value$ != null ? value$.toString() : null; break;
+    case 1: sagaId = value$ != null ? value$.toString() : null; break;
+    case 2: restaurantId = value$ != null ? value$.toString() : null; break;
+    case 3: orderId = value$ != null ? value$.toString() : null; break;
     case 4: createdAt = (java.time.Instant)value$; break;
     case 5: orderApprovalStatus = (com.berkay.kafka.order.avro.model.OrderApprovalStatus)value$; break;
     case 6: failureMessages = (java.util.List<java.lang.String>)value$; break;
@@ -169,7 +168,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Gets the value of the 'id' field.
    * @return The value of the 'id' field.
    */
-  public java.util.UUID getId() {
+  public java.lang.String getId() {
     return id;
   }
 
@@ -178,7 +177,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Sets the value of the 'id' field.
    * @param value the value to set.
    */
-  public void setId(java.util.UUID value) {
+  public void setId(java.lang.String value) {
     this.id = value;
   }
 
@@ -186,7 +185,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Gets the value of the 'sagaId' field.
    * @return The value of the 'sagaId' field.
    */
-  public java.util.UUID getSagaId() {
+  public java.lang.String getSagaId() {
     return sagaId;
   }
 
@@ -195,7 +194,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Sets the value of the 'sagaId' field.
    * @param value the value to set.
    */
-  public void setSagaId(java.util.UUID value) {
+  public void setSagaId(java.lang.String value) {
     this.sagaId = value;
   }
 
@@ -203,7 +202,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Gets the value of the 'restaurantId' field.
    * @return The value of the 'restaurantId' field.
    */
-  public java.util.UUID getRestaurantId() {
+  public java.lang.String getRestaurantId() {
     return restaurantId;
   }
 
@@ -212,7 +211,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Sets the value of the 'restaurantId' field.
    * @param value the value to set.
    */
-  public void setRestaurantId(java.util.UUID value) {
+  public void setRestaurantId(java.lang.String value) {
     this.restaurantId = value;
   }
 
@@ -220,7 +219,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Gets the value of the 'orderId' field.
    * @return The value of the 'orderId' field.
    */
-  public java.util.UUID getOrderId() {
+  public java.lang.String getOrderId() {
     return orderId;
   }
 
@@ -229,7 +228,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * Sets the value of the 'orderId' field.
    * @param value the value to set.
    */
-  public void setOrderId(java.util.UUID value) {
+  public void setOrderId(java.lang.String value) {
     this.orderId = value;
   }
 
@@ -325,10 +324,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<RestaurantApprovalResponseAvroModel>
     implements org.apache.avro.data.RecordBuilder<RestaurantApprovalResponseAvroModel> {
 
-    private java.util.UUID id;
-    private java.util.UUID sagaId;
-    private java.util.UUID restaurantId;
-    private java.util.UUID orderId;
+    private java.lang.String id;
+    private java.lang.String sagaId;
+    private java.lang.String restaurantId;
+    private java.lang.String orderId;
     private java.time.Instant createdAt;
     private com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
     private java.util.List<java.lang.String> failureMessages;
@@ -414,7 +413,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * Gets the value of the 'id' field.
       * @return The value.
       */
-    public java.util.UUID getId() {
+    public java.lang.String getId() {
       return id;
     }
 
@@ -424,7 +423,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setId(java.lang.String value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -454,7 +453,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * Gets the value of the 'sagaId' field.
       * @return The value.
       */
-    public java.util.UUID getSagaId() {
+    public java.lang.String getSagaId() {
       return sagaId;
     }
 
@@ -464,7 +463,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * @param value The value of 'sagaId'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setSagaId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setSagaId(java.lang.String value) {
       validate(fields()[1], value);
       this.sagaId = value;
       fieldSetFlags()[1] = true;
@@ -494,7 +493,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * Gets the value of the 'restaurantId' field.
       * @return The value.
       */
-    public java.util.UUID getRestaurantId() {
+    public java.lang.String getRestaurantId() {
       return restaurantId;
     }
 
@@ -504,7 +503,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * @param value The value of 'restaurantId'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setRestaurantId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setRestaurantId(java.lang.String value) {
       validate(fields()[2], value);
       this.restaurantId = value;
       fieldSetFlags()[2] = true;
@@ -534,7 +533,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * Gets the value of the 'orderId' field.
       * @return The value.
       */
-    public java.util.UUID getOrderId() {
+    public java.lang.String getOrderId() {
       return orderId;
     }
 
@@ -544,7 +543,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       * @param value The value of 'orderId'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setOrderId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setOrderId(java.lang.String value) {
       validate(fields()[3], value);
       this.orderId = value;
       fieldSetFlags()[3] = true;
@@ -694,10 +693,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     public RestaurantApprovalResponseAvroModel build() {
       try {
         RestaurantApprovalResponseAvroModel record = new RestaurantApprovalResponseAvroModel();
-        record.id = fieldSetFlags()[0] ? this.id : (java.util.UUID) defaultValue(fields()[0]);
-        record.sagaId = fieldSetFlags()[1] ? this.sagaId : (java.util.UUID) defaultValue(fields()[1]);
-        record.restaurantId = fieldSetFlags()[2] ? this.restaurantId : (java.util.UUID) defaultValue(fields()[2]);
-        record.orderId = fieldSetFlags()[3] ? this.orderId : (java.util.UUID) defaultValue(fields()[3]);
+        record.id = fieldSetFlags()[0] ? this.id : (java.lang.String) defaultValue(fields()[0]);
+        record.sagaId = fieldSetFlags()[1] ? this.sagaId : (java.lang.String) defaultValue(fields()[1]);
+        record.restaurantId = fieldSetFlags()[2] ? this.restaurantId : (java.lang.String) defaultValue(fields()[2]);
+        record.orderId = fieldSetFlags()[3] ? this.orderId : (java.lang.String) defaultValue(fields()[3]);
         record.createdAt = fieldSetFlags()[4] ? this.createdAt : (java.time.Instant) defaultValue(fields()[4]);
         record.orderApprovalStatus = fieldSetFlags()[5] ? this.orderApprovalStatus : (com.berkay.kafka.order.avro.model.OrderApprovalStatus) defaultValue(fields()[5]);
         record.failureMessages = fieldSetFlags()[6] ? this.failureMessages : (java.util.List<java.lang.String>) defaultValue(fields()[6]);
