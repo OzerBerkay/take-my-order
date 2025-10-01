@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.berkay</groupId>
-	<artifactId>food-ordering-system</artifactId>
+	<artifactId>take-my-order</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>food-ordering-system</name>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>food-ordering-system</artifactId>
+        <artifactId>take-my-order</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
