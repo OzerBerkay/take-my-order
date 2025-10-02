@@ -3,5 +3,5 @@ version: '28.3.2'
 
 # This part is defined so that containers can see each other over the same network.
 networks:
-  food-ordering-system:
+  take-my-order:
     driver: bridge
