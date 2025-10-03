@@ -13,10 +13,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import static com.berkay.domain.DomainConstants.UTC;
+
 @Slf4j
 public class OrderDomainServiceImpl implements OrderDomainService {
-
-    private static final String UTC = "UTC";
 
     // Product id and item price comes from client. To be sure it is the real price of product
     // we need to validate with Restaurant entity
