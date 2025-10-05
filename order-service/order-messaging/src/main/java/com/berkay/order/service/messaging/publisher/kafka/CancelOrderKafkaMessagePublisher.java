@@ -1,6 +1,7 @@
 package com.berkay.order.service.messaging.publisher.kafka;
 
 import com.berkay.kafka.order.avro.model.PaymentRequestAvroModel;
+import com.berkay.kafka.producer.KafkaMessageHelper;
 import com.berkay.kafka.producer.service.KafkaProducer;
 import com.berkay.order.service.domain.config.OrderServiceConfigData;
 import com.berkay.order.service.domain.event.OrderCancelledEvent;
@@ -16,11 +17,11 @@ public class CancelOrderKafkaMessagePublisher implements OrderCancelledPaymentRe
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
     private final KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer;
-    private final OrderKafkaMessageHelper orderKafkaMessageHelper;
+    private final KafkaMessageHelper orderKafkaMessageHelper;
 
     public CancelOrderKafkaMessagePublisher(OrderMessagingDataMapper orderMessagingDataMapper,
                                             OrderServiceConfigData orderServiceConfigData,
-                                            KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer, OrderKafkaMessageHelper orderKafkaMessageHelper) {
+                                            KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer, KafkaMessageHelper orderKafkaMessageHelper) {
         this.orderMessagingDataMapper = orderMessagingDataMapper;
         this.orderServiceConfigData = orderServiceConfigData;
         this.orderKafkaMessageHelper = orderKafkaMessageHelper;

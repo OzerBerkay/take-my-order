@@ -1,4 +1,4 @@
-package com.berkay.order.service.messaging.publisher.kafka;
+package com.berkay.kafka.producer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -9,9 +9,9 @@ import java.util.function.BiConsumer;
 
 @Slf4j
 @Component
-public class OrderKafkaMessageHelper  {
+public class KafkaMessageHelper {
     public <T> BiConsumer<SendResult<String, T>, Throwable>
-    getKafkaCallback(String responseTopicName, T requestAvroModel, String orderId, String requestAvroModelName) {
+    getKafkaCallback(String responseTopicName, T avroModel, String orderId, String avroModelName) {
 
         return (result, ex) -> {
             if (ex == null) {
@@ -24,8 +24,8 @@ public class OrderKafkaMessageHelper  {
                         metadata.offset(),
                         metadata.timestamp());
             } else {
-                log.error("Error while sending "+ requestAvroModelName +
-                        " message {} to topic {}", requestAvroModel.toString(), responseTopicName);
+                log.error("Error while sending "+ avroModelName +
+                        " message {} to topic {}", avroModel.toString(), responseTopicName);
             }
         };
     }

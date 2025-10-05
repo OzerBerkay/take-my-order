@@ -1,6 +1,7 @@
 package com.berkay.order.service.messaging.publisher.kafka;
 
 import com.berkay.kafka.order.avro.model.PaymentRequestAvroModel;
+import com.berkay.kafka.producer.KafkaMessageHelper;
 import com.berkay.kafka.producer.service.KafkaProducer;
 import com.berkay.order.service.domain.config.OrderServiceConfigData;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
@@ -15,11 +16,11 @@ public class CreateOrderKafkaMessagePublisher implements OrderCreatedPaymentRequ
 
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
-    private final OrderKafkaMessageHelper orderKafkaMessageHelper;
+    private final KafkaMessageHelper orderKafkaMessageHelper;
     private final KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer;
 
     public CreateOrderKafkaMessagePublisher(OrderMessagingDataMapper orderMessagingDataMapper,
-                                            OrderServiceConfigData orderServiceConfigData, OrderKafkaMessageHelper orderKafkaMessageHelper,
+                                            OrderServiceConfigData orderServiceConfigData, KafkaMessageHelper orderKafkaMessageHelper,
                                             KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer) {
         this.orderMessagingDataMapper = orderMessagingDataMapper;
         this.orderServiceConfigData = orderServiceConfigData;
