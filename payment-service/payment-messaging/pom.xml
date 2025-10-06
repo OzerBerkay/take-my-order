@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pament-messaging</artifactId>
+    <artifactId>payment-messaging</artifactId>
 
     <dependencies>
         <dependency>
