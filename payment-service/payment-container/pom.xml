@@ -5,19 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>take-my-order</artifactId>
+        <artifactId>payment-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>payment-service</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>payment-domain</module>
-        <module>payment-dataaccess</module>
-        <module>payment-messaging</module>
-        <module>payment-container</module>
-        <module>payment-container</module>
-    </modules>
+    <artifactId>payment-container</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
