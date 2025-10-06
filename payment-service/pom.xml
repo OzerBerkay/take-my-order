@@ -14,7 +14,7 @@
     <modules>
         <module>payment-domain</module>
         <module>payment-dataaccess</module>
-        <module>pament-messaging</module>
+        <module>payment-messaging</module>
         <module>payment-container</module>
     </modules>
 
