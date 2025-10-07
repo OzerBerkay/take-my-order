@@ -14,7 +14,7 @@
     <modules>
         <module>restaurant-domain</module>
         <module>restaurant-container</module>
-        <module>resstaurant-dataaccess</module>
+        <module>restaurant-dataaccess</module>
         <module>restaurant-messaging</module>
     </modules>
 
