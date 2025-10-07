@@ -90,6 +90,26 @@
 			</dependency>
 			<dependency>
 				<groupId>com.berkay</groupId>
+				<artifactId>restaurant-domain-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>restaurant-dataaccess</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>restaurant-messaging</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>restaurant-application-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
 				<artifactId>common-domain</artifactId>
 				<version>${project.version}</version>
 			</dependency>
