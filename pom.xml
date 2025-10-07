@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>take-my-order</name>
-	<description>Food Ordering System</description>
+	<description>Take My Order</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -80,6 +80,11 @@
 			<dependency>
 				<groupId>com.berkay</groupId>
 				<artifactId>payment-application-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>payment-messaging</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
