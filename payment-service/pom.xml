@@ -16,8 +16,6 @@
         <module>payment-dataaccess</module>
         <module>payment-messaging</module>
         <module>payment-container</module>
-        <module>payment-container</module>
-        <module>payment-container</module>
     </modules>
 
     <properties>
