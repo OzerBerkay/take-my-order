@@ -1,10 +1,10 @@
 package com.berkay.order.service.dataaccess.restaurant.mapper;
 
+import com.berkay.dataaccess.restaurant.entity.RestaurantEntity;
+import com.berkay.dataaccess.restaurant.exception.RestaurantDataAccessException;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.ProductId;
 import com.berkay.domain.valueobject.RestaurantId;
-import com.berkay.order.service.dataaccess.restaurant.entity.RestaurantEntity;
-import com.berkay.order.service.dataaccess.restaurant.exception.RestaurantDataAcessException;
 import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class RestaurantDataAccessMapper {
     }
 
     public Restaurant restaurantEntityToRestaurant(List<RestaurantEntity> restaurantEntities){
-        RestaurantEntity restaurantEntity = restaurantEntities.stream().findFirst().orElseThrow(()-> new RestaurantDataAcessException("Restaurant could not be found!"));
+        RestaurantEntity restaurantEntity = restaurantEntities.stream().findFirst().orElseThrow(()-> new RestaurantDataAccessException("Restaurant could not be found!"));
 
         List<Product> restaurantProducts = restaurantEntities.stream().map(entity->
                 new Product(new ProductId(entity.getProductId()), entity.getProductName(), new Money(entity.getProductPrice()))).toList();
