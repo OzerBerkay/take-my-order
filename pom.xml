@@ -60,6 +60,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.berkay</groupId>
+				<artifactId>common-dataaccess</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
 				<artifactId>order-application</artifactId>
 				<version>${project.version}</version>
 			</dependency>
