@@ -5,15 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>take-my-order</artifactId>
+        <artifactId>infrastructure</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>infrastructure</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>kafka</module>
-        <module>saga</module>
-    </modules>
+    <artifactId>saga</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>common-domain</artifactId>
+        </dependency>
+    </dependencies>
 </project>
