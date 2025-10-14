@@ -13,6 +13,7 @@ order-service:
   outbox-schedular-fixed-rate: 10000
   outbox-schedular-initial-delay: 10000
 
+
 spring:
   jpa:
     open-in-view: false
