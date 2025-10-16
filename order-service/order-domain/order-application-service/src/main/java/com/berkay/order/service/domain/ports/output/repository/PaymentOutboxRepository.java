@@ -22,5 +22,5 @@ public interface PaymentOutboxRepository {
 
     void deleteByTypeAndOutboxStatusAndSagaStatus(String type,
                                                   OutboxStatus outboxStatus,
-                                                  SagaStatus sagaStatus);
+                                                  SagaStatus... sagaStatus);
 }
