@@ -1,9 +1,11 @@
 package com.berkay.order.service.domain;
 
 import com.berkay.domain.valueobject.OrderId;
+import com.berkay.domain.valueobject.OrderStatus;
 import com.berkay.order.service.domain.entity.Order;
 import com.berkay.order.service.domain.exception.OrderNotFoundException;
 import com.berkay.order.service.domain.ports.output.repository.OrderRepository;
+import com.berkay.saga.SagaStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -31,5 +33,15 @@ public class OrderSagaHelper {
 
     void saveOrder(Order order) {
         orderRepository.save(order);
+    }
+
+    SagaStatus orderStatusToSagaStatus(OrderStatus orderStatus) {
+        return switch (orderStatus) {
+            case PAID -> SagaStatus.PROCESSING;
+            case APPROVED -> SagaStatus.SUCCEEDED;
+            case CANCELLING -> SagaStatus.COMPENSATING;
+            case CANCELLED -> SagaStatus.COMPENSATED;
+            default -> SagaStatus.STARTED;
+        };
     }
 }
