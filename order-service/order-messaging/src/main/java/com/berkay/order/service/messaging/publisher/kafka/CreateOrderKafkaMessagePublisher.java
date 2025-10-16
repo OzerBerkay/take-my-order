@@ -1,18 +1,18 @@
 package com.berkay.order.service.messaging.publisher.kafka;
 
+import com.berkay.domain.event.publisher.DomainEventPublisher;
 import com.berkay.kafka.order.avro.model.PaymentRequestAvroModel;
 import com.berkay.kafka.producer.KafkaMessageHelper;
 import com.berkay.kafka.producer.service.KafkaProducer;
 import com.berkay.order.service.domain.config.OrderServiceConfigData;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
-import com.berkay.order.service.domain.ports.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import com.berkay.order.service.messaging.mapper.OrderMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CreateOrderKafkaMessagePublisher implements OrderCreatedPaymentRequestMessagePublisher {
+public class CreateOrderKafkaMessagePublisher implements DomainEventPublisher<OrderCreatedEvent> {
 
     private final OrderMessagingDataMapper orderMessagingDataMapper;
     private final OrderServiceConfigData orderServiceConfigData;
