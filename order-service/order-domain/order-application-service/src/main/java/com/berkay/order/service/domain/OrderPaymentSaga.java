@@ -4,7 +4,6 @@ import com.berkay.domain.event.EmptyEvent;
 import com.berkay.order.service.domain.dto.message.PaymentResponse;
 import com.berkay.order.service.domain.entity.Order;
 import com.berkay.order.service.domain.event.OrderPaidEvent;
-import com.berkay.order.service.domain.ports.output.message.publisher.restaurantapproval.OrderPaidRestaurantRequestMessagePublisher;
 import com.berkay.saga.SagaStep;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

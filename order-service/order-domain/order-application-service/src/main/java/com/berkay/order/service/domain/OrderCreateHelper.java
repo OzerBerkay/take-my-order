@@ -7,7 +7,6 @@ import com.berkay.order.service.domain.entity.Restaurant;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
 import com.berkay.order.service.domain.exception.OrderDomainException;
 import com.berkay.order.service.domain.mapper.OrderDataMapper;
-import com.berkay.order.service.domain.ports.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import com.berkay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.berkay.order.service.domain.ports.output.repository.OrderRepository;
 import com.berkay.order.service.domain.ports.output.repository.RestaurantRepository;
