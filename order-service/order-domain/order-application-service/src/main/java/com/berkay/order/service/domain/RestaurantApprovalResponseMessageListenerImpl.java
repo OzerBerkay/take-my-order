@@ -1,7 +1,6 @@
 package com.berkay.order.service.domain;
 
 import com.berkay.order.service.domain.dto.message.RestaurantApprovalResponse;
-import com.berkay.order.service.domain.event.OrderCancelledEvent;
 import com.berkay.order.service.domain.ports.input.message.listener.restaurantapproval.RestaurantApprovalResponseMessageListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,10 +27,9 @@ public class RestaurantApprovalResponseMessageListenerImpl implements Restaurant
 
     @Override
     public void orderRejected(RestaurantApprovalResponse restaurantApprovalResponse) {
-        OrderCancelledEvent orderCancelledEvent = orderApprovalSaga.rollback(restaurantApprovalResponse);
-        log.info("Publishing order cancelled event for order id: {} with failure messages: {}",
+        orderApprovalSaga.rollback(restaurantApprovalResponse);
+        log.info("Restaurant Approval Saga rollback operation is completed for order id: {} with failure messages: {}",
                 restaurantApprovalResponse.getOrderId(),
                 String.join(FAILURE_MESSAGE_DELIMITER, restaurantApprovalResponse.getFailureMessages()));
-        orderCancelledEvent.fire();
     }
 }
