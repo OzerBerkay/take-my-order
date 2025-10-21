@@ -9,6 +9,7 @@ import com.berkay.order.service.domain.entity.Order;
 import com.berkay.order.service.domain.entity.OrderItem;
 import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
+import com.berkay.order.service.domain.event.OrderCancelledEvent;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
 import com.berkay.order.service.domain.event.OrderPaidEvent;
 import com.berkay.order.service.domain.outbox.model.approval.OrderApprovalEventPayload;
@@ -66,6 +67,17 @@ public class OrderDataMapper {
                 .price(orderCreatedEvent.getOrder().getPrice().getAmount())
                 .createdAt(orderCreatedEvent.getCreatedAt())
                 .paymentOrderStatus(PaymentOrderStatus.PENDING.name())
+                .build();
+    }
+
+    public OrderPaymentEventPayload orderCancelledEventToOrderPaymentEventPayload(OrderCancelledEvent
+                                                                                          orderCancelledEvent) {
+        return OrderPaymentEventPayload.builder()
+                .customerId(orderCancelledEvent.getOrder().getCustomerId().getValue().toString())
+                .orderId(orderCancelledEvent.getOrder().getId().getValue().toString())
+                .price(orderCancelledEvent.getOrder().getPrice().getAmount())
+                .createdAt(orderCancelledEvent.getCreatedAt())
+                .paymentOrderStatus(PaymentOrderStatus.CANCELLED.name())
                 .build();
     }
 
