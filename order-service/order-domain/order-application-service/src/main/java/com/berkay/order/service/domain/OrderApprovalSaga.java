@@ -1,6 +1,5 @@
 package com.berkay.order.service.domain;
 
-import com.berkay.domain.event.EmptyEvent;
 import com.berkay.domain.valueobject.OrderStatus;
 import com.berkay.order.service.domain.dto.message.RestaurantApprovalResponse;
 import com.berkay.order.service.domain.entity.Order;
