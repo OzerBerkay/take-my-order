@@ -14,6 +14,10 @@
     <dependencies>
         <dependency>
             <groupId>com.berkay</groupId>
+            <artifactId>outbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
             <artifactId>kafka-model</artifactId>
         </dependency>
         <dependency>
