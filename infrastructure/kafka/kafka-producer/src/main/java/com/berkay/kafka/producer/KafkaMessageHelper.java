@@ -1,6 +1,9 @@
 package com.berkay.kafka.producer;
 
+import com.berkay.order.service.domain.exception.OrderDomainException;
 import com.berkay.outbox.OutboxStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.support.SendResult;
@@ -11,6 +14,13 @@ import java.util.function.BiConsumer;
 @Slf4j
 @Component
 public class KafkaMessageHelper {
+
+    private final ObjectMapper objectMapper;
+
+    public KafkaMessageHelper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public <T, U> BiConsumer<SendResult<String, T>, Throwable>
     getKafkaCallback(String responseTopicName, T avroModel, U outboxMessage,
                      BiConsumer<U, OutboxStatus> outboxCallback,
@@ -32,5 +42,14 @@ public class KafkaMessageHelper {
                 outboxCallback.accept(outboxMessage, OutboxStatus.FAILED);
             }
         };
+    }
+
+    public <T> T getOrderEventPayload(String payload, Class<T> outputType) {
+        try {
+            return objectMapper.readValue(payload, outputType);
+        } catch (JsonProcessingException e) {
+            log.error("Could not read {} object!", outputType.getName(), e);
+            throw new OrderDomainException("Could not read " + outputType.getName() +" object!", e);
+        }
     }
 }
