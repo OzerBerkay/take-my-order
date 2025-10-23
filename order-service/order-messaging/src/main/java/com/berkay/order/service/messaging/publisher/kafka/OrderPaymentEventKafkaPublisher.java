@@ -25,24 +25,22 @@ public class OrderPaymentEventKafkaPublisher implements PaymentRequestMessagePub
     private final KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer;
     private final OrderServiceConfigData orderServiceConfigData;
     private final KafkaMessageHelper kafkaMessageHelper;
-    private final ObjectMapper objectMapper;
 
     public OrderPaymentEventKafkaPublisher(OrderMessagingDataMapper orderMessagingDataMapper,
                                            KafkaProducer<String, PaymentRequestAvroModel> kafkaProducer,
                                            OrderServiceConfigData orderServiceConfigData,
-                                           KafkaMessageHelper kafkaMessageHelper, ObjectMapper objectMapper) {
+                                           KafkaMessageHelper kafkaMessageHelper) {
         this.orderMessagingDataMapper = orderMessagingDataMapper;
         this.kafkaProducer = kafkaProducer;
         this.orderServiceConfigData = orderServiceConfigData;
         this.kafkaMessageHelper = kafkaMessageHelper;
-        this.objectMapper = objectMapper;
     }
 
     @Override
     public void publish(OrderPaymentOutboxMessage orderPaymentOutboxMessage,
                         BiConsumer<OrderPaymentOutboxMessage, OutboxStatus> outboxCallback) {
         OrderPaymentEventPayload orderPaymentEventPayload =
-                getOrderEventPayload(orderPaymentOutboxMessage.getPayload());
+                kafkaMessageHelper.getOrderEventPayload(orderPaymentOutboxMessage.getPayload(), OrderPaymentEventPayload.class);
 
         String sagaId = orderPaymentOutboxMessage.getSagaId().toString();
 
@@ -75,12 +73,5 @@ public class OrderPaymentEventKafkaPublisher implements PaymentRequestMessagePub
 
     }
 
-    private OrderPaymentEventPayload getOrderEventPayload(String payload) {
-        try {
-            return objectMapper.readValue(payload, OrderPaymentEventPayload.class);
-        } catch (JsonProcessingException e) {
-            log.error("Could not read OrderPaymentEventPayload object!", e);
-            throw new OrderDomainException("Could not read OrderPaymentEventPayload object!", e);
-        }
-    }
+
 }
