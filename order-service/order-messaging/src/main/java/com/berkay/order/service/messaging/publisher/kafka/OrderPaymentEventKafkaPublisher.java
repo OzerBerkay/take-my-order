@@ -4,14 +4,11 @@ import com.berkay.kafka.order.avro.model.PaymentRequestAvroModel;
 import com.berkay.kafka.producer.KafkaMessageHelper;
 import com.berkay.kafka.producer.service.KafkaProducer;
 import com.berkay.order.service.domain.config.OrderServiceConfigData;
-import com.berkay.order.service.domain.exception.OrderDomainException;
 import com.berkay.order.service.domain.outbox.model.payment.OrderPaymentEventPayload;
 import com.berkay.order.service.domain.outbox.model.payment.OrderPaymentOutboxMessage;
 import com.berkay.order.service.domain.ports.output.message.publisher.payment.PaymentRequestMessagePublisher;
 import com.berkay.order.service.messaging.mapper.OrderMessagingDataMapper;
 import com.berkay.outbox.OutboxStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
