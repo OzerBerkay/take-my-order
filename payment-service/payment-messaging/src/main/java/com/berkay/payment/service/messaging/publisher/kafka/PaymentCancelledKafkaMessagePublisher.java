@@ -1,18 +1,18 @@
 package com.berkay.payment.service.messaging.publisher.kafka;
 
+import com.berkay.domain.event.publisher.DomainEventPublisher;
 import com.berkay.kafka.order.avro.model.PaymentResponseAvroModel;
 import com.berkay.kafka.producer.KafkaMessageHelper;
 import com.berkay.kafka.producer.service.KafkaProducer;
 import com.berkay.payment.service.domain.config.PaymentServiceConfigData;
 import com.berkay.payment.service.domain.event.PaymentCancelledEvent;
-import com.berkay.payment.service.domain.ports.output.message.publisher.PaymentCancelledMessagePublisher;
 import com.berkay.payment.service.messaging.mapper.PaymentMessagingDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class PaymentCancelledKafkaMessagePublisher implements PaymentCancelledMessagePublisher {
+public class PaymentCancelledKafkaMessagePublisher implements DomainEventPublisher<PaymentCancelledEvent> {
 
     private final PaymentMessagingDataMapper paymentMessagingDataMapper;
     private final KafkaProducer<String, PaymentResponseAvroModel> kafkaProducer;
