@@ -18,6 +18,10 @@
         </dependency>
         <dependency>
             <groupId>com.berkay</groupId>
+            <artifactId>saga</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
             <artifactId>payment-domain-core</artifactId>
         </dependency>
         <dependency>
