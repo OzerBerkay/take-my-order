@@ -18,6 +18,18 @@
         </dependency>
         <dependency>
             <groupId>com.berkay</groupId>
+            <artifactId>outbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>saga</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
             <artifactId>restaurant-domain-core</artifactId>
         </dependency>
         <dependency>
