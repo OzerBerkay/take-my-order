@@ -1,6 +1,5 @@
 package com.berkay.order.service.domain;
 
-import com.berkay.domain.event.publisher.DomainEventPublisher;
 import com.berkay.order.service.domain.entity.Order;
 import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
