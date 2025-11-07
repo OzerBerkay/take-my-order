@@ -16,6 +16,26 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>customer-domain-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>customer-application-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>customer-application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>customer-dataaccess</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>customer-messaging</artifactId>
+        </dependency>
     </dependencies>
 
         <build>

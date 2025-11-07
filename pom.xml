@@ -118,6 +118,34 @@
 				<artifactId>restaurant-application-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>customer-domain-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>customer-application-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>customer-application</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>customer-dataaccess</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>customer-messaging</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+
 			<dependency>
 				<groupId>com.berkay</groupId>
 				<artifactId>common-domain</artifactId>
