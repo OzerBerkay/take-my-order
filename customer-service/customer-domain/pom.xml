@@ -5,18 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>take-my-order</artifactId>
+        <artifactId>customer-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>customer-service</artifactId>
+    <artifactId>customer-domain</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>customer-container</module>
-        <module>customer-application</module>
-        <module>customer-dataaccess</module>
-        <module>customer-messaging</module>
-        <module>customer-domain</module>
+        <module>customer-domain-core</module>
+        <module>customer-application-service</module>
     </modules>
 
 </project>
