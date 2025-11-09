@@ -4,11 +4,9 @@ import com.berkay.domain.valueobject.*;
 import com.berkay.order.service.domain.dto.create.CreateOrderCommand;
 import com.berkay.order.service.domain.dto.create.CreateOrderResponse;
 import com.berkay.order.service.domain.dto.create.OrderAddress;
+import com.berkay.order.service.domain.dto.message.CustomerModel;
 import com.berkay.order.service.domain.dto.track.TrackOrderResponse;
-import com.berkay.order.service.domain.entity.Order;
-import com.berkay.order.service.domain.entity.OrderItem;
-import com.berkay.order.service.domain.entity.Product;
-import com.berkay.order.service.domain.entity.Restaurant;
+import com.berkay.order.service.domain.entity.*;
 import com.berkay.order.service.domain.event.OrderCancelledEvent;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
 import com.berkay.order.service.domain.event.OrderPaidEvent;
@@ -94,6 +92,13 @@ public class OrderDataMapper {
                 .price(orderPaidEvent.getOrder().getPrice().getAmount())
                 .createdAt(orderPaidEvent.getCreatedAt())
                 .build();
+    }
+
+    public Customer customerModelToCustomer(CustomerModel customerModel) {
+        return new Customer(new CustomerId(UUID.fromString(customerModel.getId())),
+                customerModel.getUsername(),
+                customerModel.getFirstName(),
+                customerModel.getLastName());
     }
 
     private List<OrderItem> orderItemsToOrderItemEntities(List<com.berkay.order.service.domain.dto.create.OrderItem> orderItems) {

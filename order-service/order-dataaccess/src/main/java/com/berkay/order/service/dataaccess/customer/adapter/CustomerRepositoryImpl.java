@@ -5,6 +5,7 @@ import com.berkay.order.service.dataaccess.customer.repository.CustomerJpaReposi
 import com.berkay.order.service.domain.entity.Customer;
 import com.berkay.order.service.domain.ports.output.repository.CustomerRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -24,5 +25,12 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public Optional<Customer> findCustomer(UUID customerId) {
         return customerJpaRepository.findById(customerId).map(customerDataAccessMapper::customerEntityToCustomer);
+    }
+
+    @Transactional
+    @Override
+    public Customer save(Customer customer) {
+        return customerDataAccessMapper.customerEntityToCustomer(
+                customerJpaRepository.save(customerDataAccessMapper.customerToCustomerEntity(customer)));
     }
 }

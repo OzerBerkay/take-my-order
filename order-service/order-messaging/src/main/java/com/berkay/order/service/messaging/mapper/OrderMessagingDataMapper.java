@@ -1,6 +1,7 @@
 package com.berkay.order.service.messaging.mapper;
 
 import com.berkay.kafka.order.avro.model.*;
+import com.berkay.order.service.domain.dto.message.CustomerModel;
 import com.berkay.order.service.domain.dto.message.PaymentResponse;
 import com.berkay.order.service.domain.dto.message.RestaurantApprovalResponse;
 import com.berkay.order.service.domain.outbox.model.approval.OrderApprovalEventPayload;
@@ -73,6 +74,15 @@ public class OrderMessagingDataMapper {
                 .setPrice(orderPaymentEventPayload.getPrice())
                 .setCreatedAt(orderPaymentEventPayload.getCreatedAt().toInstant())
                 .setPaymentOrderStatus(PaymentOrderStatus.valueOf(orderPaymentEventPayload.getPaymentOrderStatus()))
+                .build();
+    }
+
+    public CustomerModel customerAvroModeltoCustomerModel(CustomerAvroModel customerAvroModel) {
+        return CustomerModel.builder()
+                .id(customerAvroModel.getId())
+                .username(customerAvroModel.getUsername())
+                .firstName(customerAvroModel.getFirstName())
+                .lastName(customerAvroModel.getLastName())
                 .build();
     }
 }

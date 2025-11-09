@@ -176,7 +176,7 @@ public class OrderApplicationServiceTest {
     public void testCreateOrderWithWrongTotalPrice() {
         OrderDomainException orderDomainException = assertThrows(OrderDomainException.class,
                 () -> orderApplicationService.createOrder(createOrderCommandWrongPrice));
-        assertEquals("Total price: 250.00 is not equal to Order items total: 200.00!", orderDomainException.getMessage());
+        assertEquals("Total price (250.00) is not equal to order items total (200.00)!", orderDomainException.getMessage());
     }
 
     @Test
@@ -198,7 +198,7 @@ public class OrderApplicationServiceTest {
                 .thenReturn(Optional.of(restaurantResponse));
         OrderDomainException orderDomainException = assertThrows(OrderDomainException.class,
                 () -> orderApplicationService.createOrder(createOrderCommand));
-        assertEquals("Restaurant with id " + RESTAURANT_ID + " is currently not active!", orderDomainException.getMessage());
+        assertEquals("Restaurant with id " + RESTAURANT_ID + " is currently not active", orderDomainException.getMessage());
     }
 
     private OrderPaymentOutboxMessage getOrderPaymentOutboxMessage() {
