@@ -28,7 +28,8 @@
 		<module>customer-service</module>
 		<module>payment-service</module>
 		<module>restaurant-service</module>
-	</modules>
+        <module>gateway-service</module>
+    </modules>
     <scm>
 		<connection/>
 		<developerConnection/>
