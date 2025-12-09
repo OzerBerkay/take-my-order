@@ -3,6 +3,8 @@ server:
 
 customer-service:
   customer-topic-name: customer
+  outbox-scheduler-fixed-rate: 10000 # 10 saniyede bir çalış
+  outbox-scheduler-initial-delay: 10000 # Başladıktan 10 sn sonra ilk işi yap
 
 spring:
   jpa:
@@ -13,13 +15,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=customer&binaryTransfer=true&reWriteBatchedInserts=true
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=customer&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
     username: postgres
     password: admin
     driver-class-name: org.postgresql.Driver
   sql:
     init:
-      mode: ALWAYS
+      mode: NEVER
       schema-locations: classpath:init-schema.sql
       platform: postgres
 

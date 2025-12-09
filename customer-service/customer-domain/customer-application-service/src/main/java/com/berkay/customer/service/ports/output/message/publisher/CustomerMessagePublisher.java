@@ -1,9 +1,13 @@
 package com.berkay.customer.service.ports.output.message.publisher;
 
-import com.berkay.customer.service.domain.event.CustomerCreatedEvent;
+import com.berkay.customer.service.outbox.model.CustomerOutboxMessage;
+import com.berkay.outbox.OutboxStatus;
+
+import java.util.function.BiConsumer;
 
 public interface CustomerMessagePublisher {
 
-    void publish(CustomerCreatedEvent customerCreatedEvent);
+    void publish(CustomerOutboxMessage customerOutboxMessage,
+                 BiConsumer<CustomerOutboxMessage, OutboxStatus> outboxCallback);
 
 }
