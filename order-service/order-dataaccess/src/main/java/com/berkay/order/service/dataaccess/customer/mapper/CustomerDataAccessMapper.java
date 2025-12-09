@@ -18,6 +18,7 @@ public class CustomerDataAccessMapper {
                 .username(customer.getUsername())
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
+                .email(customer.getEmail())
                 .build();
     }
 }

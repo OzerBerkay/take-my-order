@@ -26,6 +26,12 @@
       "type": {
         "type": "string"
       }
+    },
+    {
+      "name": "email",
+      "type": {
+        "type": "string"
+      }
     }
   ]
 }

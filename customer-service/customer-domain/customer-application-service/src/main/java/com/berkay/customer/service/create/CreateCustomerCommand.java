@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class CreateCustomerCommand {
+public class CreateCustomerCommand  { //client'dan gelen emir (DTO)
     @NotNull
     private final UUID customerId;
     @NotNull
@@ -19,4 +19,6 @@ public class CreateCustomerCommand {
     private final String firstName;
     @NotNull
     private final String lastName;
+    @NotNull
+    private final String email;
 }

@@ -98,7 +98,8 @@ public class OrderDataMapper {
         return new Customer(new CustomerId(UUID.fromString(customerModel.getId())),
                 customerModel.getUsername(),
                 customerModel.getFirstName(),
-                customerModel.getLastName());
+                customerModel.getLastName(),
+                customerModel.getEmail());
     }
 
     private List<OrderItem> orderItemsToOrderItemEntities(List<com.berkay.order.service.domain.dto.create.OrderItem> orderItems) {

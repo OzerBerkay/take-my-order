@@ -83,6 +83,7 @@ public class OrderMessagingDataMapper {
                 .username(customerAvroModel.getUsername())
                 .firstName(customerAvroModel.getFirstName())
                 .lastName(customerAvroModel.getLastName())
+                .email(customerAvroModel.getEmail())
                 .build();
     }
 }

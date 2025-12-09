@@ -1,7 +1,8 @@
-package com.berkay.customer.service.dataaccess.mapper;
+package com.berkay.customer.service.dataaccess.customer.mapper;
 
-import com.berkay.customer.service.dataaccess.entity.CustomerEntity;
+import com.berkay.customer.service.dataaccess.customer.entity.CustomerEntity;
 import com.berkay.customer.service.domain.entity.Customer;
+import com.berkay.customer.service.domain.valueobject.CustomerEmail;
 import com.berkay.domain.valueobject.CustomerId;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,8 @@ public class CustomerDataAccessMapper {
         return new Customer(new CustomerId(customerEntity.getId()),
                 customerEntity.getUsername(),
                 customerEntity.getFirstName(),
-                customerEntity.getLastName());
+                customerEntity.getLastName(),
+                new CustomerEmail(customerEntity.getEmail()));
     }
 
     public CustomerEntity customerToCustomerEntity(Customer customer) {
@@ -21,6 +23,7 @@ public class CustomerDataAccessMapper {
                 .username(customer.getUsername())
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
+                .email(customer.getEmail().getValue())
                 .build();
     }
 
