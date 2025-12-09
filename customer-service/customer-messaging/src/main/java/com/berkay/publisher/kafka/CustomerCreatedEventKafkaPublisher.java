@@ -38,9 +38,8 @@ public class CustomerCreatedEventKafkaPublisher implements CustomerMessagePublis
                         BiConsumer<CustomerOutboxMessage, OutboxStatus> outboxCallback) {
 
         // 1. JSON Payload'ı Helper ile Çevir
-        // TODO: Metod ismi commonda ORDER'a göre yapılmış. Ortak bir metot olmalı'
         CustomerEventPayload customerEventPayload = kafkaMessageHelper
-                .getOrderEventPayload(customerOutboxMessage.getPayload(), CustomerEventPayload.class);
+                .getEventPayload(customerOutboxMessage.getPayload(), CustomerEventPayload.class);
 
         log.info("Received CustomerOutboxMessage for customer id: {}", customerEventPayload.getCustomerId());
 
@@ -55,7 +54,6 @@ public class CustomerCreatedEventKafkaPublisher implements CustomerMessagePublis
                     customerAvroModel.getId(),
                     customerAvroModel,
                     // Helper bizim yerimize CompletableFuture/ListenableFuture karmaşasını yönetiyor
-                    // TODO: Metod ismi commonda ORDER'a göre yapılmış. Ortak bir metot olmalı'
                     kafkaMessageHelper.getKafkaCallback(
                             customerServiceConfigData.getCustomerTopicName(),
                             customerAvroModel,
