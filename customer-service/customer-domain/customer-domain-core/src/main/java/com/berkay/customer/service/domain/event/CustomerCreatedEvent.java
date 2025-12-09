@@ -19,4 +19,6 @@ public class CustomerCreatedEvent implements DomainEvent<Customer> {
     public Customer getCustomer() {
         return customer;
     }
+
+    public ZonedDateTime getCreatedAt() {return createdAt; }
 }

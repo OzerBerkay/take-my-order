@@ -1,4 +1,4 @@
-package com.berkay.customer.service.dataaccess.exception;
+package com.berkay.customer.service.dataaccess.customer.exception;
 
 public class CustomerDataaccessException extends RuntimeException {
 
