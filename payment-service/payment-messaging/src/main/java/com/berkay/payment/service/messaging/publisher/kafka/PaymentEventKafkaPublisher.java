@@ -37,7 +37,7 @@ public class PaymentEventKafkaPublisher implements PaymentResponseMessagePublish
     public void publish(OrderOutboxMessage orderOutboxMessage,
                         BiConsumer<OrderOutboxMessage, OutboxStatus> outboxCallback) {
         OrderEventPayload orderEventPayload =
-                kafkaMessageHelper.getOrderEventPayload(orderOutboxMessage.getPayload(), OrderEventPayload.class);
+                kafkaMessageHelper.getEventPayload(orderOutboxMessage.getPayload(), OrderEventPayload.class);
 
         String sagaId = orderOutboxMessage.getSagaId().toString();
 
