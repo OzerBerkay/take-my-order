@@ -13,10 +13,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 2300266370800031537L;
+  private static final long serialVersionUID = -2526687414923271296L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"CustomerAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"username\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"firstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"CustomerAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"username\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"firstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"email\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -76,6 +76,7 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
   private java.lang.String username;
   private java.lang.String firstName;
   private java.lang.String lastName;
+  private java.lang.String email;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -90,12 +91,14 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
    * @param username The new value for username
    * @param firstName The new value for firstName
    * @param lastName The new value for lastName
+   * @param email The new value for email
    */
-  public CustomerAvroModel(java.lang.String id, java.lang.String username, java.lang.String firstName, java.lang.String lastName) {
+  public CustomerAvroModel(java.lang.String id, java.lang.String username, java.lang.String firstName, java.lang.String lastName, java.lang.String email) {
     this.id = id;
     this.username = username;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.email = email;
   }
 
   @Override
@@ -112,6 +115,7 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
     case 1: return username;
     case 2: return firstName;
     case 3: return lastName;
+    case 4: return email;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -125,6 +129,7 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
     case 1: username = value$ != null ? value$.toString() : null; break;
     case 2: firstName = value$ != null ? value$.toString() : null; break;
     case 3: lastName = value$ != null ? value$.toString() : null; break;
+    case 4: email = value$ != null ? value$.toString() : null; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -198,6 +203,23 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
   }
 
   /**
+   * Gets the value of the 'email' field.
+   * @return The value of the 'email' field.
+   */
+  public java.lang.String getEmail() {
+    return email;
+  }
+
+
+  /**
+   * Sets the value of the 'email' field.
+   * @param value the value to set.
+   */
+  public void setEmail(java.lang.String value) {
+    this.email = value;
+  }
+
+  /**
    * Creates a new CustomerAvroModel RecordBuilder.
    * @return A new CustomerAvroModel RecordBuilder
    */
@@ -242,6 +264,7 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
     private java.lang.String username;
     private java.lang.String firstName;
     private java.lang.String lastName;
+    private java.lang.String email;
 
     /** Creates a new Builder */
     private Builder() {
@@ -270,6 +293,10 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
         this.lastName = data().deepCopy(fields()[3].schema(), other.lastName);
         fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
+      if (isValidValue(fields()[4], other.email)) {
+        this.email = data().deepCopy(fields()[4].schema(), other.email);
+        fieldSetFlags()[4] = other.fieldSetFlags()[4];
+      }
     }
 
     /**
@@ -293,6 +320,10 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
       if (isValidValue(fields()[3], other.lastName)) {
         this.lastName = data().deepCopy(fields()[3].schema(), other.lastName);
         fieldSetFlags()[3] = true;
+      }
+      if (isValidValue(fields()[4], other.email)) {
+        this.email = data().deepCopy(fields()[4].schema(), other.email);
+        fieldSetFlags()[4] = true;
       }
     }
 
@@ -456,6 +487,46 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
       return this;
     }
 
+    /**
+      * Gets the value of the 'email' field.
+      * @return The value.
+      */
+    public java.lang.String getEmail() {
+      return email;
+    }
+
+
+    /**
+      * Sets the value of the 'email' field.
+      * @param value The value of 'email'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.CustomerAvroModel.Builder setEmail(java.lang.String value) {
+      validate(fields()[4], value);
+      this.email = value;
+      fieldSetFlags()[4] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'email' field has been set.
+      * @return True if the 'email' field has been set, false otherwise.
+      */
+    public boolean hasEmail() {
+      return fieldSetFlags()[4];
+    }
+
+
+    /**
+      * Clears the value of the 'email' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.CustomerAvroModel.Builder clearEmail() {
+      email = null;
+      fieldSetFlags()[4] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public CustomerAvroModel build() {
@@ -465,6 +536,7 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
         record.username = fieldSetFlags()[1] ? this.username : (java.lang.String) defaultValue(fields()[1]);
         record.firstName = fieldSetFlags()[2] ? this.firstName : (java.lang.String) defaultValue(fields()[2]);
         record.lastName = fieldSetFlags()[3] ? this.lastName : (java.lang.String) defaultValue(fields()[3]);
+        record.email = fieldSetFlags()[4] ? this.email : (java.lang.String) defaultValue(fields()[4]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -505,6 +577,8 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
 
     out.writeString(this.lastName);
 
+    out.writeString(this.email);
+
   }
 
   @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
@@ -520,8 +594,10 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
 
       this.lastName = in.readString();
 
+      this.email = in.readString();
+
     } else {
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 5; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.id = in.readString();
@@ -537,6 +613,10 @@ public class CustomerAvroModel extends org.apache.avro.specific.SpecificRecordBa
 
         case 3:
           this.lastName = in.readString();
+          break;
+
+        case 4:
+          this.email = in.readString();
           break;
 
         default:

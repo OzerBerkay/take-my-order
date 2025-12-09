@@ -13,7 +13,8 @@ public class CustomerDataMapper {
         return new Customer(new CustomerId(createCustomerCommand.getCustomerId()),
                 createCustomerCommand.getUsername(),
                 createCustomerCommand.getFirstName(),
-                createCustomerCommand.getLastName());
+                createCustomerCommand.getLastName(),
+                new CustomerEmail(createCustomerCommand.getEmail()));
     }
 
     public CreateCustomerResponse customerToCreateCustomerResponse(Customer customer, String message) {

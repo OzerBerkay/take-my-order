@@ -1,5 +1,6 @@
-package com.berkay.customer.service.dataaccess.entity;
+package com.berkay.customer.service.dataaccess.customer.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "customers")
+@Table(name = "customers", schema = "customer")
 @Entity
 public class CustomerEntity {
 
@@ -21,4 +22,6 @@ public class CustomerEntity {
     private String username;
     private String firstName;
     private String lastName;
+    @Column(nullable = false, unique = true)
+    private String email;
 }
