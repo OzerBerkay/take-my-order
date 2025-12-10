@@ -11,6 +11,13 @@
 
     <artifactId>customer-service</artifactId>
     <packaging>pom</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+            <version>25.0.6</version>
+        </dependency>
+    </dependencies>
     <modules>
         <module>customer-container</module>
         <module>customer-application</module>

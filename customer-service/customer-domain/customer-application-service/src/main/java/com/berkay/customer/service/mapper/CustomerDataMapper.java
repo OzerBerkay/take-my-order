@@ -9,11 +9,13 @@ import com.berkay.customer.service.outbox.model.CustomerEventPayload;
 import com.berkay.domain.valueobject.CustomerId;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class CustomerDataMapper {
 
-    public Customer createCustomerCommandToCustomer(CreateCustomerCommand createCustomerCommand) {
-        return new Customer(new CustomerId(createCustomerCommand.getCustomerId()),
+    public Customer createCustomerCommandToCustomer(CreateCustomerCommand createCustomerCommand, String keycloakUserId) {
+        return new Customer(new CustomerId(UUID.fromString(keycloakUserId)),
                 createCustomerCommand.getUsername(),
                 createCustomerCommand.getFirstName(),
                 createCustomerCommand.getLastName(),

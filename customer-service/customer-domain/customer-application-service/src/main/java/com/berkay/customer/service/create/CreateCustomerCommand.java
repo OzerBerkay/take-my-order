@@ -12,9 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateCustomerCommand  { //client'dan gelen emir (DTO)
     @NotNull
-    private final UUID customerId;
-    @NotNull
     private final String username;
+    @NotNull
+    private final String password;
     @NotNull
     private final String firstName;
     @NotNull
