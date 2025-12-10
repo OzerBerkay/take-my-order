@@ -24,12 +24,12 @@ spring:
     username: postgres
     password: admin
     driver-class-name: org.postgresql.Driver
-  sql:
-    init:
-      platform: postgres
-      schema-locations: classpath:init-schema.sql
-      data-locations: classpath:init-data.sql
-      mode: always
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    schemas: restaurant
+    locations: classpath:db/migration
 
 kafka-config:
   bootstrap-servers: localhost:19092, localhost:29092, localhost:39092

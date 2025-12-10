@@ -1,13 +1,9 @@
 -- 1. ŞEMA KURULUMU
-DROP SCHEMA IF EXISTS customer CASCADE;
-
-CREATE SCHEMA customer;
+CREATE SCHEMA IF NOT EXISTS customer;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-DROP TABLE IF EXISTS customer.customers CASCADE;
-
-CREATE TABLE customer.customers
+CREATE TABLE IF NOT EXISTS customer.customers
 (
     id uuid NOT NULL,
     username character varying COLLATE pg_catalog."default" NOT NULL,
@@ -18,12 +14,18 @@ CREATE TABLE customer.customers
 );
 
 -- 2. Outbox Status Enum
-DROP TYPE IF EXISTS outbox_status;
-CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
+-- Do end bloğu ile sarıldı çünkü diğer türlü ilk çalıştırdığında harika çalışır.
+-- Fakat ikinci kez çalıştığında (veya veritabanında bu tip zaten varsa) PostgreSQL şu
+-- hatayı fırlatır ve işlemi durdurur: ERROR: type "outbox_status" already exists
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'outbox_status') THEN
+        CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
+    END IF;
+END $$;
 
 -- 3. Outbox Tablosu
 -- Kafka'ya gidecek mesajlar burada güvenle saklanacak.
-CREATE TABLE customer.customer_outbox
+CREATE TABLE IF NOT EXISTS customer.customer_outbox
 (
     id uuid NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -36,16 +38,16 @@ CREATE TABLE customer.customer_outbox
 );
 
 -- 4. İndeksler
-CREATE INDEX "customer_outbox_status"
+CREATE INDEX IF NOT EXISTS "customer_outbox_status"
     ON customer.customer_outbox
         (type, outbox_status);
 
 -- Kayıt esnasında aynı kullanıcı adından iki kişi olmasın,
 -- bunun için username arama yapıldığında sistem ışık hızında çalışsın diye.
-CREATE UNIQUE INDEX "customers_username_index"
+CREATE UNIQUE INDEX IF NOT EXISTS "customers_username_index"
     ON customer.customers
         (username);
 
-CREATE UNIQUE INDEX "customers_email_index"
+CREATE UNIQUE INDEX IF NOT EXISTS "customers_email_index"
     ON customer.customers
         (email);
