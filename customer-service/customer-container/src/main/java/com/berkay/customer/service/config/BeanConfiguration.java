@@ -1,4 +1,4 @@
-package com.berkay.customer.service;
+package com.berkay.customer.service.config;
 
 import com.berkay.customer.service.domain.CustomerDomainService;
 import com.berkay.customer.service.domain.CustomerDomainServiceImpl;

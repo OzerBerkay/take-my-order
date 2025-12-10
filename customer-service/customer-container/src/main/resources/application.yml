@@ -42,3 +42,11 @@ kafka-producer-config:
   linger-ms: 5
   request-timeout-ms: 60000
   retry-count: 5
+
+keycloak:
+  server-url: http://localhost:9090
+  realm: take-my-order
+  master-realm: master
+  admin-client-id: admin-cli
+  admin-username: admin      # Keycloak yönetim paneli kullanıcısı
+  admin-password: admin      # Keycloak yönetim paneli şifresi
