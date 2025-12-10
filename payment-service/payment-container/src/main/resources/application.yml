@@ -20,21 +20,21 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
-    username: postgres
-    password: admin
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/postgres?currentSchema=${DB_SCHEMA:payment}&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 1
-    schemas: payment
+    schemas: ${DB_SCHEMA:payment}
     locations: classpath:db/migration
 
 kafka-config:
-  bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092, localhost:29092, localhost:39092}
   schema-registry-url-key: schema.registry.url
-  schema-registry-url: http://localhost:8081
+  schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:8081}
   num-of-partitions: 3
   replication-factor: 3
 

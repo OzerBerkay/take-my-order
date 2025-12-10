@@ -10,7 +10,7 @@ spring:
       resourceserver:
         jwt:
           # Keycloak'ın token dağıttığı adres (Issuer)
-          issuer-uri: http://localhost:9090/realms/take-my-order
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/take-my-order}
           # Token'ın geçerliliğini kontrol etmek için sertifika adresi
           jwk-set-uri: http://localhost:9090/realms/take-my-order/protocol/openid-connect/certs
 
