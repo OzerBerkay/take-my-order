@@ -16,5 +16,5 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Derlenen jar dosyasını alıyoruz
-COPY --from=builder /app/customer-service/target/*.jar app.jar
+COPY --from=builder /app/customer-service/customer-container/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
