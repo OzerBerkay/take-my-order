@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-manager
+  namespace: take-my-order
+  labels:
+    app: kafka-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-manager
+  template:
+    metadata:
+      labels:
+        app: kafka-manager
+    spec:
+      containers:
+        - name: kafka-manager
+          image: hlebalbau/kafka-manager:stable
+          ports:
+            - containerPort: 9000
+          env:
+            - name: ZK_HOSTS
+              value: "zookeeper:2181" # K8s içindeki Zookeeper servisi
+            - name: APPLICATION_SECRET
+              value: "admin" # Arayüz güvenliği için rastgele bir secret (önemsiz)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-manager
+  namespace: take-my-order
+spec:
+  selector:
+    app: kafka-manager
+  type: NodePort
+  ports:
+    - port: 9000
+      targetPort: 9000
+      nodePort: 30091 # Tarayıcıdan giriş portun (localhost:30091)
