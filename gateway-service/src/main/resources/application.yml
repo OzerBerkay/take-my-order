@@ -49,3 +49,12 @@ spring:
           uri: http://localhost:8183
           predicates:
             - Path=/restaurants/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: always
