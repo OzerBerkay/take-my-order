@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-yml-config
+  namespace: take-my-order
+data:
+  application.yml: |
+    server:
+      port: 8080
+    spring:
+      application:
+        name: gateway-service
+      cloud:
+        gateway:
+          routes:
+            # --- CUSTOMER SERVICE ---
+            - id: customer-service
+              uri: http://customer-service:80
+              predicates:
+                - Path=/customers/**
+              # Filtreleri sildik (CircuitBreaker yok)
+
+            # --- ORDER SERVICE ---
+            - id: order-service
+              uri: http://order-service:80
+              predicates:
+                - Path=/orders/**
+              # Filtreleri sildik
+
+            # --- RESTAURANT SERVICE ---
+            - id: restaurant-service
+              uri: http://restaurant-service:80
+              predicates:
+                - Path=/restaurants/**
+              # Filtreleri sildik
+
+            # --- PAYMENT SERVICE ---
+            - id: payment-service
+              uri: http://payment-service:80
+              predicates:
+                - Path=/payments/**
+              # Filtreleri sildik
+
+    # Actuator Ayarları
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health, info, prometheus, metrics
+      endpoint:
+        health:
+          show-details: always
