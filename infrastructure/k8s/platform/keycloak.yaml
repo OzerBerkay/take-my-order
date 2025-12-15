@@ -18,16 +18,56 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.1
-          args: ["start-dev"]
+          args: ["start-dev"] # Geliştirme modu
           env:
+            # Yönetici Hesabı (Secret'tan okunuyor)
             - name: KEYCLOAK_ADMIN
               value: "admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ADMIN_PASSWORD
+
+            # Proxy Ayarı (Ingress arkasında çalışacağı için)
             - name: KC_PROXY
               value: "edge"
+
+            # --- DATABASE CONFIGURATION (POSTGRES BAĞLANTISI) ---
+            - name: KC_DB
+              value: "postgres"
+            - name: KC_DB_URL
+              # DİKKAT: Ana veritabanı 'postgres', Şema 'keycloak'
+              value: "jdbc:postgresql://host.docker.internal:5432/postgres?currentSchema=keycloak"
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_USERNAME
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_PASSWORD
+
+            # Hata almamak için sıkı kontrolleri gevşetiyoruz
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HTTP_ENABLED
+              value: "true"
+
           ports:
             - containerPort: 8080
+
+          # Kaynak Sınırlama (Hardening)
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+
           readinessProbe:
             httpGet:
               path: /realms/master
