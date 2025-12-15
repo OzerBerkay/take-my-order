@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-kafka
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-kafka
+          image: confluentinc/cp-kafka:7.2.5
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              echo "Waiting for Kafka brokers to be ready..."
+              
+              # GÜVENLİ DÖNGÜ (MAX 30 DENEME)
+              # Sonsuza kadar beklemez, 60 saniye dener, olmazsa hata verir.
+              i=0
+              while ! kafka-topics --bootstrap-server kafka-broker-1:9092 --list > /dev/null 2>&1; do
+                i=$((i+1))
+                if [ $i -ge 30 ]; then
+                  echo "TIMEOUT: Kafka is not reachable after 60 seconds. Exiting..."
+                  exit 1
+                fi
+                echo "Kafka not reachable yet (Attempt $i/30). Retrying in 2 seconds..."
+                sleep 2
+              done
+              
+              echo "Kafka is READY! Starting topic creation..."
+              
+              # DELETE KISIMLARI COMMENT'E ALINDI SADECE DEVELOPMENT İÇİNDE KULLANILACAK
+              # echo "------------------------------------------------------------------"
+              # echo "WARNING: DELETING EXISTING TOPICS (DEV MODE)"
+              # echo "------------------------------------------------------------------"
+              # kafka-topics --bootstrap-server kafka-broker-1:9092 --topic payment-request --delete --if-exists
+              # kafka-topics --bootstrap-server kafka-broker-1:9092 --topic payment-response --delete --if-exists
+              # kafka-topics --bootstrap-server kafka-broker-1:9092 --topic restaurant-approval-request --delete --if-exists
+              # kafka-topics --bootstrap-server kafka-broker-1:9092 --topic restaurant-approval-response --delete --if-exists
+              # kafka-topics --bootstrap-server kafka-broker-1:9092 --topic customer --delete --if-exists
+              
+              echo "Creating kafka topics..."
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic payment-request --replication-factor 3 --partitions 3
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic payment-response --replication-factor 3 --partitions 3
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic restaurant-approval-request --replication-factor 3 --partitions 3
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic restaurant-approval-response --replication-factor 3 --partitions 3
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic customer --replication-factor 3 --partitions 3
+              
+              echo "Successfully created topics:"
+              kafka-topics --bootstrap-server kafka-broker-1:9092 --list
