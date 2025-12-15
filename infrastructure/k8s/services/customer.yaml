@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+  namespace: take-my-order
+  labels:
+    app: customer
+spec:
+  replicas: 1 # Kaç kopya çalışacak?
+  selector:
+    matchLabels:
+      app: customer
+  template:
+    metadata:
+      labels:
+        app: customer
+    spec:
+      containers:
+        - name: customer
+          image: berkay/customer-service:v1 # # Localde build ettiğimiz imaj
+          imagePullPolicy: Never            # Docker Hub'a gitme, yerel imajı kullan!
+          ports:
+            - containerPort: 8184           # Application.yml içindeki customer portu
+          env:
+            - name: SERVER_PORT
+              value: "8184"
+            # --- Veritabanı Ayarları (ConfigMap ve Secret'tan) ---
+            # Sıralama Önemli! Port ve Host SPRING_DATASOURCE_URL'den Önce Tanımlanmalı
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: DB_PORT
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=customer&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_PASSWORD
+
+            # 👇 --- KEYCLOAK AYARLARI ---
+            - name: KEYCLOAK_SERVER_URL
+              value: "http://keycloak-service:8080" # Artık localhost değil!
+
+            - name: KEYCLOAK_REALM
+              value: "take-my-order"
+
+            - name: KEYCLOAK_MASTER_REALM
+              value: "master"
+
+            - name: KEYCLOAK_ADMIN_CLIENT_ID
+              value: "admin-cli"
+
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: "admin"
+
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin" # Keycloak kurarken verdiğimiz şifre
+
+              # --- compression type ---
+            - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+              value: "none"
+
+            # --- Kafka Ayarları ---
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: SCHEMA_REGISTRY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SCHEMA_REGISTRY_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-service # Gateway buna bu isimle ulaşacak
+  namespace: take-my-order
+spec:
+  selector:
+    app: customer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8184
