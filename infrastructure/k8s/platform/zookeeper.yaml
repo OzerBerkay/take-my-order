@@ -17,6 +17,8 @@ kind: Deployment
 metadata:
   name: zookeeper
   namespace: take-my-order
+  labels:
+    app: zookeeper
 spec:
   replicas: 1
   selector:
@@ -47,10 +49,26 @@ spec:
               value: "zookeeper:2888:3888"
             - name: KAFKA_OPTS
               value: "-Dzookeeper.4lw.commands.whitelist=ruok"
-          volumeMounts: # Diski içeriye bağlıyoruz
+            # JVM Heap Ayarı (Resource Limit ile uyumlu olmalı)
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx256M -Xms256M"
+          volumeMounts:
             - name: zookeeper-storage
               mountPath: /var/lib/zookeeper/data
+            - name: zookeeper-log-storage
+              mountPath: /var/lib/zookeeper/log
+          # EKLENEN KISIM: Production için Kaynak Limitleri
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
       volumes: #Hangi diski kullanacağız?
         - name: zookeeper-storage
           persistentVolumeClaim:
             claimName: zookeeper-pvc
+        - name: zookeeper-log-storage
+          persistentVolumeClaim:
+            claimName: zookeeper-log-pvc
