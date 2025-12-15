@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: take-my-order
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: berkay/gateway-service:v1  # Build edilen imaj
+          imagePullPolicy: Never            # Localdeki imajı kullan (Çok Önemli!)
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: KEYCLOAK_SERVER_URL
+              value: "http://keycloak-service:8080"
+            - name: KEYCLOAK_REALM
+              value: "take-my-order"
+            # Spring Security Ayarları (Token Doğrulama için)
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: "http://keycloak-service:8080/realms/take-my-order"
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+              value: "http://keycloak-service:8080/realms/take-my-order/protocol/openid-connect/certs"
+          # Ayarları dışarıdan al! Böylece docker-compose ile ayağa kaldırmadaki kısımları bypass et ama bozma
+          volumeMounts:
+            - name: gateway-config-volume
+              # İmajın içindeki config dosyasının YOLUNU hedef aldık
+              mountPath: /app/config/application.yml
+              subPath: application.yml
+      # ConfigMap'i disk gibi tak
+      volumes:
+        - name: gateway-config-volume
+          configMap:
+            name: gateway-yml-config # Oluşturduğumuz ConfigMap'i kullan
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  selector:
+    app: gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30090  # Bilgisayarından buraya istek atacaksın (30080 de keycloak'a ait)
