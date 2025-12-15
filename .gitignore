@@ -141,3 +141,5 @@ Desktop.ini
 /.idea/
 
 infrastructure/docker-compose/volumes/**/**
+#Hide project secrets
+infrastructure/k8s/secrets.yaml
