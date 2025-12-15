@@ -9,8 +9,8 @@ COPY order-service order-service
 COPY payment-service payment-service
 COPY restaurant-service restaurant-service
 
-# Sadece Customer Service'i derliyoruz
-RUN mvn clean package -DskipTests -pl customer-service -am
+# Sadece Customer Service'i derliyoruz (DİKKAT: multimodule proje olduğunda /****-container ekledik)
+RUN mvn clean package -DskipTests -pl customer-service/customer-container -am
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
