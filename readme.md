@@ -264,6 +264,10 @@ If you prefer Docker Compose instead of Kubernetes:
   ```
   http://localhost:9000
   ```
+- **Create Topics (3 partition, 3 replication factor).**
+  ```bash
+  docker-compose -f common.yml -f init_kafka.yml up
+  ```
 
 ---
 
