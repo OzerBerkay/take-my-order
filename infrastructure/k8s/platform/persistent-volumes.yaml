@@ -1,4 +1,4 @@
-# Zookeeper Diski
+# Zookeeper Data Diski
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -10,6 +10,19 @@ spec:
   resources:
     requests:
       storage: 1Gi # Zookeeper için 1GB yeterli
+---
+# Zookeeper Log Diski
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-log-pvc
+  namespace: take-my-order
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 # Kafka Broker 1 Diski
 apiVersion: v1
