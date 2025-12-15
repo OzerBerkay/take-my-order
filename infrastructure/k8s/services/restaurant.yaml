@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant
+  namespace: take-my-order
+  labels:
+    app: restaurant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant
+  template:
+    metadata:
+      labels:
+        app: restaurant
+    spec:
+      containers:
+        - name: restaurant
+          image: berkay/restaurant-service:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8183
+          env:
+            - name: SERVER_PORT
+              value: "8183"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: DB_PORT
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=restaurant&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_PASSWORD
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: SCHEMA_REGISTRY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SCHEMA_REGISTRY_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-service
+  namespace: take-my-order
+spec:
+  selector:
+    app: restaurant
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8183
