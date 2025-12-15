@@ -1,0 +1,51 @@
+# Zookeeper Diski
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-pvc
+  namespace: take-my-order
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Zookeeper için 1GB yeterli
+---
+# Kafka Broker 1 Diski
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-broker-1-pvc
+  namespace: take-my-order
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi # Kafka için 2GB (Senaryoya göre artırılabilir)
+---
+# Kafka Broker 2 Diski
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-broker-2-pvc
+  namespace: take-my-order
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+# Kafka Broker 3 Diski
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-broker-3-pvc
+  namespace: take-my-order
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
