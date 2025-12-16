@@ -26,6 +26,10 @@
         </dependency>
         <dependency>
             <groupId>com.berkay</groupId>
+            <artifactId>restaurant-application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
             <artifactId>restaurant-messaging</artifactId>
         </dependency>
         <dependency>

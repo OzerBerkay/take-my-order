@@ -5,29 +5,28 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>payment-service</artifactId>
+        <artifactId>restaurant-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>payment-dataaccess</artifactId>
-
+    <artifactId>restaurant-application</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.berkay</groupId>
-            <artifactId>payment-application-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.berkay</groupId>
-            <artifactId>common-dataaccess</artifactId>
+            <artifactId>restaurant-application-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>common-application</artifactId>
         </dependency>
     </dependencies>
 
