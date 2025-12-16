@@ -86,3 +86,9 @@ management:
   metrics:
     tags:
       application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için
+  tracing:
+    sampling:
+      probability: 1.0 # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans}
