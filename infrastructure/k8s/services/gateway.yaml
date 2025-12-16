@@ -31,26 +31,18 @@ spec:
           env:
             - name: SERVER_PORT
               value: "8080"
-            - name: KEYCLOAK_SERVER_URL
-              value: "http://keycloak-service:8080"
-            - name: KEYCLOAK_REALM
-              value: "take-my-order"
-            # Spring Security Ayarları (Token Doğrulama için)
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+            # Application.yml içinde ${KEYCLOAK_ISSUER_URI} kullanıyorduk.
+            # Onu burada K8s içindeki adrese eşitliyoruz.
+            - name: KEYCLOAK_ISSUER_URI
               value: "http://keycloak-service:8080/realms/take-my-order"
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
-              value: "http://keycloak-service:8080/realms/take-my-order/protocol/openid-connect/certs"
-          # Ayarları dışarıdan al! Böylece docker-compose ile ayağa kaldırmadaki kısımları bypass et ama bozma
-          volumeMounts:
-            - name: gateway-config-volume
-              # İmajın içindeki config dosyasının YOLUNU hedef aldık
-              mountPath: /app/config/application.yml
-              subPath: application.yml
-      # ConfigMap'i disk gibi tak
-      volumes:
-        - name: gateway-config-volume
-          configMap:
-            name: gateway-yml-config # Oluşturduğumuz ConfigMap'i kullan
+
+          # ConfigMap ve Secret'tan TOPLU İçe Aktarım
+          # Burası sayesinde ORDER_SERVICE_URI vb. otomatik yüklenir.
+          envFrom:
+            - configMapRef:
+                name: service-config
+            - secretRef:
+                name: service-secrets
 ---
 apiVersion: v1
 kind: Service
@@ -58,7 +50,7 @@ metadata:
   name: gateway-service
   namespace: take-my-order
 spec:
-  type: ClusterIP
+  type: ClusterIP # Ingress arkasında olduğu için ClusterIP
   selector:
     app: gateway-service
   ports:
