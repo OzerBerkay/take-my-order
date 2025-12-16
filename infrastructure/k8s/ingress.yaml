@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: takemyorder-ingress
+  namespace: take-my-order
+  annotations:
+    # Trafik boyutunu artırıyoruz (Dosya yükleme vb. için)
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    # SSL olmadığı için şimdilik HTTP kullan
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    # 1. KURAL: API (Gateway)
+    - host: api.takemyorder.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service # Trafiği Spring Cloud Gateway'e atıyoruz
+                port:
+                  number: 80
+    # 2. KURAL: AUTH (Keycloak)
+    - host: auth.takemyorder.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak-service
+                port:
+                  number: 8080 # Keycloak'ın iç portu

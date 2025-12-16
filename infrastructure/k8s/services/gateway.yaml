@@ -58,11 +58,10 @@ metadata:
   name: gateway-service
   namespace: take-my-order
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gateway-service
   ports:
     - name: http
       port: 80
       targetPort: 8080
-      nodePort: 30090  # Bilgisayarından buraya istek atacaksın (30080 de keycloak'a ait)

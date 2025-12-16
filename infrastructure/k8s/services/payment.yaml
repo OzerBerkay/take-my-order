@@ -73,6 +73,7 @@ metadata:
   name: payment-service
   namespace: take-my-order
 spec:
+  type: ClusterIP
   selector:
     app: payment-service
   ports:
