@@ -29,3 +29,5 @@ data:
   CUSTOMER_SERVICE_URI: "http://customer-service:80"
   PAYMENT_SERVICE_URI: "http://payment-service:80"
   RESTAURANT_SERVICE_URI: "http://restaurant-service:80"
+
+  ZIPKIN_URL: "http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans"
