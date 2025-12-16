@@ -81,6 +81,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.berkay</groupId>
+				<artifactId>payment-dataaccess</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
 				<artifactId>order-messaging</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -92,6 +97,16 @@
 			<dependency>
 				<groupId>com.berkay</groupId>
 				<artifactId>payment-application-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>payment-application</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>restaurant-application</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

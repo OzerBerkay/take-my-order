@@ -22,8 +22,11 @@
         </dependency>
         <dependency>
             <groupId>com.berkay</groupId>
+            <artifactId>payment-application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.berkay</groupId>
             <artifactId>payment-dataaccess</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.berkay</groupId>
