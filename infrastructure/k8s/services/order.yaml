@@ -82,6 +82,7 @@ metadata:
   name: order-service
   namespace: take-my-order
 spec:
+  type: ClusterIP
   selector:
     app: order-service
   ports:

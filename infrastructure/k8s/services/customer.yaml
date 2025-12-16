@@ -97,6 +97,7 @@ metadata:
   name: customer-service # Gateway buna bu isimle ulaşacak Servis İsmi
   namespace: take-my-order
 spec:
+  type: ClusterIP
   selector:
     app: customer-service # Servis Bağlantısı
   ports:
