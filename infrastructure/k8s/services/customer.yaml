@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer
+  name: customer-service # Deployment İsmi
   namespace: take-my-order
   labels:
-    app: customer
+    app: customer-service # Deployment Etiketi
 spec:
   replicas: 1 # Kaç kopya çalışacak?
   selector:
     matchLabels:
-      app: customer
+      app: customer-service # Pod Seçicisi
   template:
     metadata:
       labels:
-        app: customer
+        app: customer-service # Pod Etiketi
     spec:
       containers:
-        - name: customer
-          image: berkay/customer-service:v1 # # Localde build ettiğimiz imaj
-          imagePullPolicy: Never            # Docker Hub'a gitme, yerel imajı kullan!
+        - name: customer-service # Konteyner İsmi
+          image: berkayozr/customer-service:v1 # Dockerhub'da build ettiğimiz imaj
+          imagePullPolicy: Always            # Docker Hub'dan çek
           ports:
             - containerPort: 8184           # Application.yml içindeki customer portu
           resources:
@@ -94,11 +94,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: customer-service # Gateway buna bu isimle ulaşacak
+  name: customer-service # Gateway buna bu isimle ulaşacak Servis İsmi
   namespace: take-my-order
 spec:
   selector:
-    app: customer
+    app: customer-service # Servis Bağlantısı
   ports:
     - name: http
       port: 80

@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: restaurant
+  name: restaurant-service
   namespace: take-my-order
   labels:
-    app: restaurant
+    app: restaurant-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: restaurant
+      app: restaurant-service
   template:
     metadata:
       labels:
-        app: restaurant
+        app: restaurant-service
     spec:
       containers:
-        - name: restaurant
-          image: berkay/restaurant-service:v1
-          imagePullPolicy: Never
+        - name: restaurant-service
+          image: berkayozr/restaurant-service:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8183
           resources:
@@ -71,7 +71,7 @@ metadata:
   namespace: take-my-order
 spec:
   selector:
-    app: restaurant
+    app: restaurant-service
   ports:
     - name: http
       port: 80
