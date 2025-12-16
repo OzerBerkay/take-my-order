@@ -1,19 +1,11 @@
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
-WORKDIR /app
-COPY pom.xml .
-COPY common common
-COPY infrastructure infrastructure
-COPY gateway-service gateway-service
-COPY customer-service customer-service
-COPY order-service order-service
-COPY payment-service payment-service
-COPY restaurant-service restaurant-service
-# Sadece order service'i derliyoruz (DİKKAT: multimodule proje olduğunda /****-container ekledik)
-RUN mvn clean package -DskipTests -pl order-service/order-container -am
-
+# 1. Hafif Java 21 Runtime
 FROM eclipse-temurin:21-jre-alpine
+
+# 2. Çalışma dizini
 WORKDIR /app
 
-# Derlenen jar dosyasını alıyoruz
-COPY --from=builder /app/order-service/order-container/target/*.jar app.jar
+# 3. Hazır JAR dosyasını kopyala
+COPY order-container/target/*.jar app.jar
+
+# 4. Başlat
 ENTRYPOINT ["java", "-jar", "app.jar"]

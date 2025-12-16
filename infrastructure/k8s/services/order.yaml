@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order
+  name: order-service
   namespace: take-my-order
   labels:
-    app: order
+    app: order-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: order
+      app: order-service
   template:
     metadata:
       labels:
-        app: order
+        app: order-service
     spec:
       containers:
-        - name: order
-          image: berkay/order-service:v1
-          imagePullPolicy: Never
+        - name: order-service
+          image: berkayozr/order-service:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8181
           resources:
@@ -83,7 +83,7 @@ metadata:
   namespace: take-my-order
 spec:
   selector:
-    app: order
+    app: order-service
   ports:
     - name: http
       port: 80

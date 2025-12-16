@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment
+  name: payment-service
   namespace: take-my-order
   labels:
-    app: payment
+    app: payment-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payment
+      app: payment-service
   template:
     metadata:
       labels:
-        app: payment
+        app: payment-service
     spec:
       containers:
-        - name: payment
-          image: berkay/payment-service:v1
-          imagePullPolicy: Never
+        - name: payment-service
+          image: berkayozr/payment-service:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8182
           resources:
@@ -74,7 +74,7 @@ metadata:
   namespace: take-my-order
 spec:
   selector:
-    app: payment
+    app: payment-service
   ports:
     - name: http
       port: 80
