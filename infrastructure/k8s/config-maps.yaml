@@ -22,3 +22,10 @@ data:
 
   # Servis İsimleri (Java içindeki Feign Client'lar vs için gerekebilir)
   GATEWAY_SERVICE_URI: "http://gateway-service:8080"
+
+  # GATEWAY YÖNLENDİRMELERİ (K8s İÇİN)
+  # Burada Service İsimlerini ve Port 80'i (ClusterIP) kullanıyoruz
+  ORDER_SERVICE_URI: "http://order-service:80"
+  CUSTOMER_SERVICE_URI: "http://customer-service:80"
+  PAYMENT_SERVICE_URI: "http://payment-service:80"
+  RESTAURANT_SERVICE_URI: "http://restaurant-service:80"

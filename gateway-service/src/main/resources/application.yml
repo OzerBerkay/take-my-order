@@ -21,7 +21,7 @@ spring:
         # 1. ORDER SERVICE (Ana Giriş Noktası) -> Port 8181
         # ---------------------------------------------------
         - id: order-service
-          uri: http://localhost:8181
+          uri: ${ORDER_SERVICE_URI:http://localhost:8181}
           predicates:
             - Path=/orders/**
 
@@ -29,7 +29,7 @@ spring:
         # 2. CUSTOMER SERVICE (Kullanıcı İşlemleri) -> Port 8184
         # ---------------------------------------------------
         - id: customer-service
-          uri: http://localhost:8184
+          uri: ${CUSTOMER_SERVICE_URI:http://localhost:8184}
           predicates:
             - Path=/customers/**
 
@@ -38,7 +38,7 @@ spring:
         # (Yazma işlemi Kafka ile olsa da okuma için açık kalsın)
         # ---------------------------------------------------
         - id: payment-service
-          uri: http://localhost:8182
+          uri: ${PAYMENT_SERVICE_URI:http://localhost:8182}
           predicates:
             - Path=/payments/**
 
@@ -46,7 +46,7 @@ spring:
         # 4. RESTAURANT SERVICE (Menü vb. İçin) -> Port 8183
         # ---------------------------------------------------
         - id: restaurant-service
-          uri: http://localhost:8183
+          uri: ${RESTAURANT_SERVICE_URI:http://localhost:8183}
           predicates:
             - Path=/restaurants/**
 
