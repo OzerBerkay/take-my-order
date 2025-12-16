@@ -72,3 +72,17 @@ kafka-consumer-config:
   max-partition-fetch-bytes-default: 1048576
   max-partition-fetch-bytes-boost-factor: 1
   poll-timeout-ms: 150
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus  # Prometheus'u dışarı açıyoruz
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için

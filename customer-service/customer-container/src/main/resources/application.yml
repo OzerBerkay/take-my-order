@@ -53,3 +53,18 @@ keycloak:
   admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
   admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
   admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus  # Prometheus'u dışarı açıyoruz
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için

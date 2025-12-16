@@ -54,7 +54,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: health,info,prometheus  # Prometheus'u dışarı açıyoruz
   endpoint:
     health:
       show-details: always
+    prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için
