@@ -115,7 +115,8 @@ metadata:
 spec:
   selector:
     app: prometheus-server
-  type: ClusterIP # Dışarı açmıyoruz, Grafana içeriden erişecek
+  type: ClusterIP # User girişi bulunmadığından dışarıya kapatılması önerilir. Dışarıya açmak istendiği durumda NodePort ile değiştir ancak zaten Grafana burayı monitor ediyor.
   ports:
     - port: 9090
       targetPort: 9090
+      #nodePort: 30090
