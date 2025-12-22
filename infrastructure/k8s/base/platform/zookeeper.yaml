@@ -57,7 +57,7 @@ spec:
               mountPath: /var/lib/zookeeper/data
             - name: zookeeper-log-storage
               mountPath: /var/lib/zookeeper/log
-          # EKLENEN KISIM: Production için Kaynak Limitleri
+          # Production için Kaynak Limitleri
           resources:
             requests:
               memory: "256Mi"
