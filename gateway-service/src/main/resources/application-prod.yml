@@ -1,0 +1,46 @@
+server:
+  port: ${GATEWAY_SERVICE_PORT}
+
+logging:
+  level:
+    com.berkay: INFO # Prod'da sadece önemli loglar
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}
+          jwk-set-uri: ${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
+
+
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: ${ORDER_SERVICE_URI}
+          predicates:
+            - Path=/orders/**
+
+        - id: customer-service
+          uri: ${CUSTOMER_SERVICE_URI}
+          predicates:
+            - Path=/customers/**
+
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URI}
+          predicates:
+            - Path=/payments/**
+
+        - id: restaurant-service
+          uri: ${RESTAURANT_SERVICE_URI}
+          predicates:
+            - Path=/restaurants/**
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY}

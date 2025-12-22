@@ -1,0 +1,30 @@
+server:
+  port: 8181
+
+logging:
+  level:
+    com.berkay: DEBUG # Localde loglar aksın
+
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+kafka-config:
+  bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+  schema-registry-url: http://localhost:8081
+
+kafka-producer-config:
+  compression-type: "none"
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0 # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)

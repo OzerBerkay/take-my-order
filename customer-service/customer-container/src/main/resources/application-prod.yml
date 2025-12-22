@@ -1,0 +1,38 @@
+server:
+  port: ${CUSTOMER_SERVICE_PORT}
+
+logging:
+  level:
+    com.berkay: INFO # Prod'da sadece önemli loglar
+
+spring:
+  jpa:
+    show-sql: false # Prod logları şişmesin
+  datasource:
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP}:${DB_PORT}/takemyorder?currentSchema=customer&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+kafka-config:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+  schema-registry-url: ${SCHEMA_REGISTRY_URL}
+
+kafka-producer-config:
+  compression-type: ${KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE}
+
+keycloak:
+  server-url: ${KEYCLOAK_SERVER_URL}
+  realm: ${KEYCLOAK_REALM}
+  master-realm: ${KEYCLOAK_MASTER_REALM}
+  admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
+  admin-username: ${KEYCLOAK_ADMIN_USERNAME}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY}

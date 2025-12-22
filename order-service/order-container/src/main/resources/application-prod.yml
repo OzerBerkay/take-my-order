@@ -1,0 +1,31 @@
+server:
+  port: ${ORDER_SERVICE_PORT}
+
+logging:
+  level:
+    com.berkay: INFO # Prod'da sadece önemli loglar
+
+spring:
+  jpa:
+    show-sql: false
+  datasource:
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP}:${DB_PORT}/takemyorder?currentSchema=order&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+kafka-config:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+  schema-registry-url: ${SCHEMA_REGISTRY_URL}
+
+kafka-producer-config:
+  compression-type: ${KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE}
+
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY}
