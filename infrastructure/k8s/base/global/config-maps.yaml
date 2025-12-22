@@ -31,3 +31,16 @@ data:
   RESTAURANT_SERVICE_URI: "http://restaurant-service:80"
 
   ZIPKIN_URL: "http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans"
+
+  # Service Ports
+  CUSTOMER_SERVICE_PORT: "8184"
+  GATEWAY_SERVICE_PORT: "8080"
+  ORDER_SERVICE_PORT: "8181"
+  PAYMENT_SERVICE_PORT: "8182"
+  RESTAURANT_SERVICE_PORT: "8183"
+
+  #Active Profile Seçimi, değişkenin adı mutlaka SPRING_PROFILES_ACTIVE olmalı. Spring bu env değişkenini kullanacak
+  SPRING_PROFILES_ACTIVE: "prod"
+
+  #Other Configs
+  TRACING_SAMPLING_PROBABILITY: "0.1"
