@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-config
+  namespace: take-my-order
+data:
+  DB_NAME: "takemyorder"
+  SCHEMA_REGISTRY_DEBUG: "false"
