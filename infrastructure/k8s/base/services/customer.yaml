@@ -29,15 +29,25 @@ spec:
               memory: "800Mi"
               cpu: "1000m"
           env:
-            - name: SERVER_PORT
-              value: "8184"
-            # --- Veritabanı Ayarları (ConfigMap ve Secret'tan) ---
-            # Sıralama Önemli! Port ve Host SPRING_DATASOURCE_URL'den Önce Tanımlanmalı
-            - name: DB_HOST
+            - name: SPRING_PROFILES_ACTIVE
               valueFrom:
                 configMapKeyRef:
                   name: service-config
-                  key: DB_HOST
+                  key: SPRING_PROFILES_ACTIVE
+
+            - name: CUSTOMER_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: CUSTOMER_SERVICE_PORT
+
+            # --- Veritabanı Ayarları (ConfigMap ve Secret'tan) ---
+            - name: MASTER_PRIVATE_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PRIVATE_IP
+
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
@@ -85,11 +95,19 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: KAFKA_BOOTSTRAP_SERVERS
+
             - name: SCHEMA_REGISTRY_URL
               valueFrom:
                 configMapKeyRef:
                   name: service-config
                   key: SCHEMA_REGISTRY_URL
+
+            - name: TRACING_SAMPLING_PROBABILITY
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: TRACING_SAMPLING_PROBABILITY
+
 ---
 apiVersion: v1
 kind: Service

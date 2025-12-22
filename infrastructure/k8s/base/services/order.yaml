@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-service
+  name: order-service
   namespace: take-my-order
   labels:
-    app: payment-service
+    app: order-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payment-service
+      app: order-service
   template:
     metadata:
       labels:
-        app: payment-service
+        app: order-service
     spec:
       containers:
-        - name: payment-service
-          image: berkayozr/payment-service:v1
+        - name: order-service
+          image: berkayozr/order-service:v1
           imagePullPolicy: Always
           ports:
-            - containerPort: 8182
+            - containerPort: 8181
           resources:
             requests:
               memory: "300Mi"
@@ -29,22 +29,31 @@ spec:
               memory: "800Mi"
               cpu: "1000m"
           env:
-            - name: SERVER_PORT
-              value: "8182"
-            # Değişkenleri önce tanımlıyoruz (Sıralama Önemli!)
-            - name: DB_HOST
+            - name: SPRING_PROFILES_ACTIVE
               valueFrom:
                 configMapKeyRef:
                   name: service-config
-                  key: DB_HOST
+                  key: SPRING_PROFILES_ACTIVE
+
+            - name: ORDER_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ORDER_SERVICE_PORT
+
+            - name: MASTER_PRIVATE_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PRIVATE_IP
+
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
                   name: service-config
                   key: DB_PORT
-            # Şimdi kullanıyoruz
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
+              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=order&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -55,7 +64,6 @@ spec:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_PASSWORD
-            # --- Kafka ---
             - name: KAFKA_BOOTSTRAP_SERVERS
               valueFrom:
                 configMapKeyRef:
@@ -66,17 +74,35 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: SCHEMA_REGISTRY_URL
+
+            - name: TRACING_SAMPLING_PROBABILITY
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: TRACING_SAMPLING_PROBABILITY
+
+            # --- compression type ---
+            - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+              value: "none"
+
+            # SAGA için gerekli servis URL'leri (Kubernetes Service İsimleri)
+            - name: SERVICE_ENDPOINTS_RESTAURANT_SERVICE_URI
+              value: "http://restaurant-service"
+            - name: SERVICE_ENDPOINTS_CUSTOMER_SERVICE_URI
+              value: "http://customer-service"
+            - name: SERVICE_ENDPOINTS_PAYMENT_SERVICE_URI
+              value: "http://payment-service"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: payment-service
+  name: order-service
   namespace: take-my-order
 spec:
   type: ClusterIP
   selector:
-    app: payment-service
+    app: order-service
   ports:
     - name: http
       port: 80
-      targetPort: 8182
+      targetPort: 8181
