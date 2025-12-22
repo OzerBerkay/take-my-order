@@ -1,0 +1,56 @@
+server:
+    port: 8080
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Keycloak'ın token dağıttığı adres (Issuer)
+          issuer-uri: http://localhost:9090/realms/take-my-order
+          # Token'ın geçerliliğini kontrol etmek için sertifika adresi
+          jwk-set-uri: http://localhost:9090/realms/take-my-order/protocol/openid-connect/certs
+
+  cloud:
+    gateway:
+      routes:
+        # ---------------------------------------------------
+        # 1. ORDER SERVICE (Ana Giriş Noktası) -> Port 8181
+        # ---------------------------------------------------
+        - id: order-service
+          uri: http://localhost:8181
+          predicates:
+            - Path=/orders/**
+
+        # ---------------------------------------------------
+        # 2. CUSTOMER SERVICE (Kullanıcı İşlemleri) -> Port 8184
+        # ---------------------------------------------------
+        - id: customer-service
+          uri: http://localhost:8184
+          predicates:
+            - Path=/customers/**
+
+        # ---------------------------------------------------
+        # 3. PAYMENT SERVICE (Sorgular İçin) -> Port 8182
+        # (Yazma işlemi Kafka ile olsa da okuma için açık kalsın)
+        # ---------------------------------------------------
+        - id: payment-service
+          uri: http://localhost:8182
+          predicates:
+            - Path=/payments/**
+
+        # ---------------------------------------------------
+        # 4. RESTAURANT SERVICE (Menü vb. İçin) -> Port 8183
+        # ---------------------------------------------------
+        - id: restaurant-service
+          uri: http://localhost:8183
+          predicates:
+            - Path=/restaurants/**
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0 # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)
