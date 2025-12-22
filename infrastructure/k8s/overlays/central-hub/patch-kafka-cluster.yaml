@@ -1,0 +1,69 @@
+# infrastructure/k8s/overlays/prod/patch-kafka-cluster.yaml
+# -----------------------------
+# BROKER 1
+# -----------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-1
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-1
+          env:
+            - name: MASTER_PUBLIC_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PUBLIC_IP
+
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker-1:9092,LISTENER_LOCAL://${MASTER_PUBLIC_IP}:31091
+---
+# -----------------------------
+# BROKER 2
+# -----------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-2
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-2
+          env:
+            - name: MASTER_PUBLIC_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PUBLIC_IP
+
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker-2:9092,LISTENER_LOCAL://${MASTER_PUBLIC_IP}:31092
+---
+# -----------------------------
+# BROKER 3
+# -----------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-3
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-3
+          env:
+            - name: MASTER_PUBLIC_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PUBLIC_IP
+
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker-3:9092,LISTENER_LOCAL://${MASTER_PUBLIC_IP}:31093
