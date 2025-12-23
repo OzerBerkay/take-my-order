@@ -1,0 +1,26 @@
+resources:
+  - ../../base
+patches:
+  - path: patch-kafka-cluster.yaml
+  - path: patch-config-maps.yaml
+
+secretGenerator:
+  - name: service-secrets
+    namespace: take-my-order
+    envs:
+      - central-secrets.env # Bu dosyayı okuyup secret yapacak
+    behavior: create # Varsa hata verme, oluştur
+    options:
+      # Kustomize normalde her değişiklikte secret isminin sonuna rastgele kod ekler (Örn: service-secrets-h52a9).
+      # Ama Deployment dosyalarında (order.yaml vb.) secret ismi sabit olarak service-secrets diye geçer.
+      # Eğer bu ayarı true yapmazsan, Deployment'ların secret'ı bulamaz ve hata verir.
+      disableNameSuffixHash: true
+
+
+  - name: monitoring-secrets
+    namespace: monitoring      # <--- KRİTİK: Bunu 'monitoring' odasına koyuyoruz
+    envs:
+      - monitoring-secrets.env            # Aynı dosyadan okuyabilir (veya ayrı dosya da yapabilirsin)
+    behavior: create
+    options:
+      disableNameSuffixHash: true

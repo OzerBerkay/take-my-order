@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # 1. Global Temeller
+  - ../../base/global
+
+  # 2. Platform (Middleware - Altyapı)
+  # Kafka, ZK, Keycloak, Schema Registry buranın demirbaşlarıdır.
+  - ../../base/platform
+
+  # 3. Monitoring (Gözlem Kulesi)
+  - ../../base/monitoring
+
+  # DİKKAT: 'services/' klasörü bilerek eklenmedi.
+  # Çünkü burası İşlem Merkezi (Compute) değil, Veri Merkezi (Hub).
+
+patches:
+  - path: patch-kafka-cluster.yaml
+  - path: patch-config-maps.yaml
+
+secretGenerator:
+  - name: service-secrets # Kubernetes'te oluşacak Secret'ın adı
+    namespace: take-my-order # Hangi namespace
+    envs:
+      - central-secrets.env # Bu dosyayı okuyup secret yapacak
+    behavior: create # Varsa hata verme, oluştur
+    options:
+      disableNameSuffixHash: true
+
+  # 2. Grafana Secret'ı (monitoring)
+  - name: monitoring-secrets
+    namespace: monitoring # <--- KRİTİK: Bunu 'monitoring' odasına koyuyoruz
+    envs:
+      - monitoring-secrets.env
+    behavior: create
+    options:
+      disableNameSuffixHash: true
