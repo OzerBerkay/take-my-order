@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Global Ayarlar (Önce bunlar oluşmalı)
+  - global/namespaces.yaml
+  - global/persistent-volumes.yaml
+  - global/config-maps.yaml
+  - global/ingress.yaml
+
+  # Altyapı (Platform - Middleware)
+  - platform/zookeeper.yaml
+  - platform/kafka-cluster.yaml
+  - platform/init-kafka.yaml
+  - platform/keycloak.yaml
+  - platform/schema-registry.yaml
+
+  # Mikroservisler (İş Mantığı)
+  - services/order.yaml
+  - services/payment.yaml
+  - services/restaurant.yaml
+  - services/customer.yaml
+  - services/gateway.yaml
+
+  # Monitoring
+  - monitoring/grafana.yaml
+  - monitoring/zipkin.yaml
+  - monitoring/prometheus.yaml
