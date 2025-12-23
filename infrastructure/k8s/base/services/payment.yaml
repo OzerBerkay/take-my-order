@@ -52,25 +52,26 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: DB_PORT
-            # Şimdi kullanıyoruz
-            - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
-            - name: SPRING_DATASOURCE_USERNAME
+
+            - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_USERNAME
-            - name: SPRING_DATASOURCE_PASSWORD
+
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_PASSWORD
+
             # --- Kafka ---
             - name: KAFKA_BOOTSTRAP_SERVERS
               valueFrom:
                 configMapKeyRef:
                   name: service-config
                   key: KAFKA_BOOTSTRAP_SERVERS
+
             - name: SCHEMA_REGISTRY_URL
               valueFrom:
                 configMapKeyRef:
@@ -82,6 +83,19 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: TRACING_SAMPLING_PROBABILITY
+
+            # --- compression type ---
+            - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+
+            - name: ZIPKIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ZIPKIN_URL
 
 ---
 apiVersion: v1

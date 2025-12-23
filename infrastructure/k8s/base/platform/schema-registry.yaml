@@ -30,7 +30,10 @@ spec:
             - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
               value: "PLAINTEXT://kafka-broker-2:9092"
             - name: SCHEMA_REGISTRY_DEBUG
-              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SCHEMA_REGISTRY_DEBUG
 ---
 apiVersion: v1
 kind: Service
