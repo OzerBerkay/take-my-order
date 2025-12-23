@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: take-my-order
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:24.0.1
+          args: ["start-dev"] # Geliştirme modu
+          env:
+            # Yönetici Hesabı (Secret'tan okunuyor)
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ADMIN_USERNAME
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ADMIN_PASSWORD
+
+            # Proxy Ayarı (Ingress arkasında çalışacağı için)
+            - name: KC_PROXY
+              value: "edge" # Ben bir Ingress (Nginx) arkasında çalışıyorum, SSL (HTTPS) işlemini o yapıyor, bana düz HTTP geliyor demek
+
+            # --- DATABASE CONFIGURATION (POSTGRES BAĞLANTISI) ---
+            - name: KC_DB
+              value: "postgres" # Hangi veritabanı sürücüsünün kullanılacağının seçilmesi
+
+            - name: KC_DB_SCHEMA
+              # Şema 'keycloak'
+              value: "keycloak"
+
+            # Keycloak DB Url tanımlamasının yapılması
+              # Host
+            - name: KC_DB_URL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PRIVATE_IP
+
+              # Port
+            - name: KC_DB_URL_PORT
+              valueFrom:
+               configMapKeyRef:
+                 name: service-config
+                 key: DB_PORT
+
+            # Veritabanı Adı
+            - name: KC_DB_URL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: DB_NAME
+
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://$(KC_DB_URL_HOST):$(KC_DB_URL_PORT)/$(KC_DB_URL_DATABASE)"
+
+            # Veritabanı Kullanıcı Adı
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_USERNAME
+
+            # Veritabanı Sifresi
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DB_PASSWORD
+
+            - name: KC_PUBLIC_IP
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PUBLIC_IP
+
+            # Keycloak'a dış adresini söylüyoruz (Browser buna güvenecek)
+            - name: KC_HOSTNAME_URL
+              value: "http://${KC_PUBLIC_IP}:30080"
+
+            # Admin paneli için de aynısını zorluyoruz
+            - name: KC_HOSTNAME_ADMIN_URL
+              value: "http://${KC_PUBLIC_IP}:30080"
+
+            - name: JAVA_OPTS
+              value: "-Xms1024m -Xmx1536m"
+
+          ports:
+            - containerPort: 8080
+
+          # Kaynak Sınırlama (Hardening)
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2048Mi"
+              cpu: "2000m"
+
+          readinessProbe:
+            httpGet:
+              path: /realms/master
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-service
+  namespace: take-my-order
+spec:
+  selector:
+    app: keycloak
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080

@@ -68,22 +68,41 @@ spec:
 
             # 👇 --- KEYCLOAK AYARLARI ---
             - name: KEYCLOAK_SERVER_URL
-              value: "http://keycloak-service:8080" # Artık localhost değil!
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_SERVER_URL
 
             - name: KEYCLOAK_REALM
-              value: "take-my-order"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_REALM
 
             - name: KEYCLOAK_MASTER_REALM
-              value: "master"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_MASTER_REALM
 
             - name: KEYCLOAK_ADMIN_CLIENT_ID
-              value: "admin-cli"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_ADMIN_CLIENT_ID
 
             - name: KEYCLOAK_ADMIN_USERNAME
-              value: "admin"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_ADMIN_USERNAME
 
             - name: KEYCLOAK_ADMIN_PASSWORD
-              value: "admin" # Keycloak kurarken verdiğimiz şifre
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ADMIN_PASSWORD
+
 
               # --- compression type ---
             - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
