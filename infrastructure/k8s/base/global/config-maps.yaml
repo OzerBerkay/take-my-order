@@ -13,6 +13,8 @@ data:
   # Kafka Ayarları
   KAFKA_BOOTSTRAP_SERVERS: "kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092"
   SCHEMA_REGISTRY_URL: "http://schema-registry-service:8081" # Schema registry kurmadık ama ayarı dursun
+  KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE: "none"
+  SCHEMA_REGISTRY_DEBUG: "true" # Prod ortamında bu kadar log basmak diski doldurabilir ve performansı düşürür. Dev için true olabilir
 
   # Keycloak Ayarları
   KEYCLOAK_SERVER_URL: "http://keycloak-service:8080"

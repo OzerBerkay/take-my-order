@@ -87,7 +87,10 @@ spec:
 
               # --- compression type ---
             - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
-              value: "none"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
 
             # --- Kafka Ayarları ---
             - name: KAFKA_BOOTSTRAP_SERVERS
@@ -108,6 +111,11 @@ spec:
                   name: service-config
                   key: TRACING_SAMPLING_PROBABILITY
 
+            - name: ZIPKIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ZIPKIN_URL
 ---
 apiVersion: v1
 kind: Service

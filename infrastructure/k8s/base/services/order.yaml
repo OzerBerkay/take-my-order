@@ -86,15 +86,17 @@ spec:
 
             # --- compression type ---
             - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
-              value: "none"
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
 
-            # SAGA için gerekli servis URL'leri (Kubernetes Service İsimleri)
-            - name: SERVICE_ENDPOINTS_RESTAURANT_SERVICE_URI
-              value: "http://restaurant-service"
-            - name: SERVICE_ENDPOINTS_CUSTOMER_SERVICE_URI
-              value: "http://customer-service"
-            - name: SERVICE_ENDPOINTS_PAYMENT_SERVICE_URI
-              value: "http://payment-service"
+            - name: ZIPKIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ZIPKIN_URL
+
 ---
 apiVersion: v1
 kind: Service

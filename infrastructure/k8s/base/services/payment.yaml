@@ -84,6 +84,19 @@ spec:
                   name: service-config
                   key: TRACING_SAMPLING_PROBABILITY
 
+            # --- compression type ---
+            - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
+
+            - name: ZIPKIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: ZIPKIN_URL
+
 ---
 apiVersion: v1
 kind: Service
