@@ -21,11 +21,17 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            # Giriş şifresi (admin / admin)
+            # Grafana uses the following environment variable names for authentication
             - name: GF_SECURITY_ADMIN_USER
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: GF_SECURITY_ADMIN_USER
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: GF_SECURITY_ADMIN_PASSWORD
           resources:
             requests:
               memory: "256Mi"
@@ -42,7 +48,8 @@ metadata:
 spec:
   selector:
     app: grafana
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 3000
       targetPort: 3000
+      nodePort: 30030
