@@ -52,23 +52,26 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: DB_PORT
-            - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/postgres?currentSchema=order&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified"
-            - name: SPRING_DATASOURCE_USERNAME
+
+            - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_USERNAME
             - name: SPRING_DATASOURCE_PASSWORD
+
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_PASSWORD
+
             - name: KAFKA_BOOTSTRAP_SERVERS
               valueFrom:
                 configMapKeyRef:
                   name: service-config
                   key: KAFKA_BOOTSTRAP_SERVERS
+
             - name: SCHEMA_REGISTRY_URL
               valueFrom:
                 configMapKeyRef:
