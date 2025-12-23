@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  namespace: take-my-order
+  labels:
+    app: kafka-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:latest # <-- Hem ARM hem x86 destekler, sorunsuz çalışır. Önceki kafka manager (CMAK) ARM desteklemiyordu!
+          ports:
+            - containerPort: 8080 # Kafka UI'ın standart portu 8080'dir (Eski manager 9000 idi)
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "take-my-order-cluster"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: "kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092"
+            - name: KAFKA_CLUSTERS_0_ZOOKEEPER
+              value: "zookeeper:2181"
+            - name: KAFKA_CLUSTERS_0_SCHEMAREGISTRY
+              value: "http://schema-registry-service:8081"
+            # Bellek yönetimi (Java tabanlı olduğu için sınır koymak iyidir)
+            - name: JAVA_OPTS
+              value: "-Xmx512m"
+
+            - name: AUTH_TYPE
+              value: "LOGIN_FORM"  # Giriş formu aktif et
+
+            - name: SPRING_SECURITY_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KAFKA_UI_USERNAME
+
+            - name: SPRING_SECURITY_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KAFKA_UI_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  namespace: take-my-order
+spec:
+  selector:
+    app: kafka-ui
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080 # Servis portu
+      targetPort: 8080 # Konteyner portu
+      nodePort: 30091 # Tarayıcıdan giriş portun (localhost:30091)
