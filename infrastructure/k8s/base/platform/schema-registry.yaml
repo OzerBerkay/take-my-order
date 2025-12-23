@@ -27,8 +27,9 @@ spec:
               value: "zookeeper:2181"
             - name: SCHEMA_REGISTRY_LISTENERS
               value: "http://0.0.0.0:8081"
+              # Preventing Single Point of Failure with 3 replicas and 9092 standard kafka port
             - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
-              value: "PLAINTEXT://kafka-broker-2:9092"
+              value: "PLAINTEXT://kafka-broker-1:9092,PLAINTEXT://kafka-broker-2:9092,PLAINTEXT://kafka-broker-3:9092"
             - name: SCHEMA_REGISTRY_DEBUG
               valueFrom:
                 configMapKeyRef:
