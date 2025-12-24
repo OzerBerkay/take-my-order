@@ -20,6 +20,16 @@ spec:
           image: openzipkin/zipkin
           ports:
             - containerPort: 9411
+          env:
+            - name: JAVA_OPTS
+              value: "-Xmx256m -Xms256m"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

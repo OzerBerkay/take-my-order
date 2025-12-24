@@ -49,6 +49,13 @@ spec:
                 secretKeyRef:
                   name: service-secrets
                   key: KAFKA_UI_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
