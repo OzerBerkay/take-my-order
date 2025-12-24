@@ -37,6 +37,15 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: SCHEMA_REGISTRY_DEBUG
+            - name: SCHEMA_REGISTRY_HEAP_OPTS
+              value: "-Xmx300M -Xms300M"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
