@@ -13,6 +13,8 @@ spec:
       labels:
         app: zipkin
     spec:
+      nodeSelector:
+        node-type: infra
       containers:
         - name: zipkin
           image: openzipkin/zipkin

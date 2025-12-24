@@ -15,6 +15,8 @@ spec:
       labels:
         app: schema-registry
     spec:
+      nodeSelector:
+        node-type: infra
       containers:
         - name: schema-registry
           image: confluentinc/cp-schema-registry:7.2.5

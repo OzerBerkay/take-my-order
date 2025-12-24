@@ -15,6 +15,8 @@ spec:
       labels:
         app: kafka-ui
     spec:
+      nodeSelector:
+        node-type: infra
       containers:
         - name: kafka-ui
           image: provectuslabs/kafka-ui:latest # <-- Hem ARM hem x86 destekler, sorunsuz çalışır. Önceki kafka manager (CMAK) ARM desteklemiyordu!
