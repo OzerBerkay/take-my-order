@@ -84,6 +84,8 @@ spec:
       labels:
         app: prometheus-server
     spec:
+      nodeSelector:
+        node-type: infra
       serviceAccountName: prometheus
       containers:
         - name: prometheus

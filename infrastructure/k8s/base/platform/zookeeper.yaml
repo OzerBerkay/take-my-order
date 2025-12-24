@@ -29,6 +29,8 @@ spec:
       labels:
         app: zookeeper
     spec:
+      nodeSelector:
+        node-type: infra
       containers:
         - name: zookeeper
           image: confluentinc/cp-zookeeper:7.2.5

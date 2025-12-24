@@ -18,6 +18,8 @@ spec:
       labels:
         app: kafka-broker-1
     spec:
+      nodeSelector:
+        node-type: infra
       containers:
         - name: kafka-broker-1
           image: confluentinc/cp-kafka:7.2.5
