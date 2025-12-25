@@ -96,7 +96,7 @@ spec:
           resources:
             requests:
               memory: "512Mi" # Prometheus açken çalışmaz
-              cpu: "500m"
+              cpu: "50m"
             limits:
               memory: "1536Mi" # 1.5 GB'a kadar yolu var, izleme verisi şişebilir
               cpu: "1000m"
