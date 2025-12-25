@@ -1,0 +1,191 @@
+# Dev ortamı local olduğundan kubernates tüm podları bir arada çalıştıracak! Bu sebeple her şeyi burada bir arada güncelleyebiliriz.
+# ---------------------------------------------------------
+# BÖLÜM 1: SERVİSLERİ DIŞARI AÇMA (NodePort)
+# ---------------------------------------------------------
+
+# Prometheus
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      targetPort: 9090
+      nodePort: 30090
+---
+# Zipkin
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - port: 9411
+      targetPort: 9411
+      nodePort: 30094
+---
+# Kafka Broker 1 - Service (Port Açma)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-broker-1
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: external
+      port: 19092
+      nodePort: 31091
+      targetPort: 19092
+    - name: internal
+      port: 9092
+      nodePort: 32091
+      targetPort: 9092
+---
+# Kafka Broker 2 - Service (Port Açma)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-broker-2
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: external
+      port: 29092
+      nodePort: 31092
+      targetPort: 29092
+    - name: internal
+      port: 9092
+      nodePort: 32092
+      targetPort: 9092
+---
+# Kafka Broker 3 - Service (Port Açma)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-broker-3
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: external
+      port: 39092
+      nodePort: 31093
+      targetPort: 39092
+    - name: internal
+      port: 9092
+      nodePort: 32093
+      targetPort: 9092
+---
+# Customer Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8184
+      nodePort: 30184
+---
+# Order Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8181
+      nodePort: 30181
+---
+# Payment Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8182
+      nodePort: 30182
+---
+# Restaurant Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8183
+      nodePort: 30183
+
+# ---------------------------------------------------------
+# BÖLÜM 2: KAFKA ADRESLERİNİ DEĞİŞTİRME (Deployment Patch)
+# ---------------------------------------------------------
+
+---
+# Kafka Broker 1 - Config Patch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-1
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-1
+          env:
+            - name: KAFKA_ADVERTISED_LISTENERS
+              # Dev ortamında olduğumuz için dış adresi 31091 olarak değiştiriyoruz!
+              value: PLAINTEXT://kafka-broker-1:9092,LISTENER_LOCAL://localhost:31091
+---
+# Kafka Broker 2 - Config Patch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-2
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-2
+          env:
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker-2:9092,LISTENER_LOCAL://localhost:31092
+---
+# Kafka Broker 3 - Config Patch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-broker-3
+  namespace: take-my-order
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-broker-3
+          env:
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker-3:9092,LISTENER_LOCAL://localhost:31093

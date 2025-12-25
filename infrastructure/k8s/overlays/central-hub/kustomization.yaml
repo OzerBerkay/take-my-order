@@ -12,11 +12,10 @@ resources:
   # 3. Monitoring (Gözlem Kulesi)
   - ../../base/monitoring
 
-  # DİKKAT: 'services/' klasörü bilerek eklenmedi.
-  # Çünkü burası İşlem Merkezi (Compute) değil, Veri Merkezi (Hub).
+  # 4. Servisler (Gateway, Order, Customer, Payment, Restaurant)
+  - ../../base/services
 
 patches:
-  - path: patch-kafka-cluster.yaml
   - path: patch-config-maps.yaml
 
 secretGenerator:

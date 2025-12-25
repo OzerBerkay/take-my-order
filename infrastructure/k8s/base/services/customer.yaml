@@ -95,8 +95,8 @@ spec:
 
             - name: KEYCLOAK_ADMIN_USERNAME
               valueFrom:
-                configMapKeyRef:
-                  name: service-config
+                secretKeyRef:
+                  name: service-secrets
                   key: KEYCLOAK_ADMIN_USERNAME
 
             - name: KEYCLOAK_ADMIN_PASSWORD
