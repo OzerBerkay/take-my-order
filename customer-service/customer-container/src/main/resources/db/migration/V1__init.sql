@@ -17,8 +17,13 @@ CREATE TABLE IF NOT EXISTS customer.customers
 -- Do end bloğu ile sarıldı çünkü diğer türlü ilk çalıştırdığında harika çalışır.
 -- Fakat ikinci kez çalıştığında (veya veritabanında bu tip zaten varsa) PostgreSQL şu
 -- hatayı fırlatır ve işlemi durdurur: ERROR: type "outbox_status" already exists
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'outbox_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'outbox_status' AND n.nspname = 'customer'
+    ) THEN
         CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
     END IF;
 END $$;

@@ -2,6 +2,7 @@ CREATE SCHEMA IF NOT EXISTS payment;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
         CREATE TYPE payment_status AS ENUM ('COMPLETED', 'CANCELLED', 'FAILED');
@@ -27,8 +28,13 @@ CREATE TABLE IF NOT EXISTS "payment".credit_entry
     CONSTRAINT credit_entry_pkey PRIMARY KEY (id)
 );
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transaction_type') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'transaction_type' AND n.nspname = 'payment'
+    ) THEN
         CREATE TYPE transaction_type AS ENUM ('DEBIT', 'CREDIT');
     END IF;
 END $$;
@@ -42,8 +48,13 @@ CREATE TABLE IF NOT EXISTS "payment".credit_history
     CONSTRAINT credit_history_pkey PRIMARY KEY (id)
 );
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'outbox_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'outbox_status' AND n.nspname = 'payment'
+    ) THEN
         CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
     END IF;
 END $$;

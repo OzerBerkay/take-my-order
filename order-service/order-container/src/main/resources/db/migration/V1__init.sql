@@ -2,8 +2,13 @@ CREATE SCHEMA IF NOT EXISTS "order";
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status') AND IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'order_status' AND n.nspname = 'order'
+    ) THEN
         CREATE TYPE order_status AS ENUM ('PENDING', 'PAID', 'APPROVED', 'CANCELLED', 'CANCELLING');
     END IF;
 END $$;
@@ -60,14 +65,24 @@ ALTER TABLE "order".order_address
         ON UPDATE NO ACTION
         ON DELETE CASCADE;
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'saga_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'saga_status' AND n.nspname = 'order'
+    ) THEN
         CREATE TYPE saga_status AS ENUM ('STARTED', 'FAILED', 'SUCCEEDED', 'PROCESSING', 'COMPENSATING', 'COMPENSATED');
     END IF;
 END $$;
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'outbox_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'outbox_status' AND n.nspname = 'order'
+    ) THEN
         CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
     END IF;
 END $$;

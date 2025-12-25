@@ -10,8 +10,13 @@ CREATE TABLE IF NOT EXISTS restaurant.restaurants
     CONSTRAINT restaurants_pkey PRIMARY KEY (id)
 );
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'approval_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'approval_status' AND n.nspname = 'restaurant'
+    ) THEN
         CREATE TYPE approval_status AS ENUM ('APPROVED', 'REJECTED');
     END IF;
 END $$;
@@ -60,8 +65,13 @@ ALTER TABLE restaurant.restaurant_products
         ON UPDATE NO ACTION
         ON DELETE RESTRICT;
 
+-- Single-DB kullanımında tipler oluşturulurken şema belirtilmezse ortak public şema içine oluşturulur. Bu da diğer şemelarla çakışma yaşatır.
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'outbox_status') THEN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON t.typnamespace = n.oid
+        WHERE t.typname = 'outbox_status' AND n.nspname = 'restaurant'
+    ) THEN
         CREATE TYPE outbox_status AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
     END IF;
 END $$;
