@@ -30,6 +30,27 @@ spec:
             limits:
               memory: "600Mi"
               cpu: "800m"
+
+          # Self-Healing Spring Boot'un /actuator/health adresi, uygulamanın nabzıdır. Eğer veritabanı bağlantısı koparsa bu adres DOWN döner
+          # ve Kubernetes bunu görüp "Bu pod bozulmuş, yeniden başlatayım" der.
+          livenessProbe: # Kubernetes, Pod'un içine sürekli "Hey, orada mısın?" diye sorar.
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 90  # İlk kontrol için 1.5 dakika bekle (ARM yavaşlığı için)
+            periodSeconds: 10        # 10 saniyede bir kontrol et
+            timeoutSeconds: 5
+            failureThreshold: 10     # 10 kere başarısız olursa restart at
+
+          readinessProbe: # Kubernetes, "Trafiği sana yönlendireyim mi, yoksa hala veritabanına bağlanmaya mı çalışıyorsun?" diye sorar.
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+
           env:
             - name: SPRING_PROFILES_ACTIVE
               valueFrom:
