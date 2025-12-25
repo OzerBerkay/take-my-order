@@ -57,7 +57,7 @@ spec:
           resources:
             requests:
               memory: "300Mi" # Başlangıçta 300 MB
-              cpu: "250m"
+              cpu: "100m"
             limits:
               memory: "600Mi" # En fazla 600 MB (Heap 400 + Native Memory için)
               cpu: "1000m"
@@ -78,15 +78,13 @@ metadata:
   name: kafka-broker-1
   namespace: take-my-order
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: external # Servise 19092'den gelen istekleri, arkadaki konteynerin 19092 portuna (Dış Hat) yönlendirir.
       port: 19092
-      nodePort: 31091 # Dışarıdan kafkaya istek atacak olan mikroservislerin kullanacağı portlar
       targetPort: 19092
     - name: internal # Servise 9092'den gelen istekleri, arkadaki konteynerin 9092 portuna (İç Hat) yönlendirir.
       port: 9092
-      nodePort: 32091
       targetPort: 9092
   selector:
     app: kafka-broker-1 # Bu servis, app=kafka-broker-1 etiketine sahip olan Pod'lara (yukarıdaki Deployment'a) trafik yollar.
@@ -140,7 +138,7 @@ spec:
           resources:
             requests:
               memory: "300Mi"
-              cpu: "250m"
+              cpu: "100m"
             limits:
               memory: "600Mi"
               cpu: "1000m"
@@ -158,15 +156,13 @@ metadata:
   name: kafka-broker-2
   namespace: take-my-order
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: external
       port: 29092
-      nodePort: 31092
       targetPort: 29092
     - name: internal
       port: 9092
-      nodePort: 32092
       targetPort: 9092
   selector:
     app: kafka-broker-2
@@ -220,7 +216,7 @@ spec:
           resources:
             requests:
               memory: "300Mi"
-              cpu: "250m"
+              cpu: "100m"
             limits:
               memory: "600Mi"
               cpu: "1000m"
@@ -238,15 +234,13 @@ metadata:
   name: kafka-broker-3
   namespace: take-my-order
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: external
       port: 39092
-      nodePort: 31093
       targetPort: 39092
     - name: internal
       port: 9092
-      nodePort: 32093
       targetPort: 9092
   selector:
     app: kafka-broker-3

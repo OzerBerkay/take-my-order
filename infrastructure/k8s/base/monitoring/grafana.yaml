@@ -54,4 +54,4 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
-      nodePort: 30030
+      nodePort: 30030 # Login paneli var patch'lemeye gerek yok

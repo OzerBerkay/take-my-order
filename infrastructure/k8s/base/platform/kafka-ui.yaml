@@ -70,4 +70,4 @@ spec:
     - protocol: TCP
       port: 8080 # Servis portu
       targetPort: 8080 # Konteyner portu
-      nodePort: 30091 # Tarayıcıdan giriş portun (localhost:30091)
+      nodePort: 30091 # Tarayıcıdan giriş portun (localhost:30091), Login paneli var patch'lemeye gerek yok

@@ -1,8 +1,9 @@
+# Dev ortamı local olduğundan kubernates tüm podları bir arada çalıştıracak!
 resources:
   - ../../base
 patches:
-  - path: patch-kafka-cluster.yaml
   - path: patch-config-maps.yaml
+  - path: patch-expose-services.yaml
 
 secretGenerator:
   - name: service-secrets
