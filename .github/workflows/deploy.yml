@@ -26,59 +26,77 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      # 4. Docker Hub'a Giriş Yap
+      # 4: QEMU Emülatörünü Kur (ARM build alabilmek için şart)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # 5: Docker Buildx Kur (Multi-Platform build motoru)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 6. Docker Hub'a Giriş Yap
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 5. Gateway Service (Build & Push)
+      # 7. Gateway Service (Build & Push)
       - name: Build & Push Gateway Service
         uses: docker/build-push-action@v5
         with:
           context: ./gateway-service
           file: ./gateway-service/Dockerfile
           push: true
+          # Hem Intel hem ARM için build al:
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/gateway-service:v1
           no-cache: true
 
-      # 6. Customer Service (Build & Push)
+      # 8. Customer Service (Build & Push)
       - name: Build & Push Customer Service
         uses: docker/build-push-action@v5
         with:
           context: ./customer-service
           file: ./customer-service/Dockerfile
           push: true
+          # Hem Intel hem ARM için build al:
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/customer-service:v1
           no-cache: true
 
-      # 7. Order Service (Build & Push)
+      # 9. Order Service (Build & Push)
       - name: Build & Push Order Service
         uses: docker/build-push-action@v5
         with:
           context: ./order-service
           file: ./order-service/Dockerfile
           push: true
+          # Hem Intel hem ARM için build al:
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/order-service:v1
           no-cache: true
 
-      # 8. Payment Service (Build & Push)
+      # 10. Payment Service (Build & Push)
       - name: Build & Push Payment Service
         uses: docker/build-push-action@v5
         with:
           context: ./payment-service
           file: ./payment-service/Dockerfile
           push: true
+          # Hem Intel hem ARM için build al:
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/payment-service:v1
           no-cache: true
 
-      # 9. Restaurant Service (Build & Push)
+      # 11. Restaurant Service (Build & Push)
       - name: Build & Push Restaurant Service
         uses: docker/build-push-action@v5
         with:
           context: ./restaurant-service
           file: ./restaurant-service/Dockerfile
           push: true
+          # Hem Intel hem ARM için build al:
+          platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/restaurant-service:v1
           no-cache: true
