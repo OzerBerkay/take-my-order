@@ -60,7 +60,6 @@ spec:
                 secretKeyRef:
                   name: service-secrets
                   key: DB_USERNAME
-            - name: SPRING_DATASOURCE_PASSWORD
 
             - name: DB_PASSWORD
               valueFrom:
