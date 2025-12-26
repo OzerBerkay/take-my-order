@@ -100,3 +100,19 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKER_USERNAME }}/restaurant-service:v1
           no-cache: true
+
+      # 12. Build ve Push adımları bittikten Docker Hub'a imajlar yüklendikten sonra
+      - name: Deploy to Kubernetes Master
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            # Master Server'a Bağlanıp Kubernetes'e "Podları yenile" diyoruz. 
+            # Hepsini yenilemek için:
+            sudo kubectl rollout restart deployment -n take-my-order
+    
+            # NOT: Eğer sadece spesifik bir servisi (örn: order-service) yenilemek istersen:
+            # sudo kubectl rollout restart deployment/order-service -n take-my-order
