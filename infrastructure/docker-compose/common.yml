@@ -1,7 +1,0 @@
-# Docker version
-version: '28.3.2'
-
-# This part is defined so that containers can see each other over the same network.
-networks:
-  take-my-order:
-    driver: bridge
