@@ -145,10 +145,6 @@ This project leverages a modern, cutting-edge technology stack designed for high
 
 This project runs on a live **Hybrid Multi-Cloud Cluster** built with **Zero Cost** using Free Tier resources.
 
-> 🚨 **Detailed Documentation:** For a step-by-step guide on how this environment was provisioned (including VCN setup, Firewall rules, and K3s installation), please refer to the comprehensive manual:
->
-> 👉 **[📖 READ THE FULL PRODUCTION SETUP GUIDE](./docs/PRODUCTION_SETUP.md)**
-
 ### Cluster Specifications (Summary)
 
 The production environment consists of **4 nodes** connected via a secure Overlay Network.
