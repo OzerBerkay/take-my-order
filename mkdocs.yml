@@ -50,7 +50,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Architecture:
-      - 'Key Competencies': architecture/compentencies.md
+      - 'Key Competencies': architecture/competencies.md
       - 'System Design': architecture/system-design.md
   - Tech Stack: tech-stack/ecosystem.md
   - Infrastructure:
