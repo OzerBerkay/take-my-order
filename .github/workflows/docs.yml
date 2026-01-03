@@ -2,7 +2,7 @@ name: Publish Docs
 on:
   push:
     branches:
-      - master # Ana branch adın (main veya master)
+      - prod
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
