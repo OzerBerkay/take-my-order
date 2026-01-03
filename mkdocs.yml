@@ -1,0 +1,61 @@
+site_name: Take My Order
+site_url: https://ozerberkay.github.io/take-my-order/
+site_author: Berkay Özer
+site_description: Production-grade Hybrid Cloud Microservices Ecosystem Documentation.
+
+# GitHub repo bağlantıları
+repo_name: OzerBerkay/take-my-order
+repo_url: https://github.com/OzerBerkay/take-my-order
+edit_uri: "" # Sayfalarda 'düzenle' butonunu gizler
+
+theme:
+  name: material
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Light Mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark Mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs        # Üst ana menü sekmeleri (Geniş ekran)
+    - navigation.sections    # Yan menü gruplaması
+    - navigation.top         # 'Yukarı çık' butonu
+    - search.suggest         # Arama önerileri
+    - search.highlight       # Arama sonuçlarını vurgulama
+    - content.code.copy      # Kod bloklarında kopyala butonu
+
+markdown_extensions:
+  - admonition               # Uyarı kutuları
+  - pymdownx.details         # Açılır/Kapanır detaylar
+  - pymdownx.superfences     # Mermaid şeması ve kod blokları için
+  - attr_list                # Resim boyutlandırma
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - 'Key Competencies': architecture/compentencies.md
+      - 'System Design': architecture/system-design.md
+  - Tech Stack: tech-stack/ecosystem.md
+  - Infrastructure:
+      - 'Environment Overview': infrastructure/environment.md
+  - Installation:
+      - 'Production Setup Guide': installation/production-setup.md
+  - DevOps:
+      - 'CI/CD Pipeline': devops/pipeline.md
