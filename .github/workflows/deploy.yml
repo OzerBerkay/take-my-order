@@ -3,6 +3,10 @@ name: Build and Push Microservices
 on:
   push:
     branches: [ "prod" ]  # Sadece prod branch'e push gelince çalışır
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'README.md'
   workflow_dispatch:      # GitHub arayüzünden manuel tetiklemek için
 
 jobs:
