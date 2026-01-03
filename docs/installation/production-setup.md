@@ -81,11 +81,14 @@ The 3 servers on Oracle will be connected to each other via a common network. Th
 | {aws public ip}/32 | TCP | Empty (ALL) | 6443 | API Server Access (gateway) |
 | {aws public ip}/32 | TCP | Empty (ALL) | 10250 | Kubelet Metrics (aws) |
 | {aws public ip}/32 | UDP | Empty (ALL) | 8472 | Flannel VXLAN (Tunnel - gateway) |
-#
+
+
 #### B) Instances
+
 Go to Instances from the menu and create a separate instance for each server:
 
 **1. Server: k8s-master-infra**
+
 * **Name:** k8s-master-infra
 * **Placement:** Mümkünse AD-1 veya AD-2 seç
 * **Image:** Ubuntu 24.04 (Canonical Ubuntu).
@@ -104,6 +107,7 @@ Go to Instances from the menu and create a separate instance for each server:
     * Set the size to **60 GB**. (For Logs and Kafka data).
 
 **2. Server: k8s-worker-01**
+
 * **Name:** k8s-worker-01
 * **Image/Shape:** Ubuntu 24.04 / Ampere.
 * **OCPU:** 1
@@ -114,6 +118,7 @@ Go to Instances from the menu and create a separate instance for each server:
     * "Specify a custom boot volume size" -> **50GB**.
 
 **3. Server: k8s-worker-02**
+
 * **Name:** k8s-worker-02
 * **Image/Shape:** Ubuntu 24.04 / Ampere.
 * **OCPU:** 1
@@ -388,6 +393,7 @@ Press the "Add security group rule" button **4 times** and enter the following l
     >   * **Resetting Attack Surface:** No hacker on the internet can reach your database port. The door is open only to those inside the house (Order Service, Payment Service).
 >   * **Worker-Master Relationship:** Microservices will talk to Master over 10.0.0.X IPs. That's why allowing the entire VCN block (10.0.0.0/16) is the cleanest management.
 > * Those who want to connect from outside will need to do **SSH Tunneling**.
+
 * Just adding this is not enough. **10.0.x.x** is the IP block of your servers (Nodes) among themselves. However, we also need to give permission for the virtual ip block that K3s distributes to pods. Otherwise Postgres will recognize the server but will not recognize the Pod inside it (e.g. Keycloak).
 * Also, the Node in AWS is not inside the same **Oracle VCN**. Gateway Pod will also want to access the database thanks to **Flannel VXLAN** tunneling. For this, we also add the following to the bottom inside **pg_hba.conf**:
 > * **10.{x}.0.0**
