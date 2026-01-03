@@ -32,8 +32,8 @@
 <br>
 
 <p>
-  <b>Production-grade</b> order management ecosystem developed with <b>Java 21</b> and <b>Spring Boot 3</b>;<br>
-  running on a geographically distributed <b>Hybrid Multi-Cloud Kubernetes</b> cluster, featuring <br>
+  <b>Production-grade</b> order management ecosystem developed with <b>Java 21</b> and <b>Spring Boot 3</b>
+  running on a geographically distributed <b>Hybrid Multi-Cloud Kubernetes</b> cluster, featuring
   <b>Event-Driven</b>, <b>DDD</b>, and <b>Hexagonal Architecture</b> principles with advanced data consistency patterns.
 </p>
 
