@@ -1,0 +1,136 @@
+/* --- 1. Modern Fontlar ve Genel Ayarlar --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --md-text-font: "Inter", sans-serif;
+    --md-code-font: "JetBrains Mono", monospace;
+}
+
+/* Yazıların daha keskin görünmesi için */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- 2. Glassmorphism Header (Cam Efektli Üst Menü) --- */
+.md-header {
+    background-color: rgba(255, 255, 255, 0.8) !important; /* Light Mode için */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Mode için Header Ayarı */
+[data-md-color-scheme="slate"] .md-header {
+    background-color: rgba(30, 33, 41, 0.85) !important; /* Yarı saydam koyu */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- 3. Gradient Başlıklar (Renk Geçişli H1) --- */
+h1 {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    /* İndigo'dan Maviye geçiş */
+    background: -webkit-linear-gradient(120deg, #3f51b5, #2196f3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+/* Dark Mode'da Gradient (Daha parlak Cyan/Mavi) */
+[data-md-color-scheme="slate"] h1 {
+    background: -webkit-linear-gradient(120deg, #818cf8, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Diğer başlıklar da modern ve koyu/net olsun */
+h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* --- 4. Tablolar (Tech Stack için) --- */
+.md-typeset table:not([class]) {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-style: hidden; /* Kenarlıkları gizle, sadece shadow kalsın */
+}
+
+.md-typeset table:not([class]) th {
+    background-color: var(--md-primary-fg-color--light);
+    color: var(--md-primary-bg-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+/* --- 5. Admonitions (Uyarı Kutuları - Glass Style) --- */
+.md-typeset .admonition,
+.md-typeset details {
+    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    box-shadow: none;
+    background: var(--md-default-bg-color);
+}
+
+/* --- 6. Scrollbar (İnce ve Şık) --- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.4);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--md-primary-fg-color);
+}
+
+/* --- 7. Anasayfa Kart Izgarası (Grid Layout) --- */
+/* Bu kısım anasayfadaki maddeleri yan yana kartlara dönüştürür */
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.card {
+    background: var(--md-default-bg-color);
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-color: var(--md-primary-fg-color);
+}
+
+/* Dark mode'da kart hover efekti (Neon glow) */
+[data-md-color-scheme="slate"] .card:hover {
+    box-shadow: 0 10px 20px rgba(0, 255, 255, 0.05);
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: var(--md-primary-fg-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Footer (Alt Kısım) */
+.md-footer {
+    background-color: var(--md-default-bg-color--darker);
+}
