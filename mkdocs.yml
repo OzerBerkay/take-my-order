@@ -11,38 +11,52 @@ edit_uri: "" # Sayfalarda 'düzenle' butonunu gizler
 theme:
   name: material
   language: en
+  font:
+    text: Inter
+    code: JetBrains Mono
   icon:
     repo: fontawesome/brands/github
   palette:
     # Light Mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep orange
-      accent: indigo
+      primary: indigo
+      accent: sky
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     # Dark Mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep orange
-      accent: indigo
+      primary: black
+      accent: cyan
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
   features:
+    - navigation.instant     # Sayfa yenilenmeden hızlı geçiş
+    - navigation.tracking    # URL'de başlık takibi
     - navigation.tabs        # Üst ana menü sekmeleri (Geniş ekran)
+    - navigation.tabs.sticky # Menü yukarıda sabit kalsın
     - navigation.sections    # Yan menü gruplaması
     - navigation.top         # 'Yukarı çık' butonu
+    - header.autohide        # Aşağı kaydırınca header gizlensin (Daha fazla okuma alanı)
     - search.suggest         # Arama önerileri
     - search.highlight       # Arama sonuçlarını vurgulama
     - content.code.copy      # Kod bloklarında kopyala butonu
+    - content.tabs.link      # Kod sekmelerini linklenebilir yap
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition               # Uyarı kutuları
   - pymdownx.details         # Açılır/Kapanır detaylar
   - pymdownx.superfences     # Mermaid şeması ve kod blokları için
+  - pymdownx.tabbed:         # Kod sekmeleri için stil
+      alternate_style: true
   - attr_list                # Resim boyutlandırma
+  - md_in_html               # HTML içinde Markdown kullanımına izin ver
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
