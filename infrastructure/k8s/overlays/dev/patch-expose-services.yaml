@@ -139,6 +139,22 @@ spec:
       targetPort: 8183
       nodePort: 30183
 
+---
+# Schema Registry
+# Kubernetes kümesi dışındaki IDE (IntelliJ/Eclipse vb.) üzerinden çalışan mikroservislerin Schema Registry'ye erişebilmesi için NodePort yapılandırması gereklidir.
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry-service
+  namespace: take-my-order
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+      nodePort: 30081
+
 # ---------------------------------------------------------
 # BÖLÜM 2: KAFKA ADRESLERİNİ DEĞİŞTİRME (Deployment Patch)
 # ---------------------------------------------------------
