@@ -5,6 +5,8 @@ metadata:
   namespace: take-my-order
 data:
   MASTER_PRIVATE_IP: "private-ip"
+  LOG_LEVEL: "INFO"
+  SHOW_SQL: "false"
 
   # Veritabanı Ayarları
   DB_NAME: "takemyorder"

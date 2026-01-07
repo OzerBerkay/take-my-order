@@ -158,6 +158,19 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: ZIPKIN_URL
+
+            # --- Diğer Ayarlar ---
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: LOG_LEVEL
+
+            - name: SHOW_SQL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SHOW_SQL
 ---
 apiVersion: v1
 kind: Service
