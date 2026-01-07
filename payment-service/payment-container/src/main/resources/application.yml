@@ -1,3 +1,5 @@
+server:
+  port: ${PAYMENT_SERVICE_PORT}
 payment-service:
   payment-request-topic-name: payment-request
   payment-response-topic-name: payment-response
@@ -12,6 +14,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5432}/takemyorder?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
+
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -20,6 +28,8 @@ spring:
     locations: classpath:db/migration
 
 kafka-config:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:31091,localhost:31092,localhost:31093}
+  schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:30081}
   schema-registry-url-key: schema.registry.url
   num-of-partitions: 3
   replication-factor: 3
@@ -27,6 +37,7 @@ kafka-config:
 kafka-producer-config:
   key-serializer-class: org.apache.kafka.common.serialization.StringSerializer
   value-serializer-class: io.confluent.kafka.serializers.KafkaAvroSerializer
+  compression-type: ${KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE:none}
   acks: all
   batch-size: 16384
   batch-size-boost-factor: 100
@@ -65,3 +76,9 @@ management:
   metrics:
     tags:
       application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:30094/api/v2/spans}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0} # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)
