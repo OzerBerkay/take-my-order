@@ -6,3 +6,5 @@ metadata:
 data:
   DB_NAME: "takemyorder"
   SCHEMA_REGISTRY_DEBUG: "true"
+  LOG_LEVEL: "DEBUG"
+  SHOW_SQL: "true"

@@ -1,5 +1,10 @@
 server:
   port: ${GATEWAY_SERVICE_PORT:8184}
+
+logging:
+  level:
+    com.berkay: ${LOG_LEVEL:DEBUG}
+
 spring:
   application:
     name: gateway-service
