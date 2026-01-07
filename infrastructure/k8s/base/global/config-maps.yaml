@@ -20,6 +20,7 @@ data:
 
   # Keycloak Ayarları
   KEYCLOAK_SERVER_URL: "http://keycloak-service:8080"
+  KEYCLOAK_ISSUER_URI: "http://keycloak-service:8080"
   KEYCLOAK_REALM: "take-my-order"
   KEYCLOAK_MASTER_REALM: "master"
   KEYCLOAK_ADMIN_CLIENT_ID: "admin-cli"

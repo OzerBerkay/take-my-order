@@ -8,3 +8,4 @@ data:
   SCHEMA_REGISTRY_DEBUG: "false"
   LOG_LEVEL: "INFO" # Prod'da sadece önemli loglar
   SHOW_SQL: "false" # Prod logları şişmesin sadece Localde queryleri görelim
+  KEYCLOAK_ISSUER_URI: "http://keycloak-service:8080"
