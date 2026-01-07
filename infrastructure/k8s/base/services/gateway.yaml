@@ -52,11 +52,6 @@ spec:
             failureThreshold: 10
 
           env:
-            - name: SPRING_PROFILES_ACTIVE
-              valueFrom:
-                configMapKeyRef:
-                  name: service-config
-                  key: SPRING_PROFILES_ACTIVE
 
             - name: ORDER_SERVICE_URI
               valueFrom:

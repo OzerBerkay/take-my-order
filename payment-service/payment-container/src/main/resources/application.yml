@@ -12,6 +12,8 @@ payment-service:
   outbox-scheduler-initial-delay: 10000
 
 spring:
+  application:
+    name: payment-service
   jpa:
     open-in-view: false
     show-sql: ${SHOW_SQL:true}
