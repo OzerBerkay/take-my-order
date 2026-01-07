@@ -4,5 +4,5 @@ metadata:
   name: service-config
   namespace: take-my-order
 data:
-  DB_NAME: "postgres"
+  DB_NAME: "takemyorder"
   SCHEMA_REGISTRY_DEBUG: "true"

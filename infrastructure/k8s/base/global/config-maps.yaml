@@ -7,7 +7,7 @@ data:
   MASTER_PRIVATE_IP: "private-ip"
 
   # Veritabanı Ayarları
-  DB_NAME: "postgres"
+  DB_NAME: "takemyorder"
   DB_PORT: "5432"
 
   # Kafka Ayarları
