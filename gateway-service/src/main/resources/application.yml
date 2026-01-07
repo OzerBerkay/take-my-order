@@ -1,6 +1,36 @@
+server:
+  port: ${GATEWAY_SERVICE_PORT:8184}
 spring:
   application:
     name: gateway-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order}/protocol/openid-connect/certs
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          # localhost is for if you run gateway-service and order-service on ide
+          uri: ${ORDER_SERVICE_URI:http://localhost:8181}
+          predicates:
+            - Path=/orders/**
+
+        - id: customer-service
+          uri: ${CUSTOMER_SERVICE_URI:http://localhost:8184}
+          predicates:
+            - Path=/customers/**
+
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URI:http://localhost:8182}
+          predicates:
+            - Path=/payments/**
+
+        - id: restaurant-service
+          uri: ${RESTAURANT_SERVICE_URI:http://localhost:8183}
+          predicates:
+            - Path=/restaurants/**
 
 management:
   endpoints:
@@ -15,3 +45,9 @@ management:
   metrics:
     tags:
       application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:30094/api/v2/spans}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}  # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)
