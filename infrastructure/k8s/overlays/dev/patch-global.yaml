@@ -1,0 +1,3 @@
+# Hedeflenen kaynaktaki "nodeSelector" alanını siler (remove). Local'de label yok yani tek bir node'da tüm proje deploy olacak.
+- op: remove
+  path: /spec/template/spec/nodeSelector

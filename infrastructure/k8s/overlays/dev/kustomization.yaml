@@ -4,6 +4,14 @@ resources:
 patches:
   - path: patch-config-maps.yaml
   - path: patch-expose-services.yaml
+  # --- NODE SELECTOR TEMİZLİĞİ ---
+  - path: patch-global.yaml
+    target:
+      kind: Deployment # Tüm Deployment'ları hedefle (Order, Kafka, Gateway vb.)
+
+  - path: patch-global.yaml
+    target:
+      kind: Job        # Init-Kafka job'ını da hedefle (Önemli!)
 
 secretGenerator:
   - name: service-secrets
