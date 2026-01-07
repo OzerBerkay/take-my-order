@@ -90,6 +90,12 @@ spec:
                   name: service-config
                   key: KEYCLOAK_SERVER_URL
 
+            - name: KEYCLOAK_ISSUER_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_ISSUER_URI
+
             - name: KEYCLOAK_REALM
               valueFrom:
                 configMapKeyRef:

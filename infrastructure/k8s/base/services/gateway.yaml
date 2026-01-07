@@ -89,6 +89,12 @@ spec:
                   name: service-config
                   key: KEYCLOAK_SERVER_URL # http://keycloak-service:8080 veya IP
 
+            - name: KEYCLOAK_ISSUER_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_ISSUER_URI
+
             - name: KEYCLOAK_REALM
               valueFrom:
                 configMapKeyRef:
