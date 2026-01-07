@@ -11,6 +11,8 @@ customer-service:
   outbox-scheduler-initial-delay: 10000 # Başladıktan 10 sn sonra ilk işi yap
 
 spring:
+  application:
+    name: customer-service
   jpa:
     open-in-view: false
     show-sql: ${SHOW_SQL:true}

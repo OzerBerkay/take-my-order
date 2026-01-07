@@ -12,6 +12,8 @@ restaurant-service:
   outbox-scheduler-initial-delay: 10000
 
 spring:
+  application:
+    name: restaurant-service
   jpa:
     open-in-view: false
     show-sql: ${SHOW_SQL:true}
