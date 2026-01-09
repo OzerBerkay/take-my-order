@@ -175,6 +175,8 @@ spec:
             - name: KAFKA_ADVERTISED_LISTENERS
               # Dev ortamında olduğumuz için dış adresi 31091 olarak değiştiriyoruz!
               value: PLAINTEXT://kafka-broker-1:9092,LISTENER_LOCAL://localhost:31091
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092,LISTENER_LOCAL://0.0.0.0:19092
 ---
 # Kafka Broker 2 - Config Patch
 apiVersion: apps/v1
@@ -190,6 +192,8 @@ spec:
           env:
             - name: KAFKA_ADVERTISED_LISTENERS
               value: PLAINTEXT://kafka-broker-2:9092,LISTENER_LOCAL://localhost:31092
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092,LISTENER_LOCAL://0.0.0.0:29092
 ---
 # Kafka Broker 3 - Config Patch
 apiVersion: apps/v1
@@ -205,3 +209,5 @@ spec:
           env:
             - name: KAFKA_ADVERTISED_LISTENERS
               value: PLAINTEXT://kafka-broker-3:9092,LISTENER_LOCAL://localhost:31093
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092,LISTENER_LOCAL://0.0.0.0:39092
