@@ -1,5 +1,5 @@
 server:
-  port: ${RESTAURANT_SERVICE_PORT}
+  port: ${RESTAURANT_SERVICE_PORT:8183}
 
 logging:
   level:
