@@ -10,12 +10,6 @@ public class Product extends BaseEntity<ProductId> {
     private int stock;
     private boolean available;
 
-    public void updateWithConfirmedNamePriceAndAvailability(String name, Money price, boolean available) {
-        this.name = name;
-        this.price = price;
-        this.available = available;
-    }
-
     private Product(Builder builder) {
         setId(builder.productId);
         name = builder.name;
