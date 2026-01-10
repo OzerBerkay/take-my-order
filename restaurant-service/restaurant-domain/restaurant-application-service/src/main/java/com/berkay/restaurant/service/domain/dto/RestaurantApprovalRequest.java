@@ -1,10 +1,9 @@
 package com.berkay.restaurant.service.domain.dto;
 
 import com.berkay.domain.valueobject.RestaurantOrderStatus;
-import com.berkay.restaurant.service.domain.entity.Product;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,7 +14,18 @@ public class RestaurantApprovalRequest {
     private String restaurantId;
     private String orderId;
     private RestaurantOrderStatus restaurantOrderStatus;
-    private java.util.List<Product> products;
+    private List<ProductQuantity> productQuantities;
     private java.math.BigDecimal price;
     private java.time.Instant createdAt;
+
+    // Domain Entity'den bağımsız, sadece veri taşıyıcı inner class
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductQuantity {
+        private String id;
+        private int quantity;
+    }
 }

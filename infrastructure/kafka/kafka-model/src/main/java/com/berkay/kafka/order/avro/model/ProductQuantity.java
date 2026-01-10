@@ -12,11 +12,11 @@ import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class Product extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 3427231556271450725L;
+public class ProductQuantity extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = 914679678483907215L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Product\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"quantity\",\"type\":\"int\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"ProductQuantity\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"quantity\",\"type\":\"int\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -24,17 +24,17 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
     MODEL$.addLogicalTypeConversion(new org.apache.avro.Conversions.UUIDConversion());
   }
 
-  private static final BinaryMessageEncoder<Product> ENCODER =
+  private static final BinaryMessageEncoder<ProductQuantity> ENCODER =
       new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<Product> DECODER =
+  private static final BinaryMessageDecoder<ProductQuantity> DECODER =
       new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<Product> getEncoder() {
+  public static BinaryMessageEncoder<ProductQuantity> getEncoder() {
     return ENCODER;
   }
 
@@ -42,7 +42,7 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<Product> getDecoder() {
+  public static BinaryMessageDecoder<ProductQuantity> getDecoder() {
     return DECODER;
   }
 
@@ -51,12 +51,12 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<Product> createDecoder(SchemaStore resolver) {
+  public static BinaryMessageDecoder<ProductQuantity> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this Product to a ByteBuffer.
+   * Serializes this ProductQuantity to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -65,12 +65,12 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
   }
 
   /**
-   * Deserializes a Product from a ByteBuffer.
+   * Deserializes a ProductQuantity from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a Product instance decoded from the given buffer
+   * @return a ProductQuantity instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static Product fromByteBuffer(
+  public static ProductQuantity fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
@@ -83,14 +83,14 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public Product() {}
+  public ProductQuantity() {}
 
   /**
    * All-args constructor.
    * @param id The new value for id
    * @param quantity The new value for quantity
    */
-  public Product(java.util.UUID id, java.lang.Integer quantity) {
+  public ProductQuantity(java.util.UUID id, java.lang.Integer quantity) {
     this.id = id;
     this.quantity = quantity;
   }
@@ -169,45 +169,45 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
   }
 
   /**
-   * Creates a new Product RecordBuilder.
-   * @return A new Product RecordBuilder
+   * Creates a new ProductQuantity RecordBuilder.
+   * @return A new ProductQuantity RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.Product.Builder newBuilder() {
-    return new com.berkay.kafka.order.avro.model.Product.Builder();
+  public static com.berkay.kafka.order.avro.model.ProductQuantity.Builder newBuilder() {
+    return new com.berkay.kafka.order.avro.model.ProductQuantity.Builder();
   }
 
   /**
-   * Creates a new Product RecordBuilder by copying an existing Builder.
+   * Creates a new ProductQuantity RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new Product RecordBuilder
+   * @return A new ProductQuantity RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.Product.Builder newBuilder(com.berkay.kafka.order.avro.model.Product.Builder other) {
+  public static com.berkay.kafka.order.avro.model.ProductQuantity.Builder newBuilder(com.berkay.kafka.order.avro.model.ProductQuantity.Builder other) {
     if (other == null) {
-      return new com.berkay.kafka.order.avro.model.Product.Builder();
+      return new com.berkay.kafka.order.avro.model.ProductQuantity.Builder();
     } else {
-      return new com.berkay.kafka.order.avro.model.Product.Builder(other);
+      return new com.berkay.kafka.order.avro.model.ProductQuantity.Builder(other);
     }
   }
 
   /**
-   * Creates a new Product RecordBuilder by copying an existing Product instance.
+   * Creates a new ProductQuantity RecordBuilder by copying an existing ProductQuantity instance.
    * @param other The existing instance to copy.
-   * @return A new Product RecordBuilder
+   * @return A new ProductQuantity RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.Product.Builder newBuilder(com.berkay.kafka.order.avro.model.Product other) {
+  public static com.berkay.kafka.order.avro.model.ProductQuantity.Builder newBuilder(com.berkay.kafka.order.avro.model.ProductQuantity other) {
     if (other == null) {
-      return new com.berkay.kafka.order.avro.model.Product.Builder();
+      return new com.berkay.kafka.order.avro.model.ProductQuantity.Builder();
     } else {
-      return new com.berkay.kafka.order.avro.model.Product.Builder(other);
+      return new com.berkay.kafka.order.avro.model.ProductQuantity.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for Product instances.
+   * RecordBuilder for ProductQuantity instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Product>
-    implements org.apache.avro.data.RecordBuilder<Product> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<ProductQuantity>
+    implements org.apache.avro.data.RecordBuilder<ProductQuantity> {
 
     private java.util.UUID id;
     private int quantity;
@@ -221,7 +221,7 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.berkay.kafka.order.avro.model.Product.Builder other) {
+    private Builder(com.berkay.kafka.order.avro.model.ProductQuantity.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -234,10 +234,10 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
     }
 
     /**
-     * Creates a Builder by copying an existing Product instance
+     * Creates a Builder by copying an existing ProductQuantity instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.berkay.kafka.order.avro.model.Product other) {
+    private Builder(com.berkay.kafka.order.avro.model.ProductQuantity other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -263,7 +263,7 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.Product.Builder setId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.ProductQuantity.Builder setId(java.util.UUID value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -283,7 +283,7 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
       * Clears the value of the 'id' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.Product.Builder clearId() {
+    public com.berkay.kafka.order.avro.model.ProductQuantity.Builder clearId() {
       id = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -303,7 +303,7 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
       * @param value The value of 'quantity'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.Product.Builder setQuantity(int value) {
+    public com.berkay.kafka.order.avro.model.ProductQuantity.Builder setQuantity(int value) {
       validate(fields()[1], value);
       this.quantity = value;
       fieldSetFlags()[1] = true;
@@ -323,16 +323,16 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
       * Clears the value of the 'quantity' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.Product.Builder clearQuantity() {
+    public com.berkay.kafka.order.avro.model.ProductQuantity.Builder clearQuantity() {
       fieldSetFlags()[1] = false;
       return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Product build() {
+    public ProductQuantity build() {
       try {
-        Product record = new Product();
+        ProductQuantity record = new ProductQuantity();
         record.id = fieldSetFlags()[0] ? this.id : (java.util.UUID) defaultValue(fields()[0]);
         record.quantity = fieldSetFlags()[1] ? this.quantity : (java.lang.Integer) defaultValue(fields()[1]);
         return record;
@@ -345,8 +345,8 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<Product>
-    WRITER$ = (org.apache.avro.io.DatumWriter<Product>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<ProductQuantity>
+    WRITER$ = (org.apache.avro.io.DatumWriter<ProductQuantity>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -354,8 +354,8 @@ public class Product extends org.apache.avro.specific.SpecificRecordBase impleme
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<Product>
-    READER$ = (org.apache.avro.io.DatumReader<Product>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<ProductQuantity>
+    READER$ = (org.apache.avro.io.DatumReader<ProductQuantity>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {

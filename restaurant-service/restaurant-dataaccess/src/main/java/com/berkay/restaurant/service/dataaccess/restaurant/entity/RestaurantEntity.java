@@ -1,0 +1,40 @@
+package com.berkay.restaurant.service.dataaccess.restaurant.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "restaurants")
+@Entity
+public class RestaurantEntity {
+
+    @Id
+    private UUID restaurantId;
+
+    private String restaurantName;
+    private boolean isActive;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductEntity> menu;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RestaurantEntity that = (RestaurantEntity) o;
+        return restaurantId.equals(that.restaurantId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(restaurantId);
+    }
+}

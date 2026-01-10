@@ -1,8 +1,11 @@
 package com.berkay.restaurant.service.domain;
 
 import com.berkay.domain.valueobject.OrderId;
+import com.berkay.domain.valueobject.OrderStatus;
+import com.berkay.domain.valueobject.ProductId;
 import com.berkay.outbox.OutboxStatus;
 import com.berkay.restaurant.service.domain.dto.RestaurantApprovalRequest;
+import com.berkay.restaurant.service.domain.entity.OrderDetail;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundException;
@@ -16,10 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -59,11 +59,17 @@ public class RestaurantApprovalRequestHelper {
 
         log.info("Processing restaurant approval for order id: {}", restaurantApprovalRequest.getOrderId());
         List<String> failureMessages = new ArrayList<>();
+
+        // Restoranı ve Menüsünü Bul
         Restaurant restaurant = findRestaurant(restaurantApprovalRequest);
+
+        // Validasyon Yap (Domain Core)
         OrderApprovalEvent orderApprovalEvent =
                 restaurantDomainService.validateOrder(
                         restaurant,
                         failureMessages);
+
+        // Sonucu Kaydet
         orderApprovalRepository.save(restaurant.getOrderApproval());
 
         orderOutboxHelper
@@ -75,26 +81,42 @@ public class RestaurantApprovalRequestHelper {
     }
 
     private Restaurant findRestaurant(RestaurantApprovalRequest restaurantApprovalRequest) {
-        Restaurant restaurant = restaurantDataMapper
-                .restaurantApprovalRequestToRestaurant(restaurantApprovalRequest);
-        Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantInformation(restaurant);
+        // Restoranı Bul
+        UUID restaurantId = UUID.fromString(restaurantApprovalRequest.getRestaurantId());
+        Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantById(restaurantId);
+
+        // Restoranın varlığını kontrol et
         if (restaurantResult.isEmpty()) {
-            log.error("Restaurant with id " + restaurant.getId().getValue() + " not found!");
-            throw new RestaurantNotFoundException("Restaurant with id " + restaurant.getId().getValue() +
-                    " not found!");
+            log.error("Restaurant with id " + restaurantId + " not found!");
+            throw new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found!");
         }
 
+        // Restoranı optional'den al (id, name, isActive, menu)
         Restaurant restaurantEntity = restaurantResult.get();
-        restaurant.setActive(restaurantEntity.isActive());
-        restaurant.getOrderDetail().getProducts().forEach(product ->
-                restaurantEntity.getOrderDetail().getProducts().forEach(p -> {
-                    if (p.getId().equals(product.getId())) {
-                        product.updateWithConfirmedNamePriceAndAvailability(p.getName(), p.getPrice(), p.isAvailable());
-                    }
-                }));
-        restaurant.getOrderDetail().setId(new OrderId(UUID.fromString(restaurantApprovalRequest.getOrderId())));
 
-        return restaurant;
+        // Request'ten gelen ürün miktarlarını Map'e çeviriyoruz
+        Map<ProductId, Integer> quantities = new HashMap<>();
+        restaurantApprovalRequest.getProductQuantities().forEach(requestedProduct -> {
+            quantities.put(
+                    new ProductId(UUID.fromString(requestedProduct.getId())),
+                    requestedProduct.getQuantity()
+            );
+        });
+
+        // Restoranın tam olması için OrderDetail eklenmesi gerek
+        OrderDetail orderDetail = OrderDetail.builder()
+                .orderId(new OrderId(UUID.fromString(restaurantApprovalRequest.getOrderId())))
+                .orderStatus(OrderStatus.valueOf(restaurantApprovalRequest.getRestaurantOrderStatus().name()))
+                .productQuantities(quantities)
+                .build();
+
+        return Restaurant.builder()
+                .restaurantId(restaurantEntity.getId())
+                .orderApproval(restaurantEntity.getOrderApproval())
+                .active(restaurantEntity.isActive())
+                .menu(restaurantEntity.getMenu())
+                .orderDetail(orderDetail)
+                .build();
     }
 
     private boolean publishIfOutboxMessageProcessed(RestaurantApprovalRequest restaurantApprovalRequest) {

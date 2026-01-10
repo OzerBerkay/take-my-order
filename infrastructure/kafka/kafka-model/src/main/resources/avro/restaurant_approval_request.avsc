@@ -36,17 +36,26 @@
             }
         },
         {
-            "name": "products",
+            "name": "productQuantities",
             "type": {
                 "type": "array",
-                "items":{
-                  "name":"Product",
-                  "type":"record",
-                  "fields":[
-                    {"name":"id", "type": "string", "logicalType": "uuid"},
-                    {"name":"quantity", "type": "int"}
-                   ]
-               }
+                "items": {
+                    "name": "ProductQuantity",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "type": {
+                                "type": "string",
+                                "logicalType": "uuid"
+                            }
+                        },
+                        {
+                            "name": "quantity",
+                            "type": "int"
+                        }
+                    ]
+                }
             }
         },
         {
