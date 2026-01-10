@@ -7,7 +7,7 @@ import com.berkay.domain.valueobject.ProductId;
 public class Product extends BaseEntity<ProductId> {
     private String name;
     private Money price;
-    private final int quantity;
+    private int stock;
     private boolean available;
 
     public void updateWithConfirmedNamePriceAndAvailability(String name, Money price, boolean available) {
@@ -20,7 +20,7 @@ public class Product extends BaseEntity<ProductId> {
         setId(builder.productId);
         name = builder.name;
         price = builder.price;
-        quantity = builder.quantity;
+        stock = builder.stock;
         available = builder.available;
     }
 
@@ -36,8 +36,8 @@ public class Product extends BaseEntity<ProductId> {
         return price;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getStock() {
+        return stock;
     }
 
     public boolean isAvailable() {
@@ -48,7 +48,7 @@ public class Product extends BaseEntity<ProductId> {
         private ProductId productId;
         private String name;
         private Money price;
-        private int quantity;
+        private int stock;
         private boolean available;
 
         private Builder() {
@@ -69,8 +69,8 @@ public class Product extends BaseEntity<ProductId> {
             return this;
         }
 
-        public Builder quantity(int val) {
-            quantity = val;
+        public Builder stock(int val) {
+            stock = val;
             return this;
         }
 
