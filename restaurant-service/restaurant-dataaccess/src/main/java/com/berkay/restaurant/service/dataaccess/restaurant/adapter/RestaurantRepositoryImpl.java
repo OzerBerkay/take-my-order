@@ -1,13 +1,12 @@
 package com.berkay.restaurant.service.dataaccess.restaurant.adapter;
 
-import com.berkay.dataaccess.restaurant.entity.RestaurantEntity;
-import com.berkay.dataaccess.restaurant.repository.RestaurantJpaRepository;
+import com.berkay.restaurant.service.dataaccess.restaurant.entity.RestaurantEntity;
 import com.berkay.restaurant.service.dataaccess.restaurant.mapper.RestaurantDataAccessMapper;
+import com.berkay.restaurant.service.dataaccess.restaurant.repository.RestaurantJpaRepository;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,12 +23,15 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
-    public Optional<Restaurant> findRestaurantInformation(Restaurant restaurant) {
-        List<UUID> restaurantProducts =
-                restaurantDataAccessMapper.restaurantToRestaurantProducts(restaurant);
-        Optional<List<RestaurantEntity>> restaurantEntities = restaurantJpaRepository
-                .findByRestaurantIdAndProductIdIn(restaurant.getId().getValue(),
-                        restaurantProducts);
-        return restaurantEntities.map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+    public Optional<Restaurant> findRestaurantById(UUID restaurantId) {
+        return restaurantJpaRepository.findById(restaurantId)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+    }
+
+    @Override
+    public Restaurant saveRestaurant(Restaurant restaurant) {
+        RestaurantEntity restaurantEntity = restaurantDataAccessMapper.restaurantToRestaurantEntity(restaurant);
+        RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);
+        return restaurantDataAccessMapper.restaurantEntityToRestaurant(savedEntity);
     }
 }
