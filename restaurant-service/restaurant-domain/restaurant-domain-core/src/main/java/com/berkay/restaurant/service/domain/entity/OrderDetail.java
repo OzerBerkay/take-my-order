@@ -4,19 +4,20 @@ import com.berkay.domain.entity.BaseEntity;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
 import com.berkay.domain.valueobject.OrderStatus;
+import com.berkay.domain.valueobject.ProductId;
 
-import java.util.List;
+import java.util.Map;
 
 public class OrderDetail extends BaseEntity<OrderId> {
     private OrderStatus orderStatus;
     private Money totalAmount;
-    private final List<Product> products;
+    private final Map<ProductId, Integer> productQuantities;
 
     private OrderDetail(Builder builder) {
         setId(builder.orderId);
         orderStatus = builder.orderStatus;
         totalAmount = builder.totalAmount;
-        products = builder.products;
+        productQuantities = builder.productQuantities;
     }
 
     public static Builder builder() {
@@ -31,15 +32,15 @@ public class OrderDetail extends BaseEntity<OrderId> {
         return totalAmount;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public Map<ProductId, Integer> getProductQuantities() {
+        return productQuantities;
     }
 
     public static final class Builder {
         private OrderId orderId;
         private OrderStatus orderStatus;
         private Money totalAmount;
-        private List<Product> products;
+        private Map<ProductId, Integer> productQuantities;
 
         private Builder() {
         }
@@ -59,8 +60,8 @@ public class OrderDetail extends BaseEntity<OrderId> {
             return this;
         }
 
-        public Builder products(List<Product> val) {
-            products = val;
+        public Builder productQuantities(Map<ProductId, Integer> val) {
+            productQuantities = val;
             return this;
         }
 
