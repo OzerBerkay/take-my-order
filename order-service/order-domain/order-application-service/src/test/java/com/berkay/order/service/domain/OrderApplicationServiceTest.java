@@ -149,8 +149,9 @@ public class OrderApplicationServiceTest {
 
         Restaurant restaurantResponse = Restaurant.builder()
                 .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
-                .products(List.of(new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00"))),
-                        new Product(new ProductId(PRODUCT_ID), "product-2", new Money(new BigDecimal("50.00")))))
+                .products(List.of(
+                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true),
+                        new Product(new ProductId(PRODUCT_ID), "product-2", new Money(new BigDecimal("50.00")), true)))
                 .active(true)
                 .build();
 
@@ -190,8 +191,9 @@ public class OrderApplicationServiceTest {
     public void testCreateOrderWithPassiveRestaurant() {
         Restaurant restaurantResponse = Restaurant.builder()
                 .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
-                .products(List.of(new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00"))),
-                        new Product(new ProductId(PRODUCT_ID), "product-2", new Money(new BigDecimal("50.00")))))
+                .products(List.of(
+                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true),
+                        new Product(new ProductId(PRODUCT_ID), "product-2", new Money(new BigDecimal("50.00")), true)))
                 .active(false)
                 .build();
         when(restaurantRepository.findRestaurantInformation(orderDataMapper.createOrderCommandToRestaurant(createOrderCommand)))
@@ -230,5 +232,4 @@ public class OrderApplicationServiceTest {
             throw new OrderDomainException("Cannot create OrderPaymentEventPayload object!");
         }
     }
-
 }
