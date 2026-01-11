@@ -4,9 +4,14 @@ import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
 import com.berkay.payment.service.domain.dto.PaymentRequest;
+import com.berkay.payment.service.domain.dto.UpdateCreditCommand;
+import com.berkay.payment.service.domain.dto.UpdateCreditResponse;
+import com.berkay.payment.service.domain.entity.CreditEntry;
+import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.entity.Payment;
 import com.berkay.payment.service.domain.event.PaymentEvent;
 import com.berkay.payment.service.domain.outbox.model.OrderEventPayload;
+import com.berkay.payment.service.domain.valueobject.CreditHistoryId;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -31,6 +36,22 @@ public class PaymentDataMapper {
                 .createdAt(paymentEvent.getCreatedAt())
                 .paymentStatus(paymentEvent.getPayment().getPaymentStatus().name())
                 .failureMessages(paymentEvent.getFailureMessages())
+                .build();
+    }
+
+    public CreditHistory creditHistoryFromUpdateCreditCommand(UpdateCreditCommand command) {
+        return CreditHistory.builder()
+                .creditHistoryId(new CreditHistoryId(UUID.randomUUID()))
+                .customerId(new CustomerId(command.getCustomerId()))
+                .amount(new Money(command.getAmount()))
+                .transactionType(command.getTransactionType())
+                .build();
+    }
+
+    public UpdateCreditResponse updateCreditResponseFromCreditEntry(CreditEntry creditEntry) {
+        return UpdateCreditResponse.builder()
+                .customerId(creditEntry.getCustomerId().getValue())
+                .newBalance(creditEntry.getTotalCreditAmount().getAmount())
                 .build();
     }
 
