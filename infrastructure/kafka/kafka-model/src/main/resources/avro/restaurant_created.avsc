@@ -1,0 +1,61 @@
+{
+  "namespace": "com.berkay.kafka.order.avro.model",
+  "type": "record",
+  "name": "RestaurantCreatedAvroModel",
+  "fields": [
+    {
+      "name": "restaurantId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "active",
+      "type": "boolean"
+    },
+    {
+      "name": "products",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "RestaurantProduct",
+          "fields": [
+            {
+              "name": "productId",
+              "type": {
+                "type": "string",
+                "logicalType": "uuid"
+              }
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "price",
+              "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 10,
+                "scale": 2
+              }
+            },
+            {
+              "name": "available",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
