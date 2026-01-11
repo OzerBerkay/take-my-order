@@ -1,8 +1,8 @@
 package com.berkay.order.service.dataaccess.restaurant.adapter;
 
-import com.berkay.dataaccess.restaurant.entity.RestaurantEntity;
-import com.berkay.dataaccess.restaurant.repository.RestaurantJpaRepository;
+import com.berkay.order.service.dataaccess.restaurant.entity.RestaurantEntity;
 import com.berkay.order.service.dataaccess.restaurant.mapper.RestaurantDataAccessMapper;
+import com.berkay.order.service.dataaccess.restaurant.repository.RestaurantJpaRepository;
 import com.berkay.order.service.domain.entity.Restaurant;
 import com.berkay.order.service.domain.ports.output.repository.RestaurantRepository;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,17 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
         List<UUID> restaurantProducts =
                 restaurantDataAccessMapper.restaurantToRestaurantProducts(restaurant);
 
-        Optional<List<RestaurantEntity>> restaurantEntities = restaurantJpaRepository.findByRestaurantIdAndProductIdIn(restaurant.getId().getValue(), restaurantProducts);
-        return restaurantEntities.map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+        Optional<RestaurantEntity> restaurantEntity = restaurantJpaRepository
+                .findByRestaurantIdAndProducts_ProductIdIn(restaurant.getId().getValue(),
+                        restaurantProducts);
+
+        return restaurantEntity.map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+    }
+
+    @Override
+    public Restaurant save(Restaurant restaurant) {
+        RestaurantEntity restaurantEntity = restaurantDataAccessMapper.restaurantToRestaurantEntity(restaurant);
+        RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);
+        return restaurantDataAccessMapper.restaurantEntityToRestaurant(savedEntity);
     }
 }
