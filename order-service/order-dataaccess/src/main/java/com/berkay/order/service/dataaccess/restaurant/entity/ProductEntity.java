@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products", schema = "orders") // ARTIK KENDİ ŞEMAMIZDA
+@Table(name = "products")
 @Entity
 public class ProductEntity {
 
