@@ -18,6 +18,12 @@ public class Product extends BaseEntity<ProductId> {
         available = builder.available;
     }
 
+    public void updateWith(String name, Money price, boolean available) {
+        this.name = name;
+        this.price = price;
+        this.available = available;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
