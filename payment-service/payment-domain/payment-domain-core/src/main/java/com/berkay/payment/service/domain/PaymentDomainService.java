@@ -18,4 +18,8 @@ public interface PaymentDomainService {
                                           CreditEntry creditEntry,
                                           List<CreditHistory> creditHistories,
                                           List<String> failureMessages);
+
+    void validateAndUpdateCreditEntry(CreditEntry creditEntry,
+                                      List<CreditHistory> creditHistories,
+                                      CreditHistory newCreditHistory);
 }

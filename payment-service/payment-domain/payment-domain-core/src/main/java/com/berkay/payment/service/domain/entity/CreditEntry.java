@@ -8,6 +8,7 @@ import com.berkay.payment.service.domain.valueobject.CreditEntryId;
 public class CreditEntry extends BaseEntity<CreditEntryId> {
 
     private final CustomerId customerId;
+    // Müşterinin mevcut bakiyesi
     private Money totalCreditAmount;
 
     public void addCreditAmount(Money amount) {
