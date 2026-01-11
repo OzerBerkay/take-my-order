@@ -5,6 +5,7 @@ import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
 import com.berkay.restaurant.service.domain.event.OrderApprovedEvent;
 import com.berkay.restaurant.service.domain.event.OrderRejectedEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.ZoneId;
@@ -38,5 +39,16 @@ public class RestaurantDomainServiceImpl implements RestaurantDomainService {
                     ZonedDateTime.now(ZoneId.of(UTC)));
         }
 
+    }
+
+    @Override
+    public RestaurantCreatedEvent validateAndInitiateRestaurant(Restaurant restaurant) {
+        // Entity üzerindeki initialize metodunu çağırıyoruz (ID atama, Active yapma)
+        restaurant.initializeRestaurant();
+
+        log.info("Restaurant with id: {} is initiated", restaurant.getId().getValue());
+
+        // Event'i oluşturup dönüyoruz
+        return new RestaurantCreatedEvent(restaurant, ZonedDateTime.now(ZoneId.of(UTC)));
     }
 }
