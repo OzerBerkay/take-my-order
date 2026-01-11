@@ -9,6 +9,7 @@ import com.berkay.payment.service.domain.event.PaymentCancelledEvent;
 import com.berkay.payment.service.domain.event.PaymentCompletedEvent;
 import com.berkay.payment.service.domain.event.PaymentEvent;
 import com.berkay.payment.service.domain.event.PaymentFailedEvent;
+import com.berkay.payment.service.domain.exception.PaymentDomainException;
 import com.berkay.payment.service.domain.valueobject.CreditHistoryId;
 import com.berkay.payment.service.domain.valueobject.TransactionType;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,41 @@ import static com.berkay.domain.DomainConstants.UTC;
 
 @Slf4j
 public class PaymentDomainServiceImpl implements PaymentDomainService {
+
+    @Override
+    public void validateAndUpdateCreditEntry(CreditEntry creditEntry,
+                                             List<CreditHistory> creditHistories,
+                                             CreditHistory newCreditHistory) {
+
+        // Transaction Tipine Göre İşlem Yap (CREDIT vs DEBIT)
+        if (TransactionType.DEBIT == newCreditHistory.getTransactionType()) {
+            // DEBIT (Para Çekme)
+            // Bakiye Kontrolü
+            if (newCreditHistory.getAmount().isGreaterThan(creditEntry.getTotalCreditAmount())) {
+                log.error("Customer with id: {} doesn't have enough credit for withdrawal!",
+                        creditEntry.getCustomerId().getValue());
+
+                throw new PaymentDomainException("Customer with id=" + creditEntry.getCustomerId().getValue()
+                        + " doesn't have enough credit for withdrawal!");
+            }
+
+            // Bakiyeden Düş
+            creditEntry.subtractCreditAmount(newCreditHistory.getAmount());
+
+        } else if (TransactionType.CREDIT == newCreditHistory.getTransactionType()) {
+            // CREDIT (Para Yükleme)
+            creditEntry.addCreditAmount(newCreditHistory.getAmount());
+        }
+
+        // İşlemi Tarihçeye Ekle
+        creditHistories.add(newCreditHistory);
+
+        log.info("Credit entry updated for customer: {}. Type: {}, Amount: {}, New Balance: {}",
+                creditEntry.getCustomerId().getValue(),
+                newCreditHistory.getTransactionType(),
+                newCreditHistory.getAmount().getAmount(),
+                creditEntry.getTotalCreditAmount().getAmount());
+    }
 
     @Override
     public PaymentEvent validateAndInitiatePayment(Payment payment,

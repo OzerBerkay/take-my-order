@@ -1,5 +1,5 @@
 server:
-  port: ${PAYMENT_SERVICE_PORT}
+  port: ${PAYMENT_SERVICE_PORT:8182}
 
 logging:
   level:
