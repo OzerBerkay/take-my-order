@@ -68,7 +68,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
         order.getItems().forEach(orderItem -> restaurant.getProducts().forEach(restaurantProduct -> {
             Product currentProduct = orderItem.getProduct();
             if (currentProduct.equals(restaurantProduct)){
-                currentProduct.updateWithConfirmedNameAndPrice(restaurantProduct.getName(), restaurantProduct.getPrice());
+                currentProduct.updateWithConfirmedNamePriceAndAvailability(restaurantProduct.getName(), restaurantProduct.getPrice(), restaurantProduct.isAvailable());
             }
         }));
     }
