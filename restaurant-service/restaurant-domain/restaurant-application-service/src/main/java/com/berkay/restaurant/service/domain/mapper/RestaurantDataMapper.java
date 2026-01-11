@@ -10,7 +10,9 @@ import com.berkay.restaurant.service.domain.entity.OrderDetail;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
 import com.berkay.restaurant.service.domain.outbox.model.OrderEventPayload;
+import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
 import org.springframework.stereotype.Component;
 
@@ -76,6 +78,21 @@ public class RestaurantDataMapper {
         return AddProductResponse.builder()
                 .productId(product.getId().getValue())
                 .message("Product added successfully")
+                .build();
+    }
+
+    public RestaurantEventPayload restaurantCreatedEventToRestaurantEventPayload(RestaurantCreatedEvent restaurantCreatedEvent) {
+        return RestaurantEventPayload.builder()
+                .restaurantId(restaurantCreatedEvent.getRestaurant().getId().getValue().toString())
+                .active(restaurantCreatedEvent.getRestaurant().isActive())
+                .createdAt(restaurantCreatedEvent.getCreatedAt())
+                .products(restaurantCreatedEvent.getRestaurant().getMenu().stream().map(product ->
+                        RestaurantEventPayload.ProductPayload.builder()
+                                .productId(product.getId().getValue().toString())
+                                .name(product.getName())
+                                .price(product.getPrice().getAmount())
+                                .available(product.isAvailable())
+                                .build()).toList())
                 .build();
     }
 }
