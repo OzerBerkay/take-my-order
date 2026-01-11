@@ -1,5 +1,5 @@
 server:
-  port: ${ORDER_SERVICE_PORT}
+  port: ${ORDER_SERVICE_PORT:8181}
 
 logging:
   level:
