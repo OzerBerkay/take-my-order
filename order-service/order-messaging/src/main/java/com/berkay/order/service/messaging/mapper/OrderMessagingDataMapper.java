@@ -1,9 +1,7 @@
 package com.berkay.order.service.messaging.mapper;
 
 import com.berkay.kafka.order.avro.model.*;
-import com.berkay.order.service.domain.dto.message.CustomerModel;
-import com.berkay.order.service.domain.dto.message.PaymentResponse;
-import com.berkay.order.service.domain.dto.message.RestaurantApprovalResponse;
+import com.berkay.order.service.domain.dto.message.*;
 import com.berkay.order.service.domain.outbox.model.approval.OrderApprovalEventPayload;
 import com.berkay.order.service.domain.outbox.model.payment.OrderPaymentEventPayload;
 import org.springframework.stereotype.Component;
@@ -39,9 +37,9 @@ public class OrderMessagingDataMapper {
                 .setRestaurantId(orderApprovalEventPayload.getRestaurantId())
                 .setRestaurantOrderStatus(RestaurantOrderStatus
                         .valueOf(orderApprovalEventPayload.getRestaurantOrderStatus()))
-                .setProducts(orderApprovalEventPayload.getProducts().stream().map(orderApprovalEventProduct ->
-                        com.berkay.kafka.order.avro.model.Product.newBuilder()
-                                .setId(orderApprovalEventProduct.getId())
+                .setProductQuantities(orderApprovalEventPayload.getProducts().stream().map(orderApprovalEventProduct ->
+                        com.berkay.kafka.order.avro.model.ProductQuantity.newBuilder()
+                                .setId(java.util.UUID.fromString(orderApprovalEventProduct.getId()))
                                 .setQuantity(orderApprovalEventProduct.getQuantity())
                                 .build()).collect(Collectors.toList()))
                 .setPrice(orderApprovalEventPayload.getPrice())
@@ -84,6 +82,23 @@ public class OrderMessagingDataMapper {
                 .firstName(customerAvroModel.getFirstName())
                 .lastName(customerAvroModel.getLastName())
                 .email(customerAvroModel.getEmail())
+                .build();
+    }
+
+    public RestaurantModel restaurantCreatedAvroModelToRestaurantModel(RestaurantCreatedAvroModel restaurantCreatedAvroModel) {
+        return RestaurantModel.builder()
+                .restaurantId(restaurantCreatedAvroModel.getRestaurantId())
+                .active(restaurantCreatedAvroModel.getActive())
+                .products(restaurantCreatedAvroModel.getProducts().stream()
+                        .map(avroProduct -> ProductModel.builder()
+                                .productId(avroProduct.getProductId())
+                                .name(avroProduct.getName())
+                                // Avro Decimal (BigDecimal) -> Java BigDecimal
+                                // Avro'da logicalType: decimal ise otomatik BigDecimal gelir.
+                                .price(avroProduct.getPrice())
+                                .available(avroProduct.getAvailable())
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

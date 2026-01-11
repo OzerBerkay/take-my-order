@@ -10,4 +10,5 @@ import org.springframework.context.annotation.Configuration;
 public class RestaurantServiceConfigData {
     private String restaurantApprovalRequestTopicName;
     private String restaurantApprovalResponseTopicName;
+    private String restaurantCreatedTopicName;
 }
