@@ -1,8 +1,10 @@
 package com.berkay.order.service.domain;
 
 import com.berkay.order.service.domain.dto.create.CreateOrderCommand;
+import com.berkay.order.service.domain.dto.create.OrderItem;
 import com.berkay.order.service.domain.entity.Customer;
 import com.berkay.order.service.domain.entity.Order;
+import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
 import com.berkay.order.service.domain.exception.OrderDomainException;
@@ -14,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -46,23 +48,59 @@ public class OrderCreateHelper {
 
     @Transactional
     public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
+        // Müşteri var mı kontrolü
         checkCustomer(createOrderCommand.getCustomerId());
-        Restaurant restaurant = checkRestaurant(createOrderCommand);
+
+        // restaurant ve product kontrolü
+        Restaurant restaurant = checkRestaurantAndProduct(createOrderCommand);
+
         Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
         OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant);
         Order orderResult = saveOrder(order);
-        log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
         return orderCreatedEvent;
     }
 
-    private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
-        Restaurant restaurant = orderDataMapper.createOrderCommandToRestaurant(createOrderCommand);
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findRestaurantInformation(restaurant);
+    private Restaurant checkRestaurantAndProduct(CreateOrderCommand createOrderCommand) {
+        // DTO'dan Restoran ID'sini al
+        UUID restaurantId = createOrderCommand.getRestaurantId();
+
+        // DTO'dan Ürün ID'lerini topla
+        Set<UUID> requestedProductIds = createOrderCommand.getItems().stream()
+                .map(OrderItem::getProductId)
+                .collect(Collectors.toSet());
+
+        // Repository'i çağır ve Restoranı yalnızca ilgili product'larıyla birlikte bul
+        Optional<Restaurant> optionalRestaurant =
+                restaurantRepository.findRestaurantWithProducts(restaurantId, new ArrayList<>(requestedProductIds));
+
+        // Restorant gerçekten var mı?
         if (optionalRestaurant.isEmpty()) {
             log.warn("Could not find restaurant with id: {}", createOrderCommand.getRestaurantId());
             throw new OrderDomainException("Could not find restaurant with id: " + createOrderCommand.getRestaurantId());
         }
-        return optionalRestaurant.get();
+
+        Restaurant restaurant = optionalRestaurant.get();
+
+        // DB'den gelen ürünleri (ID -> Product) Map'e çevirelim, erişim kolay olsun.
+        Map<UUID, Product> dbProductsMap = restaurant.getProducts().stream()
+                .collect(Collectors.toMap(p -> p.getId().getValue(), p -> p));
+
+        // Ürün restorantta gerçekten var mı?
+        List<String> validationErrors = new ArrayList<>();
+        for (UUID requestedId : requestedProductIds) {
+            if (!dbProductsMap.containsKey(requestedId)) {
+                // Ürün veritabanında hiç yok (ID yanlış veya bu restorana ait değil)
+                validationErrors.add("Product with id: " + requestedId + " not found in restaurant");
+            }
+        }
+
+        // Hata varsa fırlat (Toplu raporlama)
+        if (!validationErrors.isEmpty()) {
+            log.warn("Order validation failed for restaurant {}: {}", restaurantId, validationErrors);
+            throw new OrderDomainException("Validation failed: " + String.join(", ", validationErrors));
+        }
+
+        return restaurant;
     }
 
     private void checkCustomer(UUID customerId) {

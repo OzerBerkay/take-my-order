@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrderPaymentOutboxMessage {
+public class OrderPaymentOutboxMessage { // DB'ye kaydedilecek olan outbox mesajı
     private UUID id;
     private UUID sagaId;
     private ZonedDateTime createdAt;
