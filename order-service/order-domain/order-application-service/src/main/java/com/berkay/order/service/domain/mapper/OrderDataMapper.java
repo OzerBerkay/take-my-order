@@ -23,15 +23,6 @@ import java.util.stream.Collectors;
 @Component // we can inject and use this from service classes
 public class OrderDataMapper {
 
-    public Restaurant createOrderCommandToRestaurant(CreateOrderCommand createOrderCommand) {
-        return Restaurant.builder()
-                .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
-                .products(createOrderCommand.getItems().stream().map((orderItem ->
-                        new Product(new ProductId(orderItem.getProductId()))))
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
     public Order createOrderCommandToOrder(CreateOrderCommand createOrderCommand) {
         return Order.builder()
                 .customerId(new CustomerId(createOrderCommand.getCustomerId()))

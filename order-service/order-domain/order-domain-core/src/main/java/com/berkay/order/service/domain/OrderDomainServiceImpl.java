@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.berkay.domain.DomainConstants.UTC;
 
@@ -23,7 +26,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     @Override
     public OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant) {
         validateRestaurant(restaurant);
-        setOrderProductInformation(order, restaurant);
+        validateAndSetOrderProductInformation(order, restaurant);
         order.validateOrder();
         order.initializeOrder();
         log.info("Order with id: {} is initiated", order.getId().getValue());
@@ -64,12 +67,31 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     }
 
     // Ensuring order product information from client is same with Restaurant's product
-    private void setOrderProductInformation(Order order, Restaurant restaurant) {
-        order.getItems().forEach(orderItem -> restaurant.getProducts().forEach(restaurantProduct -> {
-            Product currentProduct = orderItem.getProduct();
-            if (currentProduct.equals(restaurantProduct)){
-                currentProduct.updateWithConfirmedNamePriceAndAvailability(restaurantProduct.getName(), restaurantProduct.getPrice(), restaurantProduct.isAvailable());
+    private void validateAndSetOrderProductInformation(Order order, Restaurant restaurant) {
+        // O(N) Performans için Map
+        Map<UUID, Product> restaurantProductMap = restaurant.getProducts().stream()
+                .collect(Collectors.toMap(p -> p.getId().getValue(), p -> p));
+
+        order.getItems().forEach(orderItem -> {
+            Product restaurantProduct = restaurantProductMap.get(orderItem.getProduct().getId().getValue());
+
+            // Helper kontrol ettiği için null gelmez ama "sigorta" olarak kalsın.
+            if (restaurantProduct != null) {
+
+                // Ürün satışa açık mı?
+                if (!restaurantProduct.isAvailable()) {
+                    throw new OrderDomainException("Product " + restaurantProduct.getId().getValue() + " is not available.");
+                }
+
+                // Product güncellenir çünkü tüm product'ı dto'da almadık sadece id aldık
+                // DB'den product'ı alarak entity içinde validasyonları sağlayacağız
+                orderItem.getProduct().updateWithConfirmedNamePriceAndAvailability(
+                        restaurantProduct.getName(),
+                        restaurantProduct.getPrice(),
+                        restaurantProduct.isAvailable());
+            } else {
+                throw new OrderDomainException("Product with id: " + orderItem.getProduct().getId().getValue() + " not found in restaurant");
             }
-        }));
+        });
     }
 }

@@ -3,10 +3,12 @@ package com.berkay.order.service.domain.entity;
 import com.berkay.domain.entity.BaseEntity;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
+import com.berkay.order.service.domain.exception.OrderDomainException;
 import com.berkay.order.service.domain.valueobject.OrderItemId;
 
 public class OrderItem extends BaseEntity<OrderItemId> {
     private OrderId orderId;
+    // DTO içinde sadece productId var. Entity'de obje olmasının sebebi restoranın orijinal product'ını karşılaştırmalarda kullanmak.
     private final Product product;
     private final int quantity;
     private final Money price;
@@ -25,12 +27,26 @@ public class OrderItem extends BaseEntity<OrderItemId> {
         super.setId(orderItemId);
     }
 
-    boolean isPriceValid() {
-        // Order item's price must be greater than zero, and order item's price must be equal to product's price,
-        // and order item's subtotal must be equal to order item's price multiplied by quantity
-        return price.isGreaterThanZero()
-                && price.equals(product.getPrice())
-                && price.multiply(quantity).equals(subTotal);
+    void validatePrice() {
+        // 1. Kontrol: Fiyat 0'dan büyük olmalı
+        if (!price.isGreaterThanZero()) {
+            throw new OrderDomainException("Order Item Price: " + price.getAmount() + " is not valid for product " + product.getId().getValue() + ". Price must be greater than zero!");
+        }
+
+        // 2. Kontrol: Ürün fiyatı ile sipariş fiyatı uyuşuyor mu?
+        if (!price.equals(product.getPrice())) {
+            throw new OrderDomainException("Order Item Price: " + price.getAmount() + " is not valid for product " + product.getId().getValue() +
+                    ". Price mismatch! Order Item Price: " + price.getAmount() +
+                    ", Product Actual Price: " + product.getPrice().getAmount());
+        }
+
+        // 3. Kontrol: Birim Fiyat * Adet = Ara Toplam mı?
+        if (!price.multiply(quantity).equals(subTotal)) {
+            throw new OrderDomainException("Order Item Price: " + price.getAmount() + " is not valid for product " + product.getId().getValue() +
+                    ". SubTotal is not correct! " +
+                    "Price: " + price.getAmount() + " * Quantity: " + quantity +
+                    " != SubTotal: " + subTotal.getAmount());
+        }
     }
 
     public OrderId getOrderId() {

@@ -2,11 +2,13 @@ package com.berkay.order.service.domain.ports.output.repository;
 
 import com.berkay.order.service.domain.entity.Restaurant;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface RestaurantRepository {
 
-    Optional<Restaurant> findRestaurantInformation(Restaurant restaurant);
+    Optional<Restaurant> findRestaurantWithProducts(UUID restaurantId, List<UUID> productIds);
 
     Restaurant save(Restaurant restaurant);
 }
