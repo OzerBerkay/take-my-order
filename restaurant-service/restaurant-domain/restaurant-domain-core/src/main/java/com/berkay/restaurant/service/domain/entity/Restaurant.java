@@ -18,11 +18,15 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private final List<Product> menu;
     private OrderApproval orderApproval;
     private boolean active;
-    private final OrderDetail orderDetail;
+    private OrderDetail orderDetail;
 
     public void initializeRestaurant() {
         setId(new RestaurantId(UUID.randomUUID()));
         this.active = true;
+    }
+
+    public void initOrderDetail(OrderDetail orderDetail) {
+        this.orderDetail = orderDetail;
     }
 
     public void addProduct(Product product) {
@@ -44,7 +48,6 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         // 1. KURAL: Restoran Aktif mi?
         if (!this.isActive()) {
             failureMessages.add("Restaurant with name " + this.restaurantName + " is currently not active!");
-            return;
         }
 
         // 2. KURAL: Ödeme Tamamlanmış mı?
@@ -67,6 +70,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
             // Ürün menüde var mı?
             if (menuProduct == null) {
                 failureMessages.add("Product with id: " + orderedProductId.getValue() + " is not found.");
+                continue;
             }
 
             // Ürün satışta mı?

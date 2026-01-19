@@ -1,5 +1,6 @@
 package com.berkay.restaurant.service.domain;
 
+import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
 import com.berkay.domain.valueobject.OrderStatus;
 import com.berkay.domain.valueobject.ProductId;
@@ -82,12 +83,14 @@ public class RestaurantApprovalRequestHelper {
 
     private Restaurant findRestaurant(RestaurantApprovalRequest restaurantApprovalRequest) {
         // Restoranı Bul
+        // TODO: Restorandan sadece siparişe özel ürünler gelmeli tüm menü değil
         UUID restaurantId = UUID.fromString(restaurantApprovalRequest.getRestaurantId());
         Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantById(restaurantId);
 
         // Restoranın varlığını kontrol et
         if (restaurantResult.isEmpty()) {
             log.error("Restaurant with id " + restaurantId + " not found!");
+            // TODO: Kafka listener'da hatayı yutmak yerine rejected status ile event fırlatılmalı
             throw new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found!");
         }
 
@@ -106,17 +109,13 @@ public class RestaurantApprovalRequestHelper {
         // Restoranın tam olması için OrderDetail eklenmesi gerek
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderId(new OrderId(UUID.fromString(restaurantApprovalRequest.getOrderId())))
+                .totalAmount(new Money(restaurantApprovalRequest.getPrice()))
                 .orderStatus(OrderStatus.valueOf(restaurantApprovalRequest.getRestaurantOrderStatus().name()))
                 .productQuantities(quantities)
                 .build();
+        restaurantEntity.initOrderDetail(orderDetail);
 
-        return Restaurant.builder()
-                .restaurantId(restaurantEntity.getId())
-                .orderApproval(restaurantEntity.getOrderApproval())
-                .active(restaurantEntity.isActive())
-                .menu(restaurantEntity.getMenu())
-                .orderDetail(orderDetail)
-                .build();
+        return restaurantEntity;
     }
 
     private boolean publishIfOutboxMessageProcessed(RestaurantApprovalRequest restaurantApprovalRequest) {

@@ -1,12 +1,10 @@
 package com.berkay.restaurant.service.domain.mapper;
 
 import com.berkay.domain.valueobject.*;
-import com.berkay.restaurant.service.domain.dto.RestaurantApprovalRequest;
 import com.berkay.restaurant.service.domain.dto.create.AddProductCommand;
 import com.berkay.restaurant.service.domain.dto.create.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
-import com.berkay.restaurant.service.domain.entity.OrderDetail;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
@@ -15,9 +13,6 @@ import com.berkay.restaurant.service.domain.outbox.model.OrderEventPayload;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class RestaurantDataMapper {
@@ -33,24 +28,6 @@ public class RestaurantDataMapper {
         return CreateRestaurantResponse.builder()
                 .restaurantId(restaurant.getId().getValue())
                 .message("Restaurant created successfully")
-                .build();
-    }
-
-
-    public Restaurant restaurantApprovalRequestToRestaurant(RestaurantApprovalRequest
-                                                                    restaurantApprovalRequest) {
-        return Restaurant.builder()
-                .restaurantId(new RestaurantId(UUID.fromString(restaurantApprovalRequest.getRestaurantId())))
-                .orderDetail(OrderDetail.builder()
-                        .orderId(new OrderId(UUID.fromString(restaurantApprovalRequest.getOrderId())))
-                        .productQuantities(restaurantApprovalRequest.getProductQuantities().stream()
-                                .collect(Collectors.toMap(
-                                        item -> new ProductId(UUID.fromString(item.getId())),
-                                        RestaurantApprovalRequest.ProductQuantity::getQuantity
-                                )))
-                        .totalAmount(new Money(restaurantApprovalRequest.getPrice()))
-                        .orderStatus(OrderStatus.valueOf(restaurantApprovalRequest.getRestaurantOrderStatus().name()))
-                        .build())
                 .build();
     }
 
