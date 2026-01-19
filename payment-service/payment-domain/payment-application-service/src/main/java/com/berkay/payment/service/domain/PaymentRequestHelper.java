@@ -117,6 +117,7 @@ public class PaymentRequestHelper {
         return creditEntry.get();
     }
 
+    // TODO: Bir kullanıcı oluşturulduğunda o zaman history ve entry'nin boş olmaması lazım 0 birimlik bir transaction gerek
     private List<CreditHistory> getCreditHistory(CustomerId customerId) {
         Optional<List<CreditHistory>> creditHistories = creditHistoryRepository.findByCustomerId(customerId);
         if (creditHistories.isEmpty()) {
@@ -132,8 +133,11 @@ public class PaymentRequestHelper {
                                   List<CreditHistory> creditHistories,
                                   List<String> failureMessages) {
         paymentRepository.save(payment);
+        // Yalnızca herhangi bir hata bulunmadığında kullanıcının cüzdan hareketleri güncellenir!
+        // Aksi durumda sadece bilgilendirme amaçlı olarak ödeme bilgisi tabloya yazılır ve bitirilir.
         if (failureMessages.isEmpty()) {
             creditEntryRepository.save(creditEntry);
+            // İlgili sipariş için oluşturulan history kaydedilir
             creditHistoryRepository.save(creditHistories.get(creditHistories.size() - 1));
         }
     }
