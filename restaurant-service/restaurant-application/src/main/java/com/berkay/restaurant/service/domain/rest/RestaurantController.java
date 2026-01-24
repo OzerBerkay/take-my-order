@@ -1,15 +1,12 @@
 package com.berkay.restaurant.service.domain.rest;
 
-import com.berkay.restaurant.service.domain.AddProductCommandHandler;
-import com.berkay.restaurant.service.domain.UpdateProductCommandHandler;
-import com.berkay.restaurant.service.domain.UpdateRestaurantCommandHandler;
 import com.berkay.restaurant.service.domain.dto.create.AddProductCommand;
 import com.berkay.restaurant.service.domain.dto.create.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
-import com.berkay.restaurant.service.domain.CreateRestaurantCommandHandler;
 import com.berkay.restaurant.service.domain.dto.update.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
+import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,25 +18,17 @@ import java.util.UUID;
 @RequestMapping(value = "/restaurants", produces = "application/vnd.api.v1+json")
 public class RestaurantController {
 
-    private final CreateRestaurantCommandHandler createRestaurantCommandHandler;
-    private final AddProductCommandHandler addProductCommandHandler;
-    private final UpdateRestaurantCommandHandler updateRestaurantCommandHandler;
-    private final UpdateProductCommandHandler updateProductCommandHandler;
+    private final RestaurantApplicationService restaurantApplicationService;
 
-    public RestaurantController(CreateRestaurantCommandHandler createRestaurantCommandHandler,
-                                AddProductCommandHandler addProductCommandHandler,
-                                UpdateRestaurantCommandHandler updateRestaurantCommandHandler,
-                                UpdateProductCommandHandler updateProductCommandHandler) {
-        this.createRestaurantCommandHandler = createRestaurantCommandHandler;
-        this.addProductCommandHandler = addProductCommandHandler;
-        this.updateRestaurantCommandHandler = updateRestaurantCommandHandler;
-        this.updateProductCommandHandler = updateProductCommandHandler;
+    public RestaurantController(RestaurantApplicationService restaurantApplicationService) {
+
+        this.restaurantApplicationService = restaurantApplicationService;
     }
 
     @PostMapping
     public ResponseEntity<CreateRestaurantResponse> createRestaurant(@RequestBody CreateRestaurantCommand createRestaurantCommand) {
         log.info("Creating restaurant with name: {}", createRestaurantCommand.getRestaurantName());
-        CreateRestaurantResponse response = createRestaurantCommandHandler.createRestaurant(createRestaurantCommand);
+        CreateRestaurantResponse response = restaurantApplicationService.createRestaurant(createRestaurantCommand);
         return ResponseEntity.ok(response);
     }
 
@@ -47,7 +36,7 @@ public class RestaurantController {
     public ResponseEntity<AddProductResponse> addProduct(@RequestBody AddProductCommand addProductCommand) {
         log.info("Adding product to restaurant with id: {}", addProductCommand.getRestaurantId());
 
-        AddProductResponse response = addProductCommandHandler.addProduct(addProductCommand);
+        AddProductResponse response = restaurantApplicationService.addProduct(addProductCommand);
 
         return ResponseEntity.ok(response);
     }
@@ -63,7 +52,7 @@ public class RestaurantController {
                 .active(active)
                 .build();
 
-        updateRestaurantCommandHandler.updateRestaurant(command);
+        restaurantApplicationService.updateRestaurant(command);
         return ResponseEntity.ok("Restaurant updated");
     }
 
@@ -73,7 +62,7 @@ public class RestaurantController {
         log.info("Updating product with id: {} for restaurant id: {}",
                 updateProductCommand.getProductId(), updateProductCommand.getRestaurantId());
 
-        updateProductCommandHandler.updateProduct(updateProductCommand);
+        restaurantApplicationService.updateProduct(updateProductCommand);
         return ResponseEntity.ok("Product updated");
     }
 }
