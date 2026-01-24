@@ -149,6 +149,8 @@ public class PaymentRequestHelper {
                         UUID.fromString(paymentRequest.getSagaId()),
                         paymentStatus);
         if (orderOutboxMessage.isPresent()) {
+            // İptal talebinin tekrar gelmesi durumunda zaten ilk isteğin işlenmiş olduğu görülürse yeniden publish edilir.
+            // Order'ın bir sebepten dolayı (ağ hatası, kafka çökmesi vs.) ilk mesajı alamadığı düşünülür.
             paymentResponseMessagePublisher.publish(orderOutboxMessage.get(), orderOutboxHelper::updateOutboxMessage);
             return true;
         }

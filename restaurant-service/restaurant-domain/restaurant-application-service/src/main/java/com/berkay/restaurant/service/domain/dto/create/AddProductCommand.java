@@ -1,29 +1,19 @@
 package com.berkay.restaurant.service.domain.dto.create;
 
-import jakarta.validation.constraints.DecimalMin;
+import com.berkay.restaurant.service.domain.dto.base.BaseProductCommand;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
-public class AddProductCommand {
-    @NotNull
+@NoArgsConstructor(force = true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class AddProductCommand extends BaseProductCommand {
+    @NotNull(message = "Restaurant id cannot be null!") // Burada zorunlu çünkü bir restorana ekleme yapıyoruz. CreateProductCommand'deki gibi restorant ile birlikte oluşturmuyoruz.
     private final UUID restaurantId;
-    @NotNull
-    @Size(min = 2, max = 50)
-    private final String name;
-    @NotNull
-    @DecimalMin("0.01")
-    private final BigDecimal price;
-    @NotNull
-    private final int stock;
-    @NotNull
-    private final boolean available;
 }
