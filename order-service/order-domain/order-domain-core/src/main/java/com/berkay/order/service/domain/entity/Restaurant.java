@@ -6,15 +6,21 @@ import com.berkay.domain.valueobject.RestaurantId;
 import java.util.List;
 
 public class Restaurant extends AggregateRoot<RestaurantId> {
-    private final List<Product> products;
+    private List<Product> products;
     private boolean active;
-    private final String name;
+    private String name;
 
     private Restaurant(Builder builder) {
         super.setId(builder.restaurantId);
         products = builder.products;
         active = builder.active;
         name = builder.name;
+    }
+
+    public void update(String name, boolean active, List<Product> products) {
+        this.name = name;
+        this.active = active;
+        this.products = products; // Snapshot mantığı: Listeyi komple yenisiyle değiştiriyoruz.
     }
 
     public static Builder builder() {

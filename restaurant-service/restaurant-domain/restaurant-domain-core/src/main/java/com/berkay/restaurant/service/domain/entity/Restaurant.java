@@ -14,11 +14,23 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Restaurant extends AggregateRoot<RestaurantId> {
-    private final RestaurantName restaurantName;
+    private RestaurantName restaurantName;
     private final List<Product> menu;
     private OrderApproval orderApproval;
     private boolean active;
     private OrderDetail orderDetail;
+
+    public void updateName(String restaurantName) {
+        if (restaurantName != null && !restaurantName.isBlank()) {
+            this.restaurantName = new RestaurantName(restaurantName);
+        }
+    }
+
+    public void updateActiveStatus(Boolean active) {
+        if (active != null) {
+            this.active = active;
+        }
+    }
 
     public void initializeRestaurant() {
         if (getId() == null) {
@@ -117,10 +129,6 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
                 .orderId(this.getOrderDetail().getId())
                 .approvalStatus(orderApprovalStatus)
                 .build();
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     private Restaurant(Builder builder) {

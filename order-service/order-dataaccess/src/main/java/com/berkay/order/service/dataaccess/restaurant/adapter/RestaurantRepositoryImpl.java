@@ -29,6 +29,12 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
+    public Optional<Restaurant> findRestaurantByRestaurantId(UUID restaurantId) {
+        return restaurantJpaRepository.findById(restaurantId)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+    }
+
+    @Override
     public Restaurant save(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = restaurantDataAccessMapper.restaurantToRestaurantEntity(restaurant);
         RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);

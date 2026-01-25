@@ -44,6 +44,7 @@ public class RestaurantDataAccessMapper {
                 .build();
 
         // Çift yönlü ilişkiyi kuruyoruz
+        // Eğer bunu yapmazsak JPA bunu kaydetmeye çalıştığında, veritabanındaki products tablosunun restaurant_id kolonuna NULL yazmaya çalışacaktı
         restaurantEntity.getProducts().forEach(productEntity -> productEntity.setRestaurant(restaurantEntity));
 
         return restaurantEntity;

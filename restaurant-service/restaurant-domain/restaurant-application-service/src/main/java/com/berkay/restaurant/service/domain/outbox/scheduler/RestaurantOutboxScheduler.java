@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,11 +31,10 @@ public class RestaurantOutboxScheduler implements OutboxScheduler {
     @Scheduled(fixedDelayString = "${restaurant-service.outbox-scheduler-fixed-rate}",
             initialDelayString = "${restaurant-service.outbox-scheduler-initial-delay}")
     public void processOutboxMessage() {
-        Optional<List<RestaurantOutboxMessage>> outboxMessagesResponse =
+        List<RestaurantOutboxMessage> outboxMessages =
                 restaurantOutboxHelper.getRestaurantOutboxMessageByOutboxStatus(OutboxStatus.STARTED);
 
-        if (outboxMessagesResponse.isPresent() && !outboxMessagesResponse.get().isEmpty()) {
-            List<RestaurantOutboxMessage> outboxMessages = outboxMessagesResponse.get();
+        if (!outboxMessages.isEmpty()) {
             log.info("Received {} RestaurantOutboxMessage with id: {}, sending to message bus!",
                     outboxMessages.size(),
                     outboxMessages.stream().map(message -> message.getId().toString())

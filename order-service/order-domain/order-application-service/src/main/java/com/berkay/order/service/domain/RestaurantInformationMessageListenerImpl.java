@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,16 +38,29 @@ public class RestaurantInformationMessageListenerImpl implements RestaurantInfor
                         productModel.isAvailable()))
                 .collect(Collectors.toList());
 
-        Restaurant restaurant = Restaurant.builder()
-                .restaurantId(new RestaurantId(restaurantModel.getRestaurantId()))
-                .name(restaurantModel.getName())
-                .active(restaurantModel.isActive())
-                .products(products)
-                .build();
+        Optional<Restaurant> restaurantResult = restaurantRepository
+                .findRestaurantByRestaurantId(restaurantModel.getRestaurantId());
 
-        // Veritabanına Kayıt (Replica Table)
-        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        if (restaurantResult.isPresent()) {
+            // UPDATE
+            Restaurant restaurant = restaurantResult.get();
+            restaurant.update(restaurantModel.getName(), restaurantModel.isActive(), products);
 
-        log.info("Restaurant is saved in Order Service with id: {}", savedRestaurant.getId().getValue());
+            restaurantRepository.save(restaurant);
+            log.info("Restaurant is updated in Order Service with id: {}", restaurant.getId().getValue());
+
+        } else {
+            // CREATE
+            Restaurant restaurant = Restaurant.builder()
+                    .restaurantId(new RestaurantId(restaurantModel.getRestaurantId()))
+                    .name(restaurantModel.getName())
+                    .active(restaurantModel.isActive())
+                    .products(products)
+                    .build();
+
+            // Veritabanına Kayıt (Replica Table)
+            Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+            log.info("Restaurant is created in Order Service with id: {}", savedRestaurant.getId().getValue());
+        }
     }
 }

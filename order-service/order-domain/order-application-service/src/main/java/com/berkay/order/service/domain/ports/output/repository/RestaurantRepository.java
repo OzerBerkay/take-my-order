@@ -10,5 +10,7 @@ public interface RestaurantRepository {
 
     Optional<Restaurant> findRestaurantWithProducts(UUID restaurantId, List<UUID> productIds);
 
+    Optional<Restaurant> findRestaurantByRestaurantId(UUID restaurantId);
+
     Restaurant save(Restaurant restaurant);
 }

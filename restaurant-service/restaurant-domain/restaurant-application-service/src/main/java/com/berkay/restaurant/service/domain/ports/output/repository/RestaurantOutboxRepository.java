@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface RestaurantOutboxRepository {
     RestaurantOutboxMessage save(RestaurantOutboxMessage restaurantOutboxMessage);
 
-    Optional<List<RestaurantOutboxMessage>> findByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus);
+    List<RestaurantOutboxMessage> findByTypeAndOutboxStatus(List<String> types, OutboxStatus outboxStatus);
+
+    void deleteByTypeAndOutboxStatus(List<String> types, OutboxStatus outboxStatus);
 }
