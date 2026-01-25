@@ -5,6 +5,7 @@ import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
+import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxMessage;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantOutboxRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,11 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.berkay.domain.DomainConstants.UTC;
-import static com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType.RESTAURANT_CREATED;
 
 @Slf4j
 @Component
@@ -40,8 +39,11 @@ public class RestaurantOutboxHelper {
     }
 
     @Transactional(readOnly = true)
-    public Optional<List<RestaurantOutboxMessage>> getRestaurantOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
-        return restaurantOutboxRepository.findByTypeAndOutboxStatus(RESTAURANT_CREATED.name(), outboxStatus);
+    public List<RestaurantOutboxMessage> getRestaurantOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
+        return restaurantOutboxRepository.findByTypeAndOutboxStatus(
+                List.of(RestaurantOutboxEventType.RESTAURANT_CREATED.name(),
+                        RestaurantOutboxEventType.RESTAURANT_UPDATED.name()),
+                outboxStatus);
     }
 
     // Her bir outbox mesajının sürecini ayrı olarak değerlendirmek gerekir.
@@ -55,13 +57,14 @@ public class RestaurantOutboxHelper {
     }
 
     @Transactional
-    public void saveRestaurantOutboxMessage(RestaurantInformationEvent restaurantInformationEvent) {
+    public void saveRestaurantOutboxMessage(RestaurantInformationEvent restaurantInformationEvent,
+                                            RestaurantOutboxEventType eventType) {
         RestaurantEventPayload payload = restaurantDataMapper.restaurantInformationEventToRestaurantEventPayload(restaurantInformationEvent);
         try {
             RestaurantOutboxMessage restaurantOutboxMessage = RestaurantOutboxMessage.builder()
                     .id(UUID.randomUUID())
                     .createdAt(payload.getCreatedAt())
-                    .type(RESTAURANT_CREATED.name())
+                    .type(eventType.name())
                     .payload(objectMapper.writeValueAsString(payload))
                     .outboxStatus(OutboxStatus.STARTED)
                     .version(0)
@@ -74,5 +77,13 @@ public class RestaurantOutboxHelper {
             log.error("Could not create RestaurantOutboxMessage for restaurant id: {}", payload.getRestaurantId(), e);
             throw new RestaurantDomainException("Could not create RestaurantOutboxMessage", e);
         }
+    }
+
+    @Transactional
+    public void deleteRestaurantOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
+        restaurantOutboxRepository.deleteByTypeAndOutboxStatus(
+                List.of(RestaurantOutboxEventType.RESTAURANT_CREATED.name(),
+                        RestaurantOutboxEventType.RESTAURANT_UPDATED.name()),
+                outboxStatus);
     }
 }

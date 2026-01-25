@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType.RESTAURANT_CREATED;
+
 @Slf4j
 @Component
 public class CreateRestaurantCommandHandler {
@@ -51,7 +53,7 @@ public class CreateRestaurantCommandHandler {
 
         // Outbox Kaydı
         // Artık "savedRestaurant" değil, domain'den dönen "event"i veriyoruz.
-        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantInformationEvent);
+        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantInformationEvent, RESTAURANT_CREATED);
 
         log.info("Restaurant is created with id: {}", savedRestaurant.getId().getValue());
         return restaurantDataMapper.restaurantToCreateRestaurantResponse(savedRestaurant);

@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static com.berkay.domain.DomainConstants.UTC;
+import static com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType.RESTAURANT_UPDATED;
 
 @Slf4j
 @Component
@@ -59,7 +60,8 @@ public class UpdateProductCommandHandler {
 
         // OUTBOX - Order Service'e güncel menüyü gönder
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
-                new RestaurantInformationEvent(restaurant, ZonedDateTime.now(ZoneId.of(UTC)))
+                new RestaurantInformationEvent(restaurant, ZonedDateTime.now(ZoneId.of(UTC))),
+                RESTAURANT_UPDATED
         );
 
         log.info("Restaurant menu updated and outbox message saved for restaurant id: {}", restaurant.getId().getValue());

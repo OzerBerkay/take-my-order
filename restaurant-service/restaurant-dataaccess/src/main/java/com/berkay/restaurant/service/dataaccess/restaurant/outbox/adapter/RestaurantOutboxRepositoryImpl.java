@@ -8,7 +8,6 @@ import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantOu
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,10 +30,15 @@ public class RestaurantOutboxRepositoryImpl implements RestaurantOutboxRepositor
     }
 
     @Override
-    public Optional<List<RestaurantOutboxMessage>> findByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus) {
-        return Optional.of(restaurantOutboxJpaRepository.findByTypeAndOutboxStatus(type, outboxStatus)
+    public List<RestaurantOutboxMessage> findByTypeAndOutboxStatus(List<String> types, OutboxStatus outboxStatus) {
+        return restaurantOutboxJpaRepository.findByTypeInAndOutboxStatus(types, outboxStatus)
                 .stream()
                 .map(restaurantOutboxDataAccessMapper::restaurantOutboxEntityToRestaurantOutboxMessage)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteByTypeAndOutboxStatus(List<String> types, OutboxStatus outboxStatus) {
+        restaurantOutboxJpaRepository.deleteByTypeInAndOutboxStatus(types, outboxStatus);
     }
 }
