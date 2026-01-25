@@ -7,7 +7,13 @@ import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.dto.update.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+@Slf4j
+@Validated
+@Service
 public class RestaurantApplicationServiceImpl implements RestaurantApplicationService {
 
     private final CreateRestaurantCommandHandler createRestaurantCommandHandler;
