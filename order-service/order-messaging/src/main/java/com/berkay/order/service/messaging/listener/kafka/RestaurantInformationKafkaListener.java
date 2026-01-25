@@ -31,8 +31,8 @@ public class RestaurantInformationKafkaListener implements KafkaConsumer<Restaur
     }
 
     @Override
-    @KafkaListener(id = "${kafka-consumer-config.restaurant-created-consumer-group-id}",
-            topics = "${order-service.restaurant-created-topic-name}")
+    @KafkaListener(id = "${kafka-consumer-config.restaurant-information-consumer-group-id}",
+            topics = "${order-service.restaurant-information-topic-name}")
     public void receive(@Payload List<RestaurantInformationAvroModel> messages,
                         @Header(KafkaHeaders.RECEIVED_KEY) List<String> keys,
                         @Header(KafkaHeaders.RECEIVED_PARTITION) List<Integer> partitions,
