@@ -1,6 +1,6 @@
 package com.berkay.restaurant.service.domain.mapper;
 
-import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
+import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantRequest;
 import org.springframework.stereotype.Component;
 

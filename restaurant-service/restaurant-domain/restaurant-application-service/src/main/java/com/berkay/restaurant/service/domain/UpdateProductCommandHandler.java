@@ -1,7 +1,7 @@
 package com.berkay.restaurant.service.domain;
 
 import com.berkay.domain.valueobject.Money;
-import com.berkay.restaurant.service.domain.dto.update.UpdateProductCommand;
+import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;

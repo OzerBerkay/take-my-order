@@ -1,6 +1,6 @@
 package com.berkay.restaurant.service.domain;
 
-import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
+import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundException;

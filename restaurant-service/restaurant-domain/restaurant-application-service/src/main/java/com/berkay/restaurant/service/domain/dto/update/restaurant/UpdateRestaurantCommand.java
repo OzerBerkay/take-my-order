@@ -1,4 +1,4 @@
-package com.berkay.restaurant.service.domain.dto.update;
+package com.berkay.restaurant.service.domain.dto.update.restaurant;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

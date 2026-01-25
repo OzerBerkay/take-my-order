@@ -1,7 +1,11 @@
 package com.berkay.restaurant.service.domain.mapper;
 
 import com.berkay.domain.valueobject.*;
-import com.berkay.restaurant.service.domain.dto.create.*;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
+import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateProductCommand;
+import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
+import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;

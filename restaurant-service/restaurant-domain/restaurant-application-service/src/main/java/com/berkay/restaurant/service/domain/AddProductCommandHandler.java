@@ -1,7 +1,7 @@
 package com.berkay.restaurant.service.domain;
 
-import com.berkay.restaurant.service.domain.dto.create.AddProductCommand;
-import com.berkay.restaurant.service.domain.dto.create.AddProductResponse;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundException;
