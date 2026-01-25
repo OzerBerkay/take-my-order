@@ -5,7 +5,7 @@ import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxMessage
 
 import java.util.function.BiConsumer;
 
-public interface RestaurantCreatedMessagePublisher {
+public interface RestaurantInformationMessagePublisher {
 
     void publish(RestaurantOutboxMessage restaurantOutboxMessage,
                  BiConsumer<RestaurantOutboxMessage, OutboxStatus> outboxCallback);

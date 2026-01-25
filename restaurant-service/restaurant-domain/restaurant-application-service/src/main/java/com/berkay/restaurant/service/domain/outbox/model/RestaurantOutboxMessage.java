@@ -13,7 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RestaurantOutboxMessage {
     private UUID id;
-    private UUID sagaId; // Trace ID olarak kullanılacak
     private ZonedDateTime createdAt;
     private ZonedDateTime processedAt;
     private String type;

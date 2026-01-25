@@ -3,11 +3,10 @@ package com.berkay.restaurant.service.domain.outbox.scheduler;
 import com.berkay.outbox.OutboxScheduler;
 import com.berkay.outbox.OutboxStatus;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxMessage;
-import com.berkay.restaurant.service.domain.ports.output.RestaurantCreatedMessagePublisher;
+import com.berkay.restaurant.service.domain.ports.output.RestaurantInformationMessagePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,16 +17,18 @@ import java.util.stream.Collectors;
 public class RestaurantOutboxScheduler implements OutboxScheduler {
 
     private final RestaurantOutboxHelper restaurantOutboxHelper;
-    private final RestaurantCreatedMessagePublisher restaurantCreatedMessagePublisher;
+    private final RestaurantInformationMessagePublisher restaurantInformationMessagePublisher;
 
     public RestaurantOutboxScheduler(RestaurantOutboxHelper restaurantOutboxHelper,
-                                     RestaurantCreatedMessagePublisher restaurantCreatedMessagePublisher) {
+                                     RestaurantInformationMessagePublisher restaurantInformationMessagePublisher) {
         this.restaurantOutboxHelper = restaurantOutboxHelper;
-        this.restaurantCreatedMessagePublisher = restaurantCreatedMessagePublisher;
+        this.restaurantInformationMessagePublisher = restaurantInformationMessagePublisher;
     }
 
+    // @Transactional anotasyonu burada değil updateOutboxMessage metodu icinde kullanılır.
+    // Eğer burada kullanılırsa Kafka'ya 10 mesajın 9u başarılı 1'i başarısız giderse, hepsi başarısızmış gibi rollback olur
+    // bu da duplicate event yayınlamayla sonuçlanır
     @Override
-    @Transactional
     @Scheduled(fixedDelayString = "${restaurant-service.outbox-scheduler-fixed-rate}",
             initialDelayString = "${restaurant-service.outbox-scheduler-initial-delay}")
     public void processOutboxMessage() {
@@ -42,14 +43,9 @@ public class RestaurantOutboxScheduler implements OutboxScheduler {
                             .collect(Collectors.joining(",")));
 
             outboxMessages.forEach(outboxMessage ->
-                    restaurantCreatedMessagePublisher.publish(outboxMessage, this::updateOutboxStatus));
+                    restaurantInformationMessagePublisher.publish(outboxMessage, restaurantOutboxHelper::updateOutboxMessage));
 
             log.info("{} RestaurantOutboxMessage sent to message bus!", outboxMessages.size());
         }
-    }
-
-    @Transactional
-    public void updateOutboxStatus(RestaurantOutboxMessage restaurantOutboxMessage, OutboxStatus outboxStatus) {
-        restaurantOutboxHelper.updateOutboxMessage(restaurantOutboxMessage, outboxStatus);
     }
 }

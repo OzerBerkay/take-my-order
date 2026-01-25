@@ -5,12 +5,12 @@ import com.berkay.restaurant.service.domain.entity.Restaurant;
 
 import java.time.ZonedDateTime;
 
-public class RestaurantCreatedEvent implements DomainEvent<Restaurant> {
+public class RestaurantInformationEvent implements DomainEvent<Restaurant> {
 
     private final Restaurant restaurant;
     private final ZonedDateTime createdAt;
 
-    public RestaurantCreatedEvent(Restaurant restaurant, ZonedDateTime createdAt) {
+    public RestaurantInformationEvent(Restaurant restaurant, ZonedDateTime createdAt) {
         this.restaurant = restaurant;
         this.createdAt = createdAt;
     }

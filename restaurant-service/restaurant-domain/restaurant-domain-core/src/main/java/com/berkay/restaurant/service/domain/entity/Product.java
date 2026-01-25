@@ -3,11 +3,13 @@ package com.berkay.restaurant.service.domain.entity;
 import com.berkay.domain.entity.BaseEntity;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.ProductId;
+import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 
 public class Product extends BaseEntity<ProductId> {
     private String name;
     private Money price;
     private int stock;
+    // Stoktan bağımsız olup ürünün son kullanıcıya gösterilip gösterilmeyeceği ile alakalıdır
     private boolean available;
 
     private Product(Builder builder) {
@@ -22,6 +24,23 @@ public class Product extends BaseEntity<ProductId> {
         this.name = name;
         this.price = price;
         this.available = available;
+    }
+
+    public void validateProduct() {
+        // initializeRestaurant içinde ID atadığımız için buraya geldiğinde ID dolu olmalı.
+        if (getId() == null) {
+            throw new RestaurantDomainException("Product id cannot be null!");
+        }
+        if (getName() == null || getName().isEmpty()) {
+            throw new RestaurantDomainException("Product name cannot be empty!");
+        }
+        if (getPrice() == null || !getPrice().isGreaterThanZero()) {
+            throw new RestaurantDomainException("Product price must be greater than zero!");
+        }
+        if (this.stock < 0) {
+            throw new RestaurantDomainException("Stock cannot be negative!");
+        }
+
     }
 
     public static Builder builder() {
