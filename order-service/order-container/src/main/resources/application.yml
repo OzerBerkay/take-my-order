@@ -63,7 +63,7 @@ kafka-consumer-config:
   payment-consumer-group-id: payment-topic-consumer
   restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
   customer-group-id:  customer-topic-consumer
-  restaurant-created-consumer-group-id: restaurant-created-topic-consumer
+  restaurant-information-consumer-group-id: restaurant-information-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
