@@ -1,11 +1,11 @@
 package com.berkay.restaurant.service.domain;
 
-import com.berkay.restaurant.service.domain.dto.create.AddProductCommand;
-import com.berkay.restaurant.service.domain.dto.create.AddProductResponse;
-import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantCommand;
-import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
-import com.berkay.restaurant.service.domain.dto.update.UpdateProductCommand;
-import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand;
+import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
+import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
+import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
+import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

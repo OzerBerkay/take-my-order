@@ -1,4 +1,4 @@
-package com.berkay.restaurant.service.domain.dto.create;
+package com.berkay.restaurant.service.domain.dto.create.product;
 
 import com.berkay.restaurant.service.domain.dto.base.BaseProductCommand;
 import jakarta.validation.constraints.NotNull;

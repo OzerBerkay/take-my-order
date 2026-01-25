@@ -1,4 +1,4 @@
-package com.berkay.restaurant.service.domain.dto.create;
+package com.berkay.restaurant.service.domain.dto.create.restaurant;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

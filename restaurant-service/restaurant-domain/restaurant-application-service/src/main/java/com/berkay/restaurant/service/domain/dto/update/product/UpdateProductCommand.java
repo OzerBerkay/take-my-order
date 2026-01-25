@@ -1,4 +1,4 @@
-package com.berkay.restaurant.service.domain.dto.update;
+package com.berkay.restaurant.service.domain.dto.update.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
