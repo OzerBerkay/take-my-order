@@ -11,7 +11,7 @@ order-service:
   restaurant-approval-request-topic-name: restaurant-approval-request
   restaurant-approval-response-topic-name: restaurant-approval-response
   customer-topic-name: customer
-  restaurant-created-topic-name: restaurant-created
+  restaurant-information-topic-name: restaurant-information
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 

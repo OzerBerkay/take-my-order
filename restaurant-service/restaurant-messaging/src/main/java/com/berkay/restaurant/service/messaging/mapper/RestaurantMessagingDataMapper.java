@@ -4,7 +4,7 @@ import com.berkay.domain.valueobject.RestaurantOrderStatus;
 import com.berkay.kafka.order.avro.model.OrderApprovalStatus;
 import com.berkay.kafka.order.avro.model.RestaurantApprovalRequestAvroModel;
 import com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel;
-import com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel;
+import com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel;
 import com.berkay.restaurant.service.domain.dto.RestaurantApprovalRequest;
 import com.berkay.restaurant.service.domain.outbox.model.OrderEventPayload;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
@@ -50,8 +50,8 @@ public class RestaurantMessagingDataMapper {
                 .build();
     }
 
-    public RestaurantCreatedAvroModel restaurantEventPayloadToRestaurantCreatedAvroModel(RestaurantEventPayload restaurantEventPayload) {
-        return RestaurantCreatedAvroModel.newBuilder()
+    public RestaurantInformationAvroModel restaurantEventPayloadToRestaurantInformationAvroModel(RestaurantEventPayload restaurantEventPayload) {
+        return RestaurantInformationAvroModel.newBuilder()
                 .setRestaurantId(java.util.UUID.fromString(restaurantEventPayload.getRestaurantId()))
                 .setActive(restaurantEventPayload.isActive())
                 .setCreatedAt(restaurantEventPayload.getCreatedAt().toInstant())

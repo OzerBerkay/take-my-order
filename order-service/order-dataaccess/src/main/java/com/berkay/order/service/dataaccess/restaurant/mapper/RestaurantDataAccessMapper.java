@@ -17,6 +17,7 @@ public class RestaurantDataAccessMapper {
     public Restaurant restaurantEntityToRestaurant(RestaurantEntity restaurantEntity) {
         return Restaurant.builder()
                 .restaurantId(new RestaurantId(restaurantEntity.getRestaurantId()))
+                .name(restaurantEntity.getName())
                 .products(restaurantEntity.getProducts().stream().map(productEntity ->
                                 new Product(new ProductId(productEntity.getProductId()),
                                         productEntity.getName(),
@@ -30,6 +31,7 @@ public class RestaurantDataAccessMapper {
     public RestaurantEntity restaurantToRestaurantEntity(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = RestaurantEntity.builder()
                 .restaurantId(restaurant.getId().getValue())
+                .name(restaurant.getName())
                 .restaurantActive(restaurant.isActive())
                 .products(restaurant.getProducts().stream()
                         .map(product -> ProductEntity.builder()

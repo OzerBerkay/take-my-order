@@ -2,7 +2,7 @@ package com.berkay.restaurant.service.domain;
 
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
-import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundException;
 import com.berkay.restaurant.service.domain.outbox.scheduler.RestaurantOutboxHelper;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
@@ -47,7 +47,7 @@ public class UpdateRestaurantCommandHandler {
         // OUTBOX - Order Service'i haberdar et
         // Restoranın son halini (Snapshot) gönderiyoruz.
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
-                new RestaurantCreatedEvent(restaurant, ZonedDateTime.now(ZoneId.of(UTC)))
+                new RestaurantInformationEvent(restaurant, ZonedDateTime.now(ZoneId.of(UTC)))
         );
 
         log.info("Restaurant id: {} updated and outbox message saved.", restaurant.getId().getValue());

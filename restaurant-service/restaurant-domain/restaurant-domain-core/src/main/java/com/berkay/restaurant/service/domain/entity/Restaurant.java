@@ -21,8 +21,22 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private OrderDetail orderDetail;
 
     public void initializeRestaurant() {
-        setId(new RestaurantId(UUID.randomUUID()));
-        this.active = true;
+        if (getId() == null) {
+            setId(new RestaurantId(UUID.randomUUID()));
+        }
+
+        if (getRestaurantName() == null) {
+            throw new RestaurantDomainException("Restaurant name cannot be null!");
+        }
+
+        if (!menu.isEmpty()) {
+            menu.forEach(product -> {
+                if (product.getId() == null) {
+                    product.setId(new ProductId(UUID.randomUUID()));
+                }
+                product.validateProduct();
+            });
+        }
     }
 
     public void initOrderDetail(OrderDetail orderDetail) {

@@ -6,7 +6,7 @@ import com.berkay.domain.valueobject.RestaurantId;
 import com.berkay.order.service.domain.dto.message.RestaurantModel;
 import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
-import com.berkay.order.service.domain.ports.input.message.listener.restaurant.RestaurantCreatedMessageListener;
+import com.berkay.order.service.domain.ports.input.message.listener.restaurant.RestaurantInformationMessageListener;
 import com.berkay.order.service.domain.ports.output.repository.RestaurantRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,17 +17,17 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class RestaurantCreatedMessageListenerImpl implements RestaurantCreatedMessageListener {
+public class RestaurantInformationMessageListenerImpl implements RestaurantInformationMessageListener {
 
     private final RestaurantRepository restaurantRepository;
 
-    public RestaurantCreatedMessageListenerImpl(RestaurantRepository restaurantRepository) {
+    public RestaurantInformationMessageListenerImpl(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
     }
 
     @Override
     @Transactional
-    public void restaurantCreated(RestaurantModel restaurantModel) {
+    public void restaurantInformationReceived(RestaurantModel restaurantModel) {
         // DTO (RestaurantModel) -> Domain Entity (Restaurant) Dönüşümü
         List<Product> products = restaurantModel.getProducts().stream()
                 .map(productModel -> new Product(
@@ -39,6 +39,7 @@ public class RestaurantCreatedMessageListenerImpl implements RestaurantCreatedMe
 
         Restaurant restaurant = Restaurant.builder()
                 .restaurantId(new RestaurantId(restaurantModel.getRestaurantId()))
+                .name(restaurantModel.getName())
                 .active(restaurantModel.isActive())
                 .products(products)
                 .build();

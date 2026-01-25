@@ -1,7 +1,7 @@
 package com.berkay.restaurant.service.domain.outbox.scheduler;
 
 import com.berkay.outbox.OutboxStatus;
-import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
@@ -43,7 +44,9 @@ public class RestaurantOutboxHelper {
         return restaurantOutboxRepository.findByTypeAndOutboxStatus(RESTAURANT_CREATED.name(), outboxStatus);
     }
 
-    @Transactional
+    // Her bir outbox mesajının sürecini ayrı olarak değerlendirmek gerekir.
+    // Bu sebeple de her birinin transaction'u kendine olmalıdır (fault-tolerant)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateOutboxMessage(RestaurantOutboxMessage restaurantOutboxMessage, OutboxStatus outboxStatus) {
         restaurantOutboxMessage.setOutboxStatus(outboxStatus);
         restaurantOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
@@ -52,12 +55,11 @@ public class RestaurantOutboxHelper {
     }
 
     @Transactional
-    public void saveRestaurantOutboxMessage(RestaurantCreatedEvent restaurantCreatedEvent) {
-        RestaurantEventPayload payload = restaurantDataMapper.restaurantCreatedEventToRestaurantEventPayload(restaurantCreatedEvent);
+    public void saveRestaurantOutboxMessage(RestaurantInformationEvent restaurantInformationEvent) {
+        RestaurantEventPayload payload = restaurantDataMapper.restaurantInformationEventToRestaurantEventPayload(restaurantInformationEvent);
         try {
             RestaurantOutboxMessage restaurantOutboxMessage = RestaurantOutboxMessage.builder()
                     .id(UUID.randomUUID())
-                    .sagaId(UUID.randomUUID())
                     .createdAt(payload.getCreatedAt())
                     .type(RESTAURANT_CREATED.name())
                     .payload(objectMapper.writeValueAsString(payload))

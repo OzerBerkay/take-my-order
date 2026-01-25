@@ -3,7 +3,7 @@ package com.berkay.restaurant.service.domain;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
-import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.scheduler.RestaurantOutboxHelper;
@@ -38,7 +38,7 @@ public class CreateRestaurantCommandHandler {
 
         // Domain Logic (Validation + Init)
         // Event dönüyor ve entity initialize ediliyor
-        RestaurantCreatedEvent restaurantCreatedEvent = restaurantDomainService.validateAndInitiateRestaurant(restaurant);
+        RestaurantInformationEvent restaurantInformationEvent = restaurantDomainService.validateAndInitiateRestaurant(restaurant);
 
         // Veritabanı Kaydı
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);
@@ -51,7 +51,7 @@ public class CreateRestaurantCommandHandler {
 
         // Outbox Kaydı
         // Artık "savedRestaurant" değil, domain'den dönen "event"i veriyoruz.
-        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantCreatedEvent);
+        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantInformationEvent);
 
         log.info("Restaurant is created with id: {}", savedRestaurant.getId().getValue());
         return restaurantDataMapper.restaurantToCreateRestaurantResponse(savedRestaurant);

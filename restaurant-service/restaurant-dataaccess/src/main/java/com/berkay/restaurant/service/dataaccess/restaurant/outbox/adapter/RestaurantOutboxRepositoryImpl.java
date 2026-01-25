@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,27 +25,16 @@ public class RestaurantOutboxRepositoryImpl implements RestaurantOutboxRepositor
 
     @Override
     public RestaurantOutboxMessage save(RestaurantOutboxMessage restaurantOutboxMessage) {
-        return restaurantOutboxDataAccessMapper.outboxEntityToOrderOutboxMessage(
+        return restaurantOutboxDataAccessMapper.restaurantOutboxEntityToRestaurantOutboxMessage(
                 restaurantOutboxJpaRepository.save(
-                        restaurantOutboxDataAccessMapper.orderOutboxMessageToOutboxEntity(restaurantOutboxMessage)));
+                        restaurantOutboxDataAccessMapper.restaurantOutboxMessageToRestaurantOutboxEntity(restaurantOutboxMessage)));
     }
 
     @Override
     public Optional<List<RestaurantOutboxMessage>> findByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus) {
         return Optional.of(restaurantOutboxJpaRepository.findByTypeAndOutboxStatus(type, outboxStatus)
                 .stream()
-                .map(restaurantOutboxDataAccessMapper::outboxEntityToOrderOutboxMessage)
+                .map(restaurantOutboxDataAccessMapper::restaurantOutboxEntityToRestaurantOutboxMessage)
                 .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Optional<RestaurantOutboxMessage> findByTypeAndSagaIdAndOutboxStatus(String type, UUID sagaId, OutboxStatus outboxStatus) {
-        return restaurantOutboxJpaRepository.findByTypeAndSagaIdAndOutboxStatus(type, sagaId, outboxStatus)
-                .map(restaurantOutboxDataAccessMapper::outboxEntityToOrderOutboxMessage);
-    }
-
-    @Override
-    public void deleteByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus) {
-        restaurantOutboxJpaRepository.deleteByTypeAndOutboxStatus(type, outboxStatus);
     }
 }

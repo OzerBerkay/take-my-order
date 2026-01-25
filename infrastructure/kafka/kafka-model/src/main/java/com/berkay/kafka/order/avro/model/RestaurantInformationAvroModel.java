@@ -12,11 +12,11 @@ import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class RestaurantCreatedAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 337550282918155005L;
+public class RestaurantInformationAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = -5264351321933874841L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantCreatedAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"active\",\"type\":\"boolean\"},{\"name\":\"products\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"}]}}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantInformationAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"active\",\"type\":\"boolean\"},{\"name\":\"products\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"}]}}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -26,17 +26,17 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
     MODEL$.addLogicalTypeConversion(new org.apache.avro.Conversions.DecimalConversion());
   }
 
-  private static final BinaryMessageEncoder<RestaurantCreatedAvroModel> ENCODER =
+  private static final BinaryMessageEncoder<RestaurantInformationAvroModel> ENCODER =
       new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<RestaurantCreatedAvroModel> DECODER =
+  private static final BinaryMessageDecoder<RestaurantInformationAvroModel> DECODER =
       new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<RestaurantCreatedAvroModel> getEncoder() {
+  public static BinaryMessageEncoder<RestaurantInformationAvroModel> getEncoder() {
     return ENCODER;
   }
 
@@ -44,7 +44,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<RestaurantCreatedAvroModel> getDecoder() {
+  public static BinaryMessageDecoder<RestaurantInformationAvroModel> getDecoder() {
     return DECODER;
   }
 
@@ -53,12 +53,12 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<RestaurantCreatedAvroModel> createDecoder(SchemaStore resolver) {
+  public static BinaryMessageDecoder<RestaurantInformationAvroModel> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this RestaurantCreatedAvroModel to a ByteBuffer.
+   * Serializes this RestaurantInformationAvroModel to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -67,17 +67,18 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   }
 
   /**
-   * Deserializes a RestaurantCreatedAvroModel from a ByteBuffer.
+   * Deserializes a RestaurantInformationAvroModel from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a RestaurantCreatedAvroModel instance decoded from the given buffer
+   * @return a RestaurantInformationAvroModel instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static RestaurantCreatedAvroModel fromByteBuffer(
+  public static RestaurantInformationAvroModel fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
   private java.util.UUID restaurantId;
+  private java.lang.String name;
   private boolean active;
   private java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products;
   private java.time.Instant createdAt;
@@ -87,17 +88,19 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public RestaurantCreatedAvroModel() {}
+  public RestaurantInformationAvroModel() {}
 
   /**
    * All-args constructor.
    * @param restaurantId The new value for restaurantId
+   * @param name The new value for name
    * @param active The new value for active
    * @param products The new value for products
    * @param createdAt The new value for createdAt
    */
-  public RestaurantCreatedAvroModel(java.util.UUID restaurantId, java.lang.Boolean active, java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products, java.time.Instant createdAt) {
+  public RestaurantInformationAvroModel(java.util.UUID restaurantId, java.lang.String name, java.lang.Boolean active, java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products, java.time.Instant createdAt) {
     this.restaurantId = restaurantId;
+    this.name = name;
     this.active = active;
     this.products = products;
     this.createdAt = createdAt.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
@@ -114,9 +117,10 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   public java.lang.Object get(int field$) {
     switch (field$) {
     case 0: return restaurantId;
-    case 1: return active;
-    case 2: return products;
-    case 3: return createdAt;
+    case 1: return name;
+    case 2: return active;
+    case 3: return products;
+    case 4: return createdAt;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -124,6 +128,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   private static final org.apache.avro.Conversion<?>[] conversions =
       new org.apache.avro.Conversion<?>[] {
       new org.apache.avro.Conversions.UUIDConversion(),
+      null,
       null,
       null,
       new org.apache.avro.data.TimeConversions.TimestampMillisConversion(),
@@ -141,9 +146,10 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
     case 0: restaurantId = (java.util.UUID)value$; break;
-    case 1: active = (java.lang.Boolean)value$; break;
-    case 2: products = (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>)value$; break;
-    case 3: createdAt = (java.time.Instant)value$; break;
+    case 1: name = value$ != null ? value$.toString() : null; break;
+    case 2: active = (java.lang.Boolean)value$; break;
+    case 3: products = (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>)value$; break;
+    case 4: createdAt = (java.time.Instant)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -163,6 +169,23 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
    */
   public void setRestaurantId(java.util.UUID value) {
     this.restaurantId = value;
+  }
+
+  /**
+   * Gets the value of the 'name' field.
+   * @return The value of the 'name' field.
+   */
+  public java.lang.String getName() {
+    return name;
+  }
+
+
+  /**
+   * Sets the value of the 'name' field.
+   * @param value the value to set.
+   */
+  public void setName(java.lang.String value) {
+    this.name = value;
   }
 
   /**
@@ -217,47 +240,48 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   }
 
   /**
-   * Creates a new RestaurantCreatedAvroModel RecordBuilder.
-   * @return A new RestaurantCreatedAvroModel RecordBuilder
+   * Creates a new RestaurantInformationAvroModel RecordBuilder.
+   * @return A new RestaurantInformationAvroModel RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder newBuilder() {
-    return new com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder();
+  public static com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder newBuilder() {
+    return new com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder();
   }
 
   /**
-   * Creates a new RestaurantCreatedAvroModel RecordBuilder by copying an existing Builder.
+   * Creates a new RestaurantInformationAvroModel RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new RestaurantCreatedAvroModel RecordBuilder
+   * @return A new RestaurantInformationAvroModel RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder newBuilder(com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder other) {
+  public static com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder newBuilder(com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder other) {
     if (other == null) {
-      return new com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder();
+      return new com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder();
     } else {
-      return new com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder(other);
+      return new com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder(other);
     }
   }
 
   /**
-   * Creates a new RestaurantCreatedAvroModel RecordBuilder by copying an existing RestaurantCreatedAvroModel instance.
+   * Creates a new RestaurantInformationAvroModel RecordBuilder by copying an existing RestaurantInformationAvroModel instance.
    * @param other The existing instance to copy.
-   * @return A new RestaurantCreatedAvroModel RecordBuilder
+   * @return A new RestaurantInformationAvroModel RecordBuilder
    */
-  public static com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder newBuilder(com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel other) {
+  public static com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder newBuilder(com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel other) {
     if (other == null) {
-      return new com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder();
+      return new com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder();
     } else {
-      return new com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder(other);
+      return new com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for RestaurantCreatedAvroModel instances.
+   * RecordBuilder for RestaurantInformationAvroModel instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<RestaurantCreatedAvroModel>
-    implements org.apache.avro.data.RecordBuilder<RestaurantCreatedAvroModel> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<RestaurantInformationAvroModel>
+    implements org.apache.avro.data.RecordBuilder<RestaurantInformationAvroModel> {
 
     private java.util.UUID restaurantId;
+    private java.lang.String name;
     private boolean active;
     private java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products;
     private java.time.Instant createdAt;
@@ -271,47 +295,55 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder other) {
+    private Builder(com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.restaurantId)) {
         this.restaurantId = data().deepCopy(fields()[0].schema(), other.restaurantId);
         fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
-      if (isValidValue(fields()[1], other.active)) {
-        this.active = data().deepCopy(fields()[1].schema(), other.active);
+      if (isValidValue(fields()[1], other.name)) {
+        this.name = data().deepCopy(fields()[1].schema(), other.name);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
-      if (isValidValue(fields()[2], other.products)) {
-        this.products = data().deepCopy(fields()[2].schema(), other.products);
+      if (isValidValue(fields()[2], other.active)) {
+        this.active = data().deepCopy(fields()[2].schema(), other.active);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
-      if (isValidValue(fields()[3], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[3].schema(), other.createdAt);
+      if (isValidValue(fields()[3], other.products)) {
+        this.products = data().deepCopy(fields()[3].schema(), other.products);
         fieldSetFlags()[3] = other.fieldSetFlags()[3];
+      }
+      if (isValidValue(fields()[4], other.createdAt)) {
+        this.createdAt = data().deepCopy(fields()[4].schema(), other.createdAt);
+        fieldSetFlags()[4] = other.fieldSetFlags()[4];
       }
     }
 
     /**
-     * Creates a Builder by copying an existing RestaurantCreatedAvroModel instance
+     * Creates a Builder by copying an existing RestaurantInformationAvroModel instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel other) {
+    private Builder(com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.restaurantId)) {
         this.restaurantId = data().deepCopy(fields()[0].schema(), other.restaurantId);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.active)) {
-        this.active = data().deepCopy(fields()[1].schema(), other.active);
+      if (isValidValue(fields()[1], other.name)) {
+        this.name = data().deepCopy(fields()[1].schema(), other.name);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.products)) {
-        this.products = data().deepCopy(fields()[2].schema(), other.products);
+      if (isValidValue(fields()[2], other.active)) {
+        this.active = data().deepCopy(fields()[2].schema(), other.active);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[3].schema(), other.createdAt);
+      if (isValidValue(fields()[3], other.products)) {
+        this.products = data().deepCopy(fields()[3].schema(), other.products);
         fieldSetFlags()[3] = true;
+      }
+      if (isValidValue(fields()[4], other.createdAt)) {
+        this.createdAt = data().deepCopy(fields()[4].schema(), other.createdAt);
+        fieldSetFlags()[4] = true;
       }
     }
 
@@ -329,7 +361,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @param value The value of 'restaurantId'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder setRestaurantId(java.util.UUID value) {
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setRestaurantId(java.util.UUID value) {
       validate(fields()[0], value);
       this.restaurantId = value;
       fieldSetFlags()[0] = true;
@@ -349,9 +381,49 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * Clears the value of the 'restaurantId' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder clearRestaurantId() {
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearRestaurantId() {
       restaurantId = null;
       fieldSetFlags()[0] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'name' field.
+      * @return The value.
+      */
+    public java.lang.String getName() {
+      return name;
+    }
+
+
+    /**
+      * Sets the value of the 'name' field.
+      * @param value The value of 'name'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setName(java.lang.String value) {
+      validate(fields()[1], value);
+      this.name = value;
+      fieldSetFlags()[1] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'name' field has been set.
+      * @return True if the 'name' field has been set, false otherwise.
+      */
+    public boolean hasName() {
+      return fieldSetFlags()[1];
+    }
+
+
+    /**
+      * Clears the value of the 'name' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearName() {
+      name = null;
+      fieldSetFlags()[1] = false;
       return this;
     }
 
@@ -369,10 +441,10 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @param value The value of 'active'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder setActive(boolean value) {
-      validate(fields()[1], value);
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setActive(boolean value) {
+      validate(fields()[2], value);
       this.active = value;
-      fieldSetFlags()[1] = true;
+      fieldSetFlags()[2] = true;
       return this;
     }
 
@@ -381,7 +453,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @return True if the 'active' field has been set, false otherwise.
       */
     public boolean hasActive() {
-      return fieldSetFlags()[1];
+      return fieldSetFlags()[2];
     }
 
 
@@ -389,8 +461,8 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * Clears the value of the 'active' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder clearActive() {
-      fieldSetFlags()[1] = false;
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearActive() {
+      fieldSetFlags()[2] = false;
       return this;
     }
 
@@ -408,10 +480,10 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @param value The value of 'products'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder setProducts(java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> value) {
-      validate(fields()[2], value);
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setProducts(java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> value) {
+      validate(fields()[3], value);
       this.products = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[3] = true;
       return this;
     }
 
@@ -420,7 +492,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @return True if the 'products' field has been set, false otherwise.
       */
     public boolean hasProducts() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[3];
     }
 
 
@@ -428,9 +500,9 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * Clears the value of the 'products' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder clearProducts() {
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearProducts() {
       products = null;
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -448,10 +520,10 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @param value The value of 'createdAt'.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder setCreatedAt(java.time.Instant value) {
-      validate(fields()[3], value);
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setCreatedAt(java.time.Instant value) {
+      validate(fields()[4], value);
       this.createdAt = value.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
-      fieldSetFlags()[3] = true;
+      fieldSetFlags()[4] = true;
       return this;
     }
 
@@ -460,7 +532,7 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * @return True if the 'createdAt' field has been set, false otherwise.
       */
     public boolean hasCreatedAt() {
-      return fieldSetFlags()[3];
+      return fieldSetFlags()[4];
     }
 
 
@@ -468,20 +540,21 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
       * Clears the value of the 'createdAt' field.
       * @return This builder.
       */
-    public com.berkay.kafka.order.avro.model.RestaurantCreatedAvroModel.Builder clearCreatedAt() {
-      fieldSetFlags()[3] = false;
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearCreatedAt() {
+      fieldSetFlags()[4] = false;
       return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public RestaurantCreatedAvroModel build() {
+    public RestaurantInformationAvroModel build() {
       try {
-        RestaurantCreatedAvroModel record = new RestaurantCreatedAvroModel();
+        RestaurantInformationAvroModel record = new RestaurantInformationAvroModel();
         record.restaurantId = fieldSetFlags()[0] ? this.restaurantId : (java.util.UUID) defaultValue(fields()[0]);
-        record.active = fieldSetFlags()[1] ? this.active : (java.lang.Boolean) defaultValue(fields()[1]);
-        record.products = fieldSetFlags()[2] ? this.products : (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>) defaultValue(fields()[2]);
-        record.createdAt = fieldSetFlags()[3] ? this.createdAt : (java.time.Instant) defaultValue(fields()[3]);
+        record.name = fieldSetFlags()[1] ? this.name : (java.lang.String) defaultValue(fields()[1]);
+        record.active = fieldSetFlags()[2] ? this.active : (java.lang.Boolean) defaultValue(fields()[2]);
+        record.products = fieldSetFlags()[3] ? this.products : (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>) defaultValue(fields()[3]);
+        record.createdAt = fieldSetFlags()[4] ? this.createdAt : (java.time.Instant) defaultValue(fields()[4]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -492,8 +565,8 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<RestaurantCreatedAvroModel>
-    WRITER$ = (org.apache.avro.io.DatumWriter<RestaurantCreatedAvroModel>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<RestaurantInformationAvroModel>
+    WRITER$ = (org.apache.avro.io.DatumWriter<RestaurantInformationAvroModel>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -501,8 +574,8 @@ public class RestaurantCreatedAvroModel extends org.apache.avro.specific.Specifi
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<RestaurantCreatedAvroModel>
-    READER$ = (org.apache.avro.io.DatumReader<RestaurantCreatedAvroModel>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<RestaurantInformationAvroModel>
+    READER$ = (org.apache.avro.io.DatumReader<RestaurantInformationAvroModel>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {

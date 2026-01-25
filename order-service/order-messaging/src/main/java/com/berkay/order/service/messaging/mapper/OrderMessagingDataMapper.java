@@ -85,11 +85,11 @@ public class OrderMessagingDataMapper {
                 .build();
     }
 
-    public RestaurantModel restaurantCreatedAvroModelToRestaurantModel(RestaurantCreatedAvroModel restaurantCreatedAvroModel) {
+    public RestaurantModel restaurantInformationAvroModelToRestaurantModel(RestaurantInformationAvroModel restaurantInformationAvroModel) {
         return RestaurantModel.builder()
-                .restaurantId(restaurantCreatedAvroModel.getRestaurantId())
-                .active(restaurantCreatedAvroModel.getActive())
-                .products(restaurantCreatedAvroModel.getProducts().stream()
+                .restaurantId(restaurantInformationAvroModel.getRestaurantId())
+                .active(restaurantInformationAvroModel.getActive())
+                .products(restaurantInformationAvroModel.getProducts().stream()
                         .map(avroProduct -> ProductModel.builder()
                                 .productId(avroProduct.getProductId())
                                 .name(avroProduct.getName())

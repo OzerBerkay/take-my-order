@@ -1,7 +1,7 @@
 {
   "namespace": "com.berkay.kafka.order.avro.model",
   "type": "record",
-  "name": "RestaurantCreatedAvroModel",
+  "name": "RestaurantInformationAvroModel",
   "fields": [
     {
       "name": "restaurantId",
@@ -9,6 +9,10 @@
         "type": "string",
         "logicalType": "uuid"
       }
+    },
+    {
+      "name": "name",
+      "type": "string"
     },
     {
       "name": "active",

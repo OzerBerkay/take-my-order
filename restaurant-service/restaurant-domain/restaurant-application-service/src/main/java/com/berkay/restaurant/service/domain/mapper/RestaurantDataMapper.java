@@ -1,27 +1,40 @@
 package com.berkay.restaurant.service.domain.mapper;
 
 import com.berkay.domain.valueobject.*;
-import com.berkay.restaurant.service.domain.dto.create.AddProductCommand;
-import com.berkay.restaurant.service.domain.dto.create.AddProductResponse;
-import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantCommand;
-import com.berkay.restaurant.service.domain.dto.create.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.create.*;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
-import com.berkay.restaurant.service.domain.event.RestaurantCreatedEvent;
+import com.berkay.restaurant.service.domain.event.RestaurantInformationEvent;
 import com.berkay.restaurant.service.domain.outbox.model.OrderEventPayload;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class RestaurantDataMapper {
 
     public Restaurant createRestaurantCommandToRestaurant(CreateRestaurantCommand createRestaurantCommand) {
-        // ID initializeRestaurant içinde atanacak
         return Restaurant.builder()
+                // ID atanmıyor, Domain Service'deki initializeRestaurant metodunda atanacak.
                 .restaurantName(new RestaurantName(createRestaurantCommand.getRestaurantName()))
+                .active(createRestaurantCommand.isActive())
+                .menu(createProductCommandsToProducts(createRestaurantCommand.getProducts()))
                 .build();
+    }
+
+    private List<Product> createProductCommandsToProducts(List<CreateProductCommand> createProductCommands) {
+        return createProductCommands.stream()
+                .map(productCommand -> Product.builder()
+                        .name(productCommand.getName())
+                        .price(new Money(productCommand.getPrice()))
+                        .stock(productCommand.getStock())
+                        .available(productCommand.isAvailable())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public CreateRestaurantResponse restaurantToCreateRestaurantResponse(Restaurant restaurant) {
@@ -58,12 +71,12 @@ public class RestaurantDataMapper {
                 .build();
     }
 
-    public RestaurantEventPayload restaurantCreatedEventToRestaurantEventPayload(RestaurantCreatedEvent restaurantCreatedEvent) {
+    public RestaurantEventPayload restaurantInformationEventToRestaurantEventPayload(RestaurantInformationEvent restaurantInformationEvent) {
         return RestaurantEventPayload.builder()
-                .restaurantId(restaurantCreatedEvent.getRestaurant().getId().getValue().toString())
-                .active(restaurantCreatedEvent.getRestaurant().isActive())
-                .createdAt(restaurantCreatedEvent.getCreatedAt())
-                .products(restaurantCreatedEvent.getRestaurant().getMenu().stream().map(product ->
+                .restaurantId(restaurantInformationEvent.getRestaurant().getId().getValue().toString())
+                .active(restaurantInformationEvent.getRestaurant().isActive())
+                .createdAt(restaurantInformationEvent.getCreatedAt())
+                .products(restaurantInformationEvent.getRestaurant().getMenu().stream().map(product ->
                         RestaurantEventPayload.ProductPayload.builder()
                                 .productId(product.getId().getValue().toString())
                                 .name(product.getName())
