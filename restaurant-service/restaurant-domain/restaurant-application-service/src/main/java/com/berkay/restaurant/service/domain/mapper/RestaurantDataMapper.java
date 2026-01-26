@@ -6,6 +6,8 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductRespons
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateProductCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.event.OrderApprovalEvent;
@@ -40,7 +42,7 @@ public class RestaurantDataMapper {
                         .name(productCommand.getName())
                         .price(new Money(productCommand.getPrice()))
                         .stock(productCommand.getStock())
-                        .available(productCommand.isAvailable())
+                        .available(productCommand.getAvailable())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -68,7 +70,7 @@ public class RestaurantDataMapper {
                 .name(addProductCommand.getName())
                 .price(new Money(addProductCommand.getPrice()))
                 .stock(addProductCommand.getStock())
-                .available(addProductCommand.isAvailable())
+                .available(addProductCommand.getAvailable())
                 .build();
     }
 
@@ -104,5 +106,26 @@ public class RestaurantDataMapper {
                 restaurant,
                 ZonedDateTime.now(ZoneId.of(UTC))
         );
+    }
+
+    public GetProductQueryResponse productToGetProductQueryResponse(Product product) {
+        return GetProductQueryResponse.builder()
+                .productId(product.getId().getValue())
+                .name(product.getName())
+                .price(product.getPrice().getAmount())
+                .stock(product.getStock())
+                .available(product.isAvailable())
+                .build();
+    }
+
+    public GetRestaurantQueryResponse restaurantToGetRestaurantQueryResponse(Restaurant restaurant) {
+        return GetRestaurantQueryResponse.builder()
+                .restaurantId(restaurant.getId().getValue())
+                .name(restaurant.getRestaurantName().getRestaurantName())
+                .active(restaurant.isActive())
+                .menu(restaurant.getMenu().stream()
+                        .map(this::productToGetProductQueryResponse)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

@@ -6,6 +6,10 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductRespons
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.dto.delete.DeleteProductCommand;
+import com.berkay.restaurant.service.domain.dto.read.GetProductQuery;
+import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
+import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.dto.update.UpdateProductRequest;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
@@ -104,5 +108,31 @@ public class RestaurantController {
         restaurantApplicationService.deleteProduct(deleteProductCommand);
 
         return ResponseEntity.ok("Product deleted successfully");
+    }
+
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<GetRestaurantQueryResponse> getRestaurant(@PathVariable UUID restaurantId) {
+        log.info("Getting restaurant with id: {}", restaurantId);
+
+        GetRestaurantQuery getRestaurantQuery = GetRestaurantQuery.builder()
+                .restaurantId(restaurantId)
+                .build();
+
+        GetRestaurantQueryResponse response = restaurantApplicationService.getRestaurant(getRestaurantQuery);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{restaurantId}/products/{productId}")
+    public ResponseEntity<GetProductQueryResponse> getProduct(@PathVariable UUID restaurantId,
+                                                              @PathVariable UUID productId) {
+        log.info("Getting product with id: {} from restaurant: {}", productId, restaurantId);
+
+        GetProductQuery getProductQuery = GetProductQuery.builder()
+                .restaurantId(restaurantId)
+                .productId(productId)
+                .build();
+
+        GetProductQueryResponse response = restaurantApplicationService.getProduct(getProductQuery);
+        return ResponseEntity.ok(response);
     }
 }
