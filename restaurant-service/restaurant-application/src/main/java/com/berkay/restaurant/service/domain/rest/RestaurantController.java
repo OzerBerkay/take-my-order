@@ -5,6 +5,7 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand
 import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.update.UpdateProductRequest;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantRequest;
@@ -66,11 +67,23 @@ public class RestaurantController {
         return ResponseEntity.ok("Restaurant updated");
     }
 
-    // Ürün Güncelleme (Fiyat/Stok/Durum)
-    @PutMapping("/products")
-    public ResponseEntity<String> updateProduct(@RequestBody UpdateProductCommand updateProductCommand) {
-        log.info("Updating product with id: {} for restaurant id: {}",
-                updateProductCommand.getProductId(), updateProductCommand.getRestaurantId());
+    /* Ürün Güncelleme (Fiyat/Stok/Durum)
+    Neden restaurantId'ye de ihtiyaç duyuldu? Bunun 2 sebebi var
+    1) DDD'de Product, Restaurant'ın bir parçasıdır. Eğer URL'i /products/{productId} yaparsak, dış dünyaya "Product tek başına bağımsız bir varlıktır" mesajı veririz.
+    2) Kötü niyetli kullanıcı, Restoran A'nın sahibiyken, Restoran B'ye ait bir ürünün UUID'sini buldu ve güncellemeye çalıştı
+    Sadece ProductId olsaydı: Veritabanından o ürünü bulur ve güncellerdik. Yanlışlıkla başka restoranın menüsü değişirdi
+    RestaurantId de olursa: Servis katmanında (Handler'da) şöyle bir kontrol yapma şansımız olur: "Gelen ürün ID'si veritabanında var mı?
+     EVET. Peki bu ürün, URL'deki restaurantId'ye mi ait? HAYIR! O zaman hata fırlat.
+     TODO: Authorization kısmı projeye eklendiğinde bu kısım da anlamlı olacak.
+     */
+    @PutMapping("/{restaurantId}/products/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable UUID restaurantId,
+                                                @PathVariable UUID productId,
+                                                @RequestBody @Valid UpdateProductRequest updateProductRequest) {
+        log.info("Updating product with id: {} in restaurant: {}", productId, restaurantId);
+
+        UpdateProductCommand updateProductCommand = productRequestMapper
+                .updateProductRequestToUpdateProductCommand(restaurantId, productId, updateProductRequest);
 
         restaurantApplicationService.updateProduct(updateProductCommand);
         return ResponseEntity.ok("Product updated");
