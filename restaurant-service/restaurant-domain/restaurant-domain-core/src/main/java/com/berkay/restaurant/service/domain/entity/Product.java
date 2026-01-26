@@ -20,10 +20,11 @@ public class Product extends BaseEntity<ProductId> {
         available = builder.available;
     }
 
-    public void updateWith(String name, Money price, boolean available) {
+    public void updateWith(String name, Money price, boolean available, int stock) {
         this.name = name;
         this.price = price;
         this.available = available;
+        this.stock = stock;
     }
 
     public void validateProduct() {
