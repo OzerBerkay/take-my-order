@@ -4,6 +4,7 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand
 import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.delete.DeleteProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
@@ -20,15 +21,18 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     private final AddProductCommandHandler addProductCommandHandler;
     private final UpdateRestaurantCommandHandler updateRestaurantCommandHandler;
     private final UpdateProductCommandHandler updateProductCommandHandler;
+    private final DeleteProductCommandHandler deleteProductCommandHandler;
 
     public RestaurantApplicationServiceImpl(CreateRestaurantCommandHandler createRestaurantCommandHandler,
                                             AddProductCommandHandler addProductCommandHandler,
                                             UpdateRestaurantCommandHandler updateRestaurantCommandHandler,
-                                            UpdateProductCommandHandler updateProductCommandHandler) {
+                                            UpdateProductCommandHandler updateProductCommandHandler,
+                                            DeleteProductCommandHandler deleteProductCommandHandler) {
         this.createRestaurantCommandHandler = createRestaurantCommandHandler;
         this.addProductCommandHandler = addProductCommandHandler;
         this.updateRestaurantCommandHandler = updateRestaurantCommandHandler;
         this.updateProductCommandHandler = updateProductCommandHandler;
+        this.deleteProductCommandHandler = deleteProductCommandHandler;
     }
 
     @Override
@@ -49,5 +53,10 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     @Override
     public void updateProduct(UpdateProductCommand updateProductCommand) {
         updateProductCommandHandler.updateProduct(updateProductCommand);
+    }
+
+    @Override
+    public void deleteProduct(DeleteProductCommand deleteProductCommand) {
+        deleteProductCommandHandler.deleteProduct(deleteProductCommand);
     }
 }
