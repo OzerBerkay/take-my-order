@@ -5,6 +5,7 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand
 import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.delete.DeleteProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateProductRequest;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
@@ -87,5 +88,21 @@ public class RestaurantController {
 
         restaurantApplicationService.updateProduct(updateProductCommand);
         return ResponseEntity.ok("Product updated");
+    }
+
+    @DeleteMapping("/{restaurantId}/products/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable UUID restaurantId,
+                                                @PathVariable UUID productId) {
+        log.info("Deleting product with id: {} in restaurant: {}", productId, restaurantId);
+
+        // Request DTO olmadığı için Command'i direkt burada oluşturuyoruz
+        DeleteProductCommand deleteProductCommand = DeleteProductCommand.builder()
+                .restaurantId(restaurantId)
+                .productId(productId)
+                .build();
+
+        restaurantApplicationService.deleteProduct(deleteProductCommand);
+
+        return ResponseEntity.ok("Product deleted successfully");
     }
 }
