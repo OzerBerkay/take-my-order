@@ -6,6 +6,8 @@ import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundException;
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
+import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType;
+import com.berkay.restaurant.service.domain.outbox.scheduler.RestaurantOutboxHelper;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,11 +21,14 @@ public class AddProductCommandHandler {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantDataMapper restaurantDataMapper;
+    private final RestaurantOutboxHelper restaurantOutboxHelper;
 
     public AddProductCommandHandler(RestaurantRepository restaurantRepository,
-                                    RestaurantDataMapper restaurantDataMapper) {
+                                    RestaurantDataMapper restaurantDataMapper,
+                                    RestaurantOutboxHelper restaurantOutboxHelper) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantDataMapper = restaurantDataMapper;
+        this.restaurantOutboxHelper = restaurantOutboxHelper;
     }
 
     @Transactional
@@ -44,9 +49,16 @@ public class AddProductCommandHandler {
         restaurant.addProduct(product);
 
         // 4. Güncel Restoranı Kaydet (Aggregate Root kaydedilince child'lar da kaydedilir)
-        restaurantRepository.saveRestaurant(restaurant);
+        Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);
 
-        log.info("Product is added with id: {} to restaurant: {}", product.getId().getValue(), restaurant.getId().getValue());
+        // 5. Outbox'a Event Kaydı (Snapshot)
+        // Order Service'in senkronize olması için bunu yapmalıyız.
+        restaurantOutboxHelper.saveRestaurantOutboxMessage(
+                restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),
+                RestaurantOutboxEventType.RESTAURANT_UPDATED
+        );
+
+        log.info("Product is added with id: {} to restaurant: {}", product.getId().getValue(), savedRestaurant.getId().getValue());
 
         return restaurantDataMapper.productToAddProductResponse(product);
     }

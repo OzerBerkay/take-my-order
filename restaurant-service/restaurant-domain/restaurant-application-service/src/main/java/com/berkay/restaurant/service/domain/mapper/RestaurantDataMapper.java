@@ -15,8 +15,12 @@ import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.berkay.domain.DomainConstants.UTC;
 
 @Component
 public class RestaurantDataMapper {
@@ -88,5 +92,17 @@ public class RestaurantDataMapper {
                                 .available(product.isAvailable())
                                 .build()).toList())
                 .build();
+    }
+
+    // Repository.save() metodundan dönen güncel objeyi kullanmazsak,
+    // Event içine eski @Version bilgisi gider ve veri tutarsızlığı oluşur.
+    //Eğer eski objeyi yollasaydın, Kafka'ya giden mesajda versiyon 1 yazardı ama veritabanında versiyon 2 olurdu.
+    // Order servisi mesajı aldığında "Bu veri eski mi?" diye şüpheye düşer veya validasyon hatası verirdi.
+    // TODO: Yukarıdaki yorumun doğru çalışması için versiyon bilgisi entity'e eklenecek ki OptimisticLocking gerçekleştirilsin! Burası şimdilik altyapı sağlamaktadır
+    public RestaurantInformationEvent restaurantToRestaurantInformationEvent(Restaurant restaurant) {
+        return new RestaurantInformationEvent(
+                restaurant,
+                ZonedDateTime.now(ZoneId.of(UTC))
+        );
     }
 }
