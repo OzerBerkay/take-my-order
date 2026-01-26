@@ -1,5 +1,6 @@
 package com.berkay.restaurant.service.domain.rest;
 
+import com.berkay.restaurant.service.domain.dto.create.AddProductRequest;
 import com.berkay.restaurant.service.domain.dto.create.product.AddProductCommand;
 import com.berkay.restaurant.service.domain.dto.create.product.AddProductResponse;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
@@ -7,6 +8,7 @@ import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaura
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.update.UpdateRestaurantRequest;
+import com.berkay.restaurant.service.domain.mapper.ProductRequestMapper;
 import com.berkay.restaurant.service.domain.mapper.RestaurantRequestMapper;
 import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
 import jakarta.validation.Valid;
@@ -23,12 +25,15 @@ public class RestaurantController {
 
     private final RestaurantApplicationService restaurantApplicationService;
     private final RestaurantRequestMapper restaurantRequestMapper;
+    private final ProductRequestMapper productRequestMapper;
 
     public RestaurantController(RestaurantApplicationService restaurantApplicationService,
-                                RestaurantRequestMapper restaurantRequestMapper) {
+                                RestaurantRequestMapper restaurantRequestMapper,
+                                ProductRequestMapper productRequestMapper) {
 
         this.restaurantApplicationService = restaurantApplicationService;
         this.restaurantRequestMapper = restaurantRequestMapper;
+        this.productRequestMapper = productRequestMapper;
     }
 
     @PostMapping
@@ -38,10 +43,12 @@ public class RestaurantController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/products")
-    public ResponseEntity<AddProductResponse> addProduct(@RequestBody AddProductCommand addProductCommand) {
-        log.info("Adding product to restaurant with id: {}", addProductCommand.getRestaurantId());
+    @PostMapping("/{restaurantId}/products")
+    public ResponseEntity<AddProductResponse> addProduct(@PathVariable UUID restaurantId,
+                                                         @RequestBody @Valid AddProductRequest addProductRequest) {
+        log.info("Adding product to restaurant with id: {}", restaurantId);
 
+        AddProductCommand addProductCommand = productRequestMapper.addProductRequestToAddProductCommand(restaurantId, addProductRequest);
         AddProductResponse response = restaurantApplicationService.addProduct(addProductCommand);
 
         return ResponseEntity.ok(response);
