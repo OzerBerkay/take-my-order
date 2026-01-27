@@ -11,12 +11,10 @@ public interface PaymentDomainService {
 
     PaymentEvent validateAndInitiatePayment(Payment payment,
                                             CreditEntry creditEntry,
-                                            List<CreditHistory> creditHistories,
                                             List<String> failureMessages);
 
     PaymentEvent validateAndCancelPayment(Payment payment,
                                           CreditEntry creditEntry,
-                                          List<CreditHistory> creditHistories,
                                           List<String> failureMessages);
 
     void validateAndUpdateCreditEntry(CreditEntry creditEntry,
