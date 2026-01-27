@@ -5,8 +5,9 @@ import com.berkay.domain.valueobject.PaymentStatus;
 import com.berkay.outbox.OutboxStatus;
 import com.berkay.payment.service.domain.dto.PaymentRequest;
 import com.berkay.payment.service.domain.entity.CreditEntry;
-import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.entity.Payment;
+import com.berkay.payment.service.domain.event.PaymentCancelledEvent;
+import com.berkay.payment.service.domain.event.PaymentCompletedEvent;
 import com.berkay.payment.service.domain.event.PaymentEvent;
 import com.berkay.payment.service.domain.exception.PaymentApplicationServiceException;
 import com.berkay.payment.service.domain.exception.PaymentNotFoundException;
@@ -65,11 +66,12 @@ public class PaymentRequestHelper {
         log.info("Received payment complete event for order id: {}", paymentRequest.getOrderId());
         Payment payment = paymentDataMapper.paymentRequestModelToPayment(paymentRequest);
         CreditEntry creditEntry = getCreditEntry(payment.getCustomerId());
-        List<CreditHistory> creditHistories = getCreditHistory(payment.getCustomerId());
+
         List<String> failureMessages = new ArrayList<>();
         PaymentEvent paymentEvent =
-                paymentDomainService.validateAndInitiatePayment(payment, creditEntry, creditHistories, failureMessages);
-        persistDbObjects(payment, creditEntry, creditHistories, failureMessages);
+                paymentDomainService.validateAndInitiatePayment(payment, creditEntry, failureMessages);
+
+        persistDbObjects(payment, creditEntry, paymentEvent, failureMessages);
 
         orderOutboxHelper.saveOrderOutboxMessage(paymentDataMapper.paymentEventToOrderEventPayload(paymentEvent),
                 paymentEvent.getPayment().getPaymentStatus(),
@@ -95,11 +97,11 @@ public class PaymentRequestHelper {
         }
         Payment payment = paymentResponse.get();
         CreditEntry creditEntry = getCreditEntry(payment.getCustomerId());
-        List<CreditHistory> creditHistories = getCreditHistory(payment.getCustomerId());
+
         List<String> failureMessages = new ArrayList<>();
         PaymentEvent paymentEvent = paymentDomainService
-                .validateAndCancelPayment(payment, creditEntry, creditHistories, failureMessages);
-        persistDbObjects(payment, creditEntry, creditHistories, failureMessages);
+                .validateAndCancelPayment(payment, creditEntry, failureMessages);
+        persistDbObjects(payment, creditEntry, paymentEvent, failureMessages);
 
         orderOutboxHelper.saveOrderOutboxMessage(paymentDataMapper.paymentEventToOrderEventPayload(paymentEvent),
                 paymentEvent.getPayment().getPaymentStatus(),
@@ -117,28 +119,25 @@ public class PaymentRequestHelper {
         return creditEntry.get();
     }
 
-    // TODO: Bir kullanıcı oluşturulduğunda o zaman history ve entry'nin boş olmaması lazım 0 birimlik bir transaction gerek
-    private List<CreditHistory> getCreditHistory(CustomerId customerId) {
-        Optional<List<CreditHistory>> creditHistories = creditHistoryRepository.findByCustomerId(customerId);
-        if (creditHistories.isEmpty()) {
-            log.error("Could not find credit history for customer: {}", customerId.getValue());
-            throw new PaymentApplicationServiceException("Could not find credit history for customer: " +
-                    customerId.getValue());
-        }
-        return creditHistories.get();
-    }
-
     private void persistDbObjects(Payment payment,
                                   CreditEntry creditEntry,
-                                  List<CreditHistory> creditHistories,
+                                  PaymentEvent paymentEvent,
                                   List<String> failureMessages) {
         paymentRepository.save(payment);
+
         // Yalnızca herhangi bir hata bulunmadığında kullanıcının cüzdan hareketleri güncellenir!
         // Aksi durumda sadece bilgilendirme amaçlı olarak ödeme bilgisi tabloya yazılır ve bitirilir.
         if (failureMessages.isEmpty()) {
+            // Cüzdanın yeni bakiyesini kaydet
             creditEntryRepository.save(creditEntry);
-            // İlgili sipariş için oluşturulan history kaydedilir
-            creditHistoryRepository.save(creditHistories.get(creditHistories.size() - 1));
+
+            // History Kaydı: Event tipine göre içinden çekiyoruz
+            if (paymentEvent instanceof PaymentCompletedEvent completedEvent) {
+                creditHistoryRepository.save(completedEvent.getCreditHistory());
+            }
+            else if (paymentEvent instanceof PaymentCancelledEvent cancelledEvent) {
+                creditHistoryRepository.save(cancelledEvent.getCreditHistory());
+            }
         }
     }
 

@@ -32,6 +32,14 @@ public class Payment extends AggregateRoot<PaymentId> {
         }
     }
 
+    public void validatePaymentForCancellation(List<String> failureMessages) {
+        validatePayment(failureMessages);
+        // Sadece COMPLETED statüsündeki bir ödeme iptal edilebilir.
+        if (paymentStatus != PaymentStatus.COMPLETED) {
+            failureMessages.add("Payment is not in COMPLETED status, current status: " + paymentStatus);
+        }
+    }
+
     public void updateStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
