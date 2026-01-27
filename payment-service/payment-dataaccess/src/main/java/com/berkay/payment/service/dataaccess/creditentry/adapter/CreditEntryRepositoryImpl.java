@@ -34,4 +34,11 @@ public class CreditEntryRepositoryImpl implements CreditEntryRepository {
                 .findByCustomerId(customerId.getValue())
                 .map(creditEntryDataAccessMapper::creditEntryEntityToCreditEntry);
     }
+
+    @Override
+    public Optional<CreditEntry> findByCustomerIdWithLock(CustomerId customerId) {
+        return creditEntryJpaRepository
+                .findByCustomerIdWithLock(customerId.getValue())
+                .map(creditEntryDataAccessMapper::creditEntryEntityToCreditEntry);
+    }
 }
