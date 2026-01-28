@@ -3,10 +3,7 @@ package com.berkay.payment.service.domain;
 import com.berkay.payment.service.domain.dto.common.PagedResponse;
 import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
 import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
-import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
-import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
-import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
-import com.berkay.payment.service.domain.dto.query.GetPagedCreditHistoriesByCustomerIdQuery;
+import com.berkay.payment.service.domain.dto.query.*;
 import com.berkay.payment.service.domain.ports.input.service.PaymentApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,5 +36,10 @@ public class PaymentApplicationServiceImpl implements PaymentApplicationService 
     @Override
     public PagedResponse<CreditHistoryResponse> getPagedCreditHistoriesByCustomerId(GetPagedCreditHistoriesByCustomerIdQuery query) {
         return creditQueryHandler.getPagedCreditHistoriesByCustomerId(query);
+    }
+
+    @Override
+    public CreditHistoryResponse getCreditHistoryById(GetCreditHistoryByIdQuery query) {
+        return creditQueryHandler.getCreditHistoryById(query);
     }
 }
