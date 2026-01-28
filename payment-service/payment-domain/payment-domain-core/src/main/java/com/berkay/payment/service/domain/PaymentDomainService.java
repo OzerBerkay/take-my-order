@@ -18,6 +18,5 @@ public interface PaymentDomainService {
                                           List<String> failureMessages);
 
     void validateAndUpdateCreditEntry(CreditEntry creditEntry,
-                                      List<CreditHistory> creditHistories,
                                       CreditHistory newCreditHistory);
 }

@@ -2,8 +2,8 @@ package com.berkay.payment.service.domain;
 
 import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.domain.valueobject.Money;
-import com.berkay.payment.service.domain.dto.UpdateCreditCommand;
-import com.berkay.payment.service.domain.dto.UpdateCreditResponse;
+import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
+import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
 import com.berkay.payment.service.domain.entity.CreditEntry;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.exception.PaymentApplicationServiceException;
@@ -16,24 +16,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Component
-public class UpdateCreditCommandHandler {
+public class CreditOperationCommandHandler {
 
     private final PaymentDomainService paymentDomainService;
     private final CreditEntryRepository creditEntryRepository;
     private final CreditHistoryRepository creditHistoryRepository;
     private final PaymentDataMapper paymentDataMapper;
 
-    public UpdateCreditCommandHandler(PaymentDomainService paymentDomainService,
-                                      CreditEntryRepository creditEntryRepository,
-                                      CreditHistoryRepository creditHistoryRepository,
-                                      PaymentDataMapper paymentDataMapper) {
+    public CreditOperationCommandHandler(PaymentDomainService paymentDomainService,
+                                         CreditEntryRepository creditEntryRepository,
+                                         CreditHistoryRepository creditHistoryRepository,
+                                         PaymentDataMapper paymentDataMapper) {
         this.paymentDomainService = paymentDomainService;
         this.creditEntryRepository = creditEntryRepository;
         this.creditHistoryRepository = creditHistoryRepository;
@@ -41,43 +39,54 @@ public class UpdateCreditCommandHandler {
     }
 
     @Transactional
-    public UpdateCreditResponse updateCredit(UpdateCreditCommand command) {
+    public CreditOperationResponse processCreditOperation(CreditOperationCommand command) {
         CustomerId customerId = new CustomerId(command.getCustomerId());
 
         // Cüzdanı (CreditEntry) Bul veya Oluştur
         CreditEntry creditEntry = getOrCreateCreditEntry(customerId, command.getTransactionType());
 
-        // Geçmişi (History) Bul
-        List<CreditHistory> creditHistories = creditHistoryRepository.findByCustomerId(customerId)
-                .orElse(new ArrayList<>());
-
         // Command -> Entity (History) Dönüşümü
-        CreditHistory newCreditHistory = paymentDataMapper.creditHistoryFromUpdateCreditCommand(command);
+        // Bu yeni history nesnesi, işlemin miktarını ve tipini (DEBIT/CREDIT) taşıyor.
+        CreditHistory newCreditHistory = paymentDataMapper.creditHistoryFromCreditOperationCommand(command);
 
         // Domain Logic Çağrısı (Validasyon ve Güncelleme)
         // Yetersiz bakiye durumunda Domain Exception fırlatır.
-        paymentDomainService.validateAndUpdateCreditEntry(creditEntry, creditHistories, newCreditHistory);
+        paymentDomainService.validateAndUpdateCreditEntry(creditEntry, newCreditHistory);
 
         // Veritabanına Kaydet
         creditEntryRepository.save(creditEntry);
         creditHistoryRepository.save(newCreditHistory);
 
-        log.info("Credit updated for customer: {}, new balance: {}",
+        log.info("Credit operation processed for customer: {}, new balance: {}",
                 customerId.getValue(), creditEntry.getTotalCreditAmount().getAmount());
 
-        return paymentDataMapper.updateCreditResponseFromCreditEntry(creditEntry);
+        return paymentDataMapper.creditOperationResponseFromCreditEntry(creditEntry);
     }
 
     private CreditEntry getOrCreateCreditEntry(CustomerId customerId, TransactionType transactionType) {
-        Optional<CreditEntry> creditEntryOptional = creditEntryRepository.findByCustomerId(customerId);
+        /*
+         * PESSIMISTIC LOCKING STRATEJİSİ:
+         * Burada "SELECT FOR UPDATE" (Pessimistic Write) kullanarak, aynı müşteri için
+         * eş zamanlı (concurrent) gelen bakiye yükleme/çekme isteklerinde Race Condition
+         * oluşmasını ve veri tutarsızlığını (Lost Update) engelliyoruz.
+         *
+         * DEADLOCK GÜVENLİĞİ:
+         * Ödeme akışında (persistPayment) ve manuel operasyonlarda (burada) sadece
+         * tek bir kaynak (CreditEntry satırı) kilitlenmektedir. Çapraz kaynak bağımlılığı
+         * (Örn: A'yı tutup B'yi bekleme durumu) olmadığı ve kilitler işlem (transaction)
+         * bitiminde serbest bırakıldığı için Deadlock riski yoktur.
+         */
+        Optional<CreditEntry> creditEntryOptional = creditEntryRepository.findByCustomerIdWithLock(customerId);
 
         if (creditEntryOptional.isPresent()) {
             return creditEntryOptional.get();
         }
 
-        // Cüzdan yoksa
+        // Cüzdan yoksa (Burada kilitlenecek bir satır yok demektir, create edeceğiz)
         if (TransactionType.CREDIT == transactionType) {
             // Para YÜKLENİYORSA cüzdanı oluştur
+            // Not: Burada henüz DB'de satır olmadığı için Lock çalışmaz ama
+            // Unique Constraint (customerId) sayesinde iki kişi aynı anda yaratmaya çalışırsa biri hata alır.
             return CreditEntry.builder()
                     .creditEntryId(new CreditEntryId(UUID.randomUUID()))
                     .customerId(customerId)

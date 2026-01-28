@@ -4,8 +4,8 @@ import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
 import com.berkay.payment.service.domain.dto.PaymentRequest;
-import com.berkay.payment.service.domain.dto.UpdateCreditCommand;
-import com.berkay.payment.service.domain.dto.UpdateCreditResponse;
+import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
+import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
 import com.berkay.payment.service.domain.entity.CreditEntry;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.entity.Payment;
@@ -39,7 +39,7 @@ public class PaymentDataMapper {
                 .build();
     }
 
-    public CreditHistory creditHistoryFromUpdateCreditCommand(UpdateCreditCommand command) {
+    public CreditHistory creditHistoryFromCreditOperationCommand(CreditOperationCommand command) {
         return CreditHistory.builder()
                 .creditHistoryId(new CreditHistoryId(UUID.randomUUID()))
                 .customerId(new CustomerId(command.getCustomerId()))
@@ -48,8 +48,8 @@ public class PaymentDataMapper {
                 .build();
     }
 
-    public UpdateCreditResponse updateCreditResponseFromCreditEntry(CreditEntry creditEntry) {
-        return UpdateCreditResponse.builder()
+    public CreditOperationResponse creditOperationResponseFromCreditEntry(CreditEntry creditEntry) {
+        return CreditOperationResponse.builder()
                 .customerId(creditEntry.getCustomerId().getValue())
                 .newBalance(creditEntry.getTotalCreditAmount().getAmount())
                 .build();

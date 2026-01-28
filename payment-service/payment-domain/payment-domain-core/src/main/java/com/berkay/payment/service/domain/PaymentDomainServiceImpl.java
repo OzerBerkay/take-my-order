@@ -25,7 +25,6 @@ public class PaymentDomainServiceImpl implements PaymentDomainService {
 
     @Override
     public void validateAndUpdateCreditEntry(CreditEntry creditEntry,
-                                             List<CreditHistory> creditHistories,
                                              CreditHistory newCreditHistory) {
 
         // Transaction Tipine Göre İşlem Yap (CREDIT vs DEBIT)
@@ -47,9 +46,6 @@ public class PaymentDomainServiceImpl implements PaymentDomainService {
             // CREDIT (Para Yükleme)
             creditEntry.addCreditAmount(newCreditHistory.getAmount());
         }
-
-        // İşlemi Tarihçeye Ekle
-        creditHistories.add(newCreditHistory);
 
         log.info("Credit entry updated for customer: {}. Type: {}, Amount: {}, New Balance: {}",
                 creditEntry.getCustomerId().getValue(),
