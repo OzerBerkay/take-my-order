@@ -3,6 +3,8 @@ package com.berkay.payment.service.domain.rest;
 import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
 import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
 import com.berkay.payment.service.domain.dto.create.CreditOperationRequest;
+import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
+import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
 import com.berkay.payment.service.domain.mapper.PaymentRequestMapper;
 import com.berkay.payment.service.domain.ports.input.service.PaymentApplicationService;
 import jakarta.validation.Valid;
@@ -38,6 +40,16 @@ public class PaymentController {
         CreditOperationResponse response = paymentApplicationService.processCreditOperation(command);
         log.info("Credit operation processed for customer id: {}, new balance: {}",
                 response.getCustomerId(), response.getNewBalance());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{customerId}/balance")
+    public ResponseEntity<CreditBalanceResponse> getCreditBalance(@PathVariable UUID customerId) {
+        log.info("Querying credit balance for customer id: {}", customerId);
+
+        CreditBalanceResponse response =
+                paymentApplicationService.getCreditBalance(new GetCreditBalanceQuery(customerId));
 
         return ResponseEntity.ok(response);
     }
