@@ -45,7 +45,7 @@ public class CreditHistoryRepositoryImpl implements CreditHistoryRepository {
     }
 
     @Override
-    public DomainPagedResult<CreditHistory> findByCustomerIdPageable(CustomerId customerId, int page, int size) {
+    public DomainPagedResult<CreditHistory> findPagedCreditHistoriesByCustomerId(CustomerId customerId, int page, int size) {
 
         // 1. Spring Data Pageable oluştur (Data Access detayları burada kalır)
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());

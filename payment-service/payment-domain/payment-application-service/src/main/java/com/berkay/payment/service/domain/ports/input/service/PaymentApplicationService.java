@@ -6,7 +6,7 @@ import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
 import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
 import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
 import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
-import com.berkay.payment.service.domain.dto.query.GetCreditHistoryQuery;
+import com.berkay.payment.service.domain.dto.query.GetPagedCreditHistoriesByCustomerIdQuery;
 import jakarta.validation.Valid;
 
 public interface PaymentApplicationService {
@@ -15,4 +15,5 @@ public interface PaymentApplicationService {
     CreditBalanceResponse getCreditBalance(GetCreditBalanceQuery query);
 
     PagedResponse<CreditHistoryResponse> getCreditHistory(GetCreditHistoryQuery query);
+    PagedResponse<CreditHistoryResponse> getPagedCreditHistoriesByCustomerId(GetPagedCreditHistoriesByCustomerIdQuery query);
 }

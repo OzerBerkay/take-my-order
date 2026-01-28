@@ -12,4 +12,4 @@ public interface CreditHistoryRepository {
 
     List<CreditHistory> findByCustomerId(CustomerId customerId);
 
-    DomainPagedResult<CreditHistory> findByCustomerIdPageable(CustomerId customerId, int page, int size);}
+    DomainPagedResult<CreditHistory> findPagedCreditHistoriesByCustomerId(CustomerId customerId, int page, int size);}

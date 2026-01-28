@@ -4,8 +4,8 @@ import com.berkay.payment.service.domain.exception.PaymentDomainException;
 
 import java.util.UUID;
 
-public record GetCreditHistoryQuery(UUID customerId, int page, int size) {
-    public GetCreditHistoryQuery {
+public record GetPagedCreditHistoriesByCustomerIdQuery(UUID customerId, int page, int size) {
+    public GetPagedCreditHistoriesByCustomerIdQuery {
         if (customerId == null) {
             throw new PaymentDomainException("Customer ID cannot be null");
         }
