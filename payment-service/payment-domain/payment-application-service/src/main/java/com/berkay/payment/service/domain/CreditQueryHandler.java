@@ -2,15 +2,13 @@ package com.berkay.payment.service.domain;
 
 import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.payment.service.domain.dto.common.PagedResponse;
-import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
-import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
-import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
-import com.berkay.payment.service.domain.dto.query.GetPagedCreditHistoriesByCustomerIdQuery;
+import com.berkay.payment.service.domain.dto.query.*;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.exception.PaymentNotFoundException;
 import com.berkay.payment.service.domain.mapper.PaymentDataMapper;
 import com.berkay.payment.service.domain.ports.output.repository.CreditEntryRepository;
 import com.berkay.payment.service.domain.ports.output.repository.CreditHistoryRepository;
+import com.berkay.payment.service.domain.valueobject.CreditHistoryId;
 import com.berkay.payment.service.domain.valueobject.DomainPagedResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -72,5 +70,17 @@ public class CreditQueryHandler {
                 .totalPages(domainResult.getTotalPages())
                 .last(domainResult.getPageNumber() == domainResult.getTotalPages() - 1)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public CreditHistoryResponse getCreditHistoryById(GetCreditHistoryByIdQuery query) {
+        CreditHistoryId id = new CreditHistoryId(query.creditHistoryId());
+
+        return creditHistoryRepository.findById(id)
+                .map(paymentDataMapper::creditHistoryResponseFromCreditHistory)
+                .orElseThrow(() -> {
+                    log.error("Credit history not found with id: {}", query.creditHistoryId());
+                    return new PaymentNotFoundException("Transaction not found with id: " + query.creditHistoryId());
+                });
     }
 }
