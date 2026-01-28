@@ -5,7 +5,7 @@ import com.berkay.payment.service.domain.dto.common.PagedResponse;
 import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
 import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
 import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
-import com.berkay.payment.service.domain.dto.query.GetCreditHistoryQuery;
+import com.berkay.payment.service.domain.dto.query.GetPagedCreditHistoriesByCustomerIdQuery;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.exception.PaymentNotFoundException;
 import com.berkay.payment.service.domain.mapper.PaymentDataMapper;
@@ -48,11 +48,11 @@ public class CreditQueryHandler {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponse<CreditHistoryResponse> getCreditHistory(GetCreditHistoryQuery query) {
+    public PagedResponse<CreditHistoryResponse> getPagedCreditHistoriesByCustomerId(GetPagedCreditHistoriesByCustomerIdQuery query) {
         log.info("Fetching credit history for customer: {}, page: {}", query.customerId(), query.page());
 
         // Domain PagedResult çekiliyor (İsimlendirme: findByCustomerIdPageable)
-        DomainPagedResult<CreditHistory> domainResult = creditHistoryRepository.findByCustomerIdPageable(
+        DomainPagedResult<CreditHistory> domainResult = creditHistoryRepository.findPagedCreditHistoriesByCustomerId(
                 new CustomerId(query.customerId()),
                 query.page(),
                 query.size()

@@ -7,7 +7,7 @@ import com.berkay.payment.service.domain.dto.create.CreditOperationRequest;
 import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
 import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
 import com.berkay.payment.service.domain.dto.query.GetCreditBalanceQuery;
-import com.berkay.payment.service.domain.dto.query.GetCreditHistoryQuery;
+import com.berkay.payment.service.domain.dto.query.GetPagedCreditHistoriesByCustomerIdQuery;
 import com.berkay.payment.service.domain.mapper.PaymentRequestMapper;
 import com.berkay.payment.service.domain.ports.input.service.PaymentApplicationService;
 import jakarta.validation.Valid;
@@ -58,16 +58,16 @@ public class PaymentController {
     }
 
     @GetMapping("/{customerId}/history")
-    public ResponseEntity<PagedResponse<CreditHistoryResponse>> getCreditHistory(
+    public ResponseEntity<PagedResponse<CreditHistoryResponse>> getPagedCreditHistoriesByCustomerId(
             @PathVariable UUID customerId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         log.info("Received credit history query for customer: {}, page: {}, size: {}", customerId, page, size);
 
-        GetCreditHistoryQuery query = new GetCreditHistoryQuery(customerId, page, size);
+        GetPagedCreditHistoriesByCustomerIdQuery query = new GetPagedCreditHistoriesByCustomerIdQuery(customerId, page, size);
 
-        PagedResponse<CreditHistoryResponse> response = paymentApplicationService.getCreditHistory(query);
+        PagedResponse<CreditHistoryResponse> response = paymentApplicationService.getPagedCreditHistoriesByCustomerId(query);
 
         return ResponseEntity.ok(response);
     }
