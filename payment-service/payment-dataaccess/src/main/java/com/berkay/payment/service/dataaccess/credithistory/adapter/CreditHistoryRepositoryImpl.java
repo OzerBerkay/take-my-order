@@ -6,6 +6,11 @@ import com.berkay.payment.service.dataaccess.credithistory.mapper.CreditHistoryD
 import com.berkay.payment.service.dataaccess.credithistory.repository.CreditHistoryJpaRepository;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.ports.output.repository.CreditHistoryRepository;
+import com.berkay.payment.service.domain.valueobject.DomainPagedResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,5 +42,29 @@ public class CreditHistoryRepositoryImpl implements CreditHistoryRepository {
         return creditHistoryList.stream()
                 .map(creditHistoryDataAccessMapper::creditHistoryEntityToCreditHistory)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DomainPagedResult<CreditHistory> findByCustomerIdPageable(CustomerId customerId, int page, int size) {
+
+        // 1. Spring Data Pageable oluştur (Data Access detayları burada kalır)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        // 2. DB'den Spring Page olarak çek
+        Page<CreditHistoryEntity> springPage = creditHistoryJpaRepository.findByCustomerId(customerId.getValue(), pageable);
+
+        // 3. Entity Listesini Domain Listesine çevir
+        List<CreditHistory> domainList = springPage.getContent().stream()
+                .map(creditHistoryDataAccessMapper::creditHistoryEntityToCreditHistory)
+                .collect(Collectors.toList());
+
+        // 4. Spring Page'i -> Domain PagedResult'a çevirip dön
+        return new DomainPagedResult<>(
+                domainList,
+                springPage.getNumber(),
+                springPage.getSize(),
+                springPage.getTotalElements(),
+                springPage.getTotalPages()
+        );
     }
 }
