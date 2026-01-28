@@ -7,6 +7,7 @@ import com.berkay.payment.service.domain.dto.PaymentRequest;
 import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
 import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
 import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
+import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
 import com.berkay.payment.service.domain.entity.CreditEntry;
 import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.entity.Payment;
@@ -65,6 +66,15 @@ public class PaymentDataMapper {
         return CreditBalanceResponse.builder()
                 .customerId(creditEntry.getCustomerId().getValue())
                 .currentBalance(creditEntry.getTotalCreditAmount().getAmount())
+                .build();
+    }
+
+    public CreditHistoryResponse creditHistoryResponseFromCreditHistory(CreditHistory creditHistory) {
+        return CreditHistoryResponse.builder()
+                .creditHistoryId(creditHistory.getId().getValue())
+                .transactionType(creditHistory.getTransactionType())
+                .amount(creditHistory.getAmount().getAmount())
+                .createdAt(creditHistory.getCreatedAt())
                 .build();
     }
 }
