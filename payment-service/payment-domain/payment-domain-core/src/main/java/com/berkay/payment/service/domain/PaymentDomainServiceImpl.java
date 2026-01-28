@@ -116,6 +116,7 @@ public class PaymentDomainServiceImpl implements PaymentDomainService {
                 .customerId(payment.getCustomerId())
                 .amount(payment.getPrice())
                 .transactionType(transactionType)
+                .createdAt(ZonedDateTime.now(ZoneId.of(UTC)))
                 .build();
     }
 
