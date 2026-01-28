@@ -1,6 +1,8 @@
 package com.berkay.payment.service.dataaccess.credithistory.repository;
 
 import com.berkay.payment.service.dataaccess.credithistory.entity.CreditHistoryEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,6 @@ public interface CreditHistoryJpaRepository extends JpaRepository<CreditHistoryE
 
     List<CreditHistoryEntity> findByCustomerId(UUID customerId);
 
-
+    // "Pageable" parametresi sayesinde limit, offset ve sort işlemlerini otomatik yapar.
+    Page<CreditHistoryEntity> findByCustomerId(UUID customerId, Pageable pageable);
 }
