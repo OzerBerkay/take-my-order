@@ -15,7 +15,11 @@ import com.berkay.payment.service.domain.outbox.model.OrderEventPayload;
 import com.berkay.payment.service.domain.valueobject.CreditHistoryId;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import static com.berkay.domain.DomainConstants.UTC;
 
 @Component
 public class PaymentDataMapper {
@@ -46,6 +50,7 @@ public class PaymentDataMapper {
                 .customerId(new CustomerId(command.getCustomerId()))
                 .amount(new Money(command.getAmount()))
                 .transactionType(command.getTransactionType())
+                .createdAt(ZonedDateTime.now(ZoneId.of(UTC)))
                 .build();
     }
 

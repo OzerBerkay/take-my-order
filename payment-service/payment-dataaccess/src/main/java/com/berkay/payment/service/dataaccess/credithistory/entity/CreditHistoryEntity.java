@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class CreditHistoryEntity {
     private BigDecimal amount;
     @Enumerated(EnumType.STRING)
     private TransactionType type;
+    private ZonedDateTime createdAt;
 
     @Override
     public boolean equals(Object o) {
