@@ -1,4 +1,4 @@
-package com.berkay.payment.service.domain.dto;
+package com.berkay.payment.service.domain.dto.create;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class UpdateCreditResponse {
+public class CreditOperationResponse {
     private final UUID customerId;
     private final BigDecimal newBalance;
 }
