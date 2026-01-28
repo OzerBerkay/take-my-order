@@ -1,34 +1,42 @@
 package com.berkay.payment.service.domain.rest;
 
-import com.berkay.payment.service.domain.UpdateCreditCommandHandler;
-import com.berkay.payment.service.domain.dto.UpdateCreditCommand;
-import com.berkay.payment.service.domain.dto.UpdateCreditResponse;
+import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
+import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
+import com.berkay.payment.service.domain.dto.create.CreditOperationRequest;
+import com.berkay.payment.service.domain.mapper.PaymentRequestMapper;
+import com.berkay.payment.service.domain.ports.input.service.PaymentApplicationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/payments")
+@RequestMapping(value = "/payments", produces = "application/vnd.api.v1+json")
 public class PaymentController {
 
-    private final UpdateCreditCommandHandler updateCreditCommandHandler;
+    private final PaymentApplicationService paymentApplicationService;
+    private final PaymentRequestMapper paymentRequestMapper;
 
-    public PaymentController(UpdateCreditCommandHandler updateCreditCommandHandler) {
-        this.updateCreditCommandHandler = updateCreditCommandHandler;
+    public PaymentController(PaymentApplicationService paymentApplicationService,
+                             PaymentRequestMapper paymentRequestMapper) {
+        this.paymentApplicationService = paymentApplicationService;
+        this.paymentRequestMapper = paymentRequestMapper;
     }
 
-    @PostMapping("/credit")
-    public ResponseEntity<UpdateCreditResponse> updateCredit(@RequestBody @Valid UpdateCreditCommand updateCreditCommand) {
-        log.info("Updating credit for customer id: {}", updateCreditCommand.getCustomerId());
+    @PostMapping("/{customerId}/operations")
+    public ResponseEntity<CreditOperationResponse> createCreditOperation(@PathVariable UUID customerId,
+                                                                         @RequestBody @Valid CreditOperationRequest creditOperationRequest) {
+        log.info("Creating credit operation for customer id: {}, amount: {}, type: {}",
+                customerId, creditOperationRequest.getAmount(), creditOperationRequest.getTransactionType().name());
 
-        UpdateCreditResponse response = updateCreditCommandHandler.updateCredit(updateCreditCommand);
+        CreditOperationCommand command = paymentRequestMapper
+                .creditOperationRequestToCreditOperationCommand(customerId, creditOperationRequest);
 
-        log.info("Credit updated for customer id: {}, new balance: {}",
+        CreditOperationResponse response = paymentApplicationService.processCreditOperation(command);
+        log.info("Credit operation processed for customer id: {}, new balance: {}",
                 response.getCustomerId(), response.getNewBalance());
 
         return ResponseEntity.ok(response);
