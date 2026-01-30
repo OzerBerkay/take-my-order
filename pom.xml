@@ -57,6 +57,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.berkay</groupId>
+				<artifactId>identity-application-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
 				<artifactId>outbox</artifactId>
 				<version>${project.version}</version>
 			</dependency>
