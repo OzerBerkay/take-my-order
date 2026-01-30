@@ -18,9 +18,14 @@ public class User extends AggregateRoot<UserId> {
     private UserEmail email;
     private PhoneNumber phoneNumber;
 
-    // Security & Access
-    private Role role;
-    private boolean isActive;
+    // Business Logic Fields
+    private UserType userType;      // CUSTOMER, MERCHANT, INTERNAL
+    private AccountStatus status;   // PENDING_APPROVAL, ACTIVE, BLOCKED vs.
+
+    // Security & Access (GÜNCELLENDİ)
+    private List<Role> roles;       // Birden fazla rol olabilir (Internal için)
+
+    // Verification Flags (Login olabilir ama onaysız olabilir ayrımı için)
     private boolean isEmailVerified;
     private boolean isPhoneVerified;
 
@@ -38,8 +43,9 @@ public class User extends AggregateRoot<UserId> {
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.phoneNumber = builder.phoneNumber;
-        this.role = builder.role;
-        this.isActive = builder.isActive;
+        this.userType = builder.userType;
+        this.roles = builder.roles;
+        this.status = builder.status;
         this.isEmailVerified = builder.isEmailVerified;
         this.isPhoneVerified = builder.isPhoneVerified;
         this.imageUrl = builder.imageUrl;
@@ -48,10 +54,10 @@ public class User extends AggregateRoot<UserId> {
         this.updatedAt = builder.updatedAt;
     }
 
-    public void initializeUser() {
+    // Ortak Başlangıç İşlemleri
+    private void initializeBase() {
         setId(new UserId(UUID.randomUUID()));
-        this.isActive = true; // Default aktif
-        this.isEmailVerified = false; // Email onayı bekler
+        this.isEmailVerified = false;
         this.isPhoneVerified = false;
 
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -61,28 +67,93 @@ public class User extends AggregateRoot<UserId> {
         if (this.addresses == null) {
             this.addresses = new ArrayList<>();
         }
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
     }
 
+    private void initializeAudit() {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    // Müşteri Oluşturma
+    public void initializeCustomer() {
+        initializeBase();
+        this.userType = UserType.CUSTOMER;
+        this.status = AccountStatus.ACTIVE; // Müşteri direkt login olabilir (Email onayı ayrı süreç)
+    }
+
+    // Restoran/Merchant Başvurusu
+    public void initializeMerchant() {
+        initializeBase();
+        this.userType = UserType.MERCHANT;
+        this.status = AccountStatus.PENDING_APPROVAL; // Kritik: Backoffice onayı bekler!
+    }
+
+    // İç Personel (Admin/Backoffice) Oluşturma
+    public void initializeInternalUser() {
+        initializeBase();
+        this.userType = UserType.INTERNAL;
+        this.status = AccountStatus.ACTIVE; // Admin oluşturduğu için güvenli
+
+        // Internal kullanıcılar için verify edilmiş kabul ediyoruz (initializeBase false atamıştı, eziyoruz)
+        this.isEmailVerified = true;
+        this.isPhoneVerified = true;
+    }
+
+    // Validasyonlar
+
     public void validateUser() {
-        // ID ve Temel VO'lar zaten kendi içlerinde validate ediliyor (constructor'da).
-        // Burada Aggregate bütünlüğüne bakıyoruz.
-        if (this.role == null) {
-            throw new IdentityDomainException("User must have a role assigned!");
+        // ID ve VO validasyonları constructor'da yapıldı.
+        // Burada Aggregate bütünlüğünü ve İş Kurallarını denetliyoruz.
+
+        if (this.roles == null || this.roles.isEmpty()) {
+            throw new IdentityDomainException("User must have at least one role assigned!");
         }
+
         if (this.email == null && this.phoneNumber == null) {
             throw new IdentityDomainException("User must have either an email or a phone number!");
         }
+
+        // Kural: Müşterilerin sadece 1 rolü olabilir (ROLE_CUSTOMER)
+        if (UserType.CUSTOMER.equals(this.userType) && this.roles.size() > 1) {
+            throw new IdentityDomainException("Customers strictly cannot have more than one role!");
+        }
+
+        // Kural: Merchant'ların sadece 1 rolü olabilir (ROLE_MERCHANT)
+        if (UserType.MERCHANT.equals(this.userType) && this.roles.size() > 1) {
+            throw new IdentityDomainException("Merchants strictly cannot have more than one role!");
+        }
     }
+
+    // State Transitions
 
     public void verifyEmail() {
         this.isEmailVerified = true;
-        this.updatedAt = ZonedDateTime.now(ZoneId.of("UTC"));
+        updateAudit();
+    }
+
+    public void approveMerchant() {
+        if (!UserType.MERCHANT.equals(this.userType)) {
+            throw new IdentityDomainException("Only MERCHANTS can be approved!");
+        }
+        if (AccountStatus.ACTIVE.equals(this.status)) {
+            throw new IdentityDomainException("Merchant is already active!");
+        }
+        this.status = AccountStatus.ACTIVE;
+        updateAudit();
     }
 
     public void updateProfile(FirstName firstName, LastName lastName, String imageUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.imageUrl = imageUrl;
+        updateAudit();
+    }
+
+    private void updateAudit() {
         this.updatedAt = ZonedDateTime.now(ZoneId.of("UTC"));
     }
 
@@ -90,8 +161,9 @@ public class User extends AggregateRoot<UserId> {
     public LastName getLastName() { return lastName; }
     public UserEmail getEmail() { return email; }
     public PhoneNumber getPhoneNumber() { return phoneNumber; }
-    public Role getRole() { return role; }
-    public boolean isActive() { return isActive; }
+    public UserType getUserType() { return userType; }
+    public List<Role> getRoles() { return roles; }
+    public AccountStatus getStatus() { return status; }
     public boolean isEmailVerified() { return isEmailVerified; }
     public boolean isPhoneVerified() { return isPhoneVerified; }
     public String getImageUrl() { return imageUrl; }
@@ -105,8 +177,9 @@ public class User extends AggregateRoot<UserId> {
         private LastName lastName;
         private UserEmail email;
         private PhoneNumber phoneNumber;
-        private Role role;
-        private boolean isActive;
+        private UserType userType;
+        private List<Role> roles;
+        private AccountStatus status;
         private boolean isEmailVerified;
         private boolean isPhoneVerified;
         private String imageUrl;
@@ -123,8 +196,9 @@ public class User extends AggregateRoot<UserId> {
         public Builder lastName(LastName val) { lastName = val; return this; }
         public Builder email(UserEmail val) { email = val; return this; }
         public Builder phoneNumber(PhoneNumber val) { phoneNumber = val; return this; }
-        public Builder role(Role val) { role = val; return this; }
-        public Builder isActive(boolean val) { isActive = val; return this; }
+        public Builder userType(UserType val) { userType = val; return this; }
+        public Builder roles(List<Role> val) { roles = val; return this; }
+        public Builder status(AccountStatus val) { status = val; return this; }
         public Builder isEmailVerified(boolean val) { isEmailVerified = val; return this; }
         public Builder isPhoneVerified(boolean val) { isPhoneVerified = val; return this; }
         public Builder imageUrl(String val) { imageUrl = val; return this; }
