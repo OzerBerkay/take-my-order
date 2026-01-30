@@ -29,6 +29,7 @@
 		<module>payment-service</module>
 		<module>restaurant-service</module>
         <module>gateway-service</module>
+        <module>identity-service</module>
     </modules>
     <scm>
 		<connection/>
@@ -47,6 +48,11 @@
 			<dependency>
 				<groupId>com.berkay</groupId>
 				<artifactId>order-domain-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.berkay</groupId>
+				<artifactId>identity-domain-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
