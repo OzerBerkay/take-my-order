@@ -1,19 +1,20 @@
 package com.berkay.identity.service.domain.entity;
 
 import com.berkay.domain.entity.BaseEntity;
-import com.berkay.domain.valueobject.BaseId;
+import com.berkay.identity.service.domain.valueobject.AddressId;
+
 import java.util.UUID;
 
-// AddressId'yi generic BaseId<UUID> olarak kullanıyoruz
-public class Address extends BaseEntity<BaseId<UUID>> {
-    private String name; // Örn: "Ev", "İş" (Bunu eklemeliyiz, profil yönetimi için şart)
-    private String street;
-    private String postalCode;
-    private String city;
-    private String country;
+public class Address extends BaseEntity<AddressId> {
+    private final String name;
+    private final String street;
+    private final String postalCode;
+    private final String city;
+    private final String country;
 
+    // Private Constructor: Sadece içeriden (create veya builder) erişilebilir
     private Address(Builder builder) {
-        super.setId(builder.id);
+        super.setId(builder.addressId);
         this.name = builder.name;
         this.street = builder.street;
         this.postalCode = builder.postalCode;
@@ -21,16 +22,28 @@ public class Address extends BaseEntity<BaseId<UUID>> {
         this.country = builder.country;
     }
 
-    public static Builder builder() { return new Builder(); }
+    // FACTORY METHOD: ID üretimini ve nesne oluşturmayı garanti altına alır.
+    public static Address create(String name, String street, String city, String postalCode, String country) {
+        return new Builder()
+                .addressId(new AddressId(UUID.randomUUID())) // ID burada üretilir, kaçış yok.
+                .name(name)
+                .street(street)
+                .city(city)
+                .postalCode(postalCode)
+                .country(country)
+                .build();
+    }
 
+    // Getterlar...
     public String getName() { return name; }
     public String getStreet() { return street; }
     public String getPostalCode() { return postalCode; }
     public String getCity() { return city; }
     public String getCountry() { return country; }
 
+    // Builder
     public static final class Builder {
-        private BaseId<UUID> id;
+        private AddressId addressId;
         private String name;
         private String street;
         private String postalCode;
@@ -39,7 +52,8 @@ public class Address extends BaseEntity<BaseId<UUID>> {
 
         private Builder() {}
 
-        public Builder id(BaseId<UUID> val) { id = val; return this; }
+        // create() metodu bunu kullanacak
+        public Builder addressId(AddressId val) { addressId = val; return this; }
         public Builder name(String val) { name = val; return this; }
         public Builder street(String val) { street = val; return this; }
         public Builder postalCode(String val) { postalCode = val; return this; }
