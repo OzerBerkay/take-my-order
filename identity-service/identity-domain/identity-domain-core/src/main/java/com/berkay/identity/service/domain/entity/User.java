@@ -82,14 +82,14 @@ public class User extends AggregateRoot<UserId> {
     public void initializeCustomer() {
         initializeBase();
         this.userType = UserType.CUSTOMER;
-        this.status = AccountStatus.ACTIVE; // Müşteri direkt login olabilir (Email onayı ayrı süreç)
+        this.status = AccountStatus.PENDING_VERIFICATION;
     }
 
     // Restoran/Merchant Başvurusu
     public void initializeMerchant() {
         initializeBase();
         this.userType = UserType.MERCHANT;
-        this.status = AccountStatus.PENDING_APPROVAL; // Kritik: Backoffice onayı bekler!
+        this.status = AccountStatus.PENDING_VERIFICATION; // Kritik: Email tel no onayı sonra da Backoffice onayını bekler!
     }
 
     // İç Personel (Admin/Backoffice) Oluşturma
@@ -133,17 +133,55 @@ public class User extends AggregateRoot<UserId> {
     public void verifyEmail() {
         this.isEmailVerified = true;
         updateAudit();
+        checkVerificationStatus();
     }
 
+    public void verifyPhoneNumber() {
+        this.isPhoneVerified = true;
+        updateAudit();
+        checkVerificationStatus();
+    }
+
+    private void checkVerificationStatus() {
+        // Eğer statü zaten PENDING_VERIFICATION değilse (Active, Blocked vs.) işlem yapma.
+        if (!AccountStatus.PENDING_VERIFICATION.equals(this.status)) {
+            return;
+        }
+
+        // İkisi de doğrulanmış mı?
+        if (this.isEmailVerified && this.isPhoneVerified) {
+
+            if (UserType.CUSTOMER.equals(this.userType)) {
+                // Müşteri ise direkt içeri al.
+                this.status = AccountStatus.ACTIVE;
+            }
+            else if (UserType.MERCHANT.equals(this.userType)) {
+                // Merchant ise bir sonraki aşamaya (Admin Onayına) geçir.
+                this.status = AccountStatus.PENDING_APPROVAL;
+            }
+        }
+    }
+
+    // Admin Onayı (Backoffice'ten çağrılır)
     public void approveMerchant() {
         if (!UserType.MERCHANT.equals(this.userType)) {
             throw new IdentityDomainException("Only MERCHANTS can be approved!");
         }
+
+        // GÜVENLİK: Eğer adam mailini doğrulamamışsa (PENDING_VERIFICATION), admin onaylayamaz!
+        if (AccountStatus.PENDING_VERIFICATION.equals(this.status)) {
+            throw new IdentityDomainException("Merchant must verify email and phone before approval!");
+        }
+
         if (AccountStatus.ACTIVE.equals(this.status)) {
             throw new IdentityDomainException("Merchant is already active!");
         }
-        this.status = AccountStatus.ACTIVE;
-        updateAudit();
+
+        // Sadece PENDING_APPROVAL durumundaysa onaylanır.
+        if (AccountStatus.PENDING_APPROVAL.equals(this.status)) {
+            this.status = AccountStatus.ACTIVE;
+            updateAudit();
+        }
     }
 
     public void updateProfile(FirstName firstName, LastName lastName, String imageUrl) {
