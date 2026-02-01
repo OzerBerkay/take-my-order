@@ -25,7 +25,7 @@ public class Address extends BaseEntity<AddressId> {
     // FACTORY METHOD: ID üretimini ve nesne oluşturmayı garanti altına alır.
     public static Address create(String name, String street, String city, String postalCode, String country) {
         return new Builder()
-                .addressId(new AddressId(UUID.randomUUID())) // ID burada üretilir, kaçış yok.
+                .addressId(new AddressId(UUID.randomUUID()))
                 .name(name)
                 .street(street)
                 .city(city)
@@ -34,14 +34,12 @@ public class Address extends BaseEntity<AddressId> {
                 .build();
     }
 
-    // Getterlar...
     public String getName() { return name; }
     public String getStreet() { return street; }
     public String getPostalCode() { return postalCode; }
     public String getCity() { return city; }
     public String getCountry() { return country; }
 
-    // Builder
     public static final class Builder {
         private AddressId addressId;
         private String name;
