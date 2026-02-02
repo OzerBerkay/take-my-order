@@ -1,6 +1,7 @@
 package com.berkay.identity.service;
 
 import com.berkay.identity.service.dto.command.*;
+import com.berkay.identity.service.handler.RegisterInternalUserCommandHandler;
 import com.berkay.identity.service.handler.RegisterCustomerCommandHandler;
 import com.berkay.identity.service.handler.RegisterMerchantCommandHandler;
 import com.berkay.identity.service.ports.input.service.UserApplicationService;
@@ -17,6 +18,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
     private final RegisterCustomerCommandHandler registerCustomerCommandHandler;
     private final RegisterMerchantCommandHandler registerMerchantCommandHandler;
+    private final RegisterInternalUserCommandHandler registerInternalUserCommandHandler;
 
     @Override
     public CreateUserResponse registerCustomer(RegisterCustomerCommand command) {
@@ -26,5 +28,10 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public CreateUserResponse registerMerchant(RegisterMerchantCommand command) {
         return registerMerchantCommandHandler.registerMerchant(command);
+    }
+
+    @Override
+    public CreateUserResponse registerInternalUser(RegisterInternalUserCommand command) {
+        return registerInternalUserCommandHandler.registerInternalUser(command);
     }
 }
