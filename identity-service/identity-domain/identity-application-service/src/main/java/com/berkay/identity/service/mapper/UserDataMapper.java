@@ -97,4 +97,17 @@ public class UserDataMapper {
                 .createdAt(event.getCreatedAt())
                 .build();
     }
+
+    public UserEventPayload userToUserEventPayload(User user) {
+        return UserEventPayload.builder()
+                .userId(user.getId().getValue().toString())
+                .email(user.getEmail().getValue())
+                .phoneNumber(user.getPhoneNumber().getValue())
+                .firstName(user.getFirstName().getValue())
+                .lastName(user.getLastName().getValue())
+                .userType(user.getUserType().name())
+                .accountStatus(user.getStatus().name())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 }
