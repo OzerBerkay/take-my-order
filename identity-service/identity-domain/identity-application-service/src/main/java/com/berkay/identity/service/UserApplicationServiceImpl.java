@@ -4,6 +4,7 @@ import com.berkay.identity.service.dto.command.*;
 import com.berkay.identity.service.handler.RegisterInternalUserCommandHandler;
 import com.berkay.identity.service.handler.RegisterCustomerCommandHandler;
 import com.berkay.identity.service.handler.RegisterMerchantCommandHandler;
+import com.berkay.identity.service.handler.UserVerificationCommandHandler;
 import com.berkay.identity.service.ports.input.service.UserApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     private final RegisterCustomerCommandHandler registerCustomerCommandHandler;
     private final RegisterMerchantCommandHandler registerMerchantCommandHandler;
     private final RegisterInternalUserCommandHandler registerInternalUserCommandHandler;
+    private final UserVerificationCommandHandler userVerificationCommandHandler;
 
     @Override
     public CreateUserResponse registerCustomer(RegisterCustomerCommand command) {
@@ -33,5 +35,15 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public CreateUserResponse registerInternalUser(RegisterInternalUserCommand command) {
         return registerInternalUserCommandHandler.registerInternalUser(command);
+    }
+
+    @Override
+    public void verifyEmail(VerifyEmailCommand command) {
+        userVerificationCommandHandler.verifyEmail(command);
+    }
+
+    @Override
+    public void verifyPhone(VerifyPhoneCommand command) {
+        userVerificationCommandHandler.verifyPhone(command);
     }
 }
