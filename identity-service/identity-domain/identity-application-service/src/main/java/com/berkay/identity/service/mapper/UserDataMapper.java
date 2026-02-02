@@ -6,6 +6,7 @@ import com.berkay.identity.service.domain.entity.User;
 import com.berkay.identity.service.domain.event.UserCreatedEvent;
 import com.berkay.identity.service.domain.valueobject.*;
 import com.berkay.identity.service.dto.command.CreateAddressCommand;
+import com.berkay.identity.service.dto.command.RegisterInternalUserCommand;
 import com.berkay.identity.service.dto.command.RegisterCustomerCommand;
 import com.berkay.identity.service.dto.command.RegisterMerchantCommand;
 import com.berkay.identity.service.dto.command.CreateUserResponse;
@@ -45,6 +46,18 @@ public class UserDataMapper {
                 // Collections.singletonList(role) immutable çalışmakta
                 .roles(new ArrayList<>(Collections.singletonList(role)))
                 // Status ve UserType -> initiateMerchant() içinde atanacak.
+                .build();
+    }
+
+    // Internal Mapping (Rolleri dışarıdan alır)
+    public User registerInternalUserCommandToUser(RegisterInternalUserCommand command, List<Role> roles) {
+        return User.Builder.builder()
+                .email(new UserEmail(command.getEmail()))
+                .firstName(new FirstName(command.getFirstName()))
+                .lastName(new LastName(command.getLastName()))
+                .phoneNumber(new PhoneNumber(command.getPhoneNumber()))
+                .addresses(addressCommandsToAddresses(command.getAddresses()))
+                .roles(new ArrayList<>(roles)) // Internal user rolleri buradan alır
                 .build();
     }
 
