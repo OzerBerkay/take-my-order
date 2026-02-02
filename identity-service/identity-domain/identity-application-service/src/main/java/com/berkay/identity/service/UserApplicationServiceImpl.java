@@ -2,6 +2,7 @@ package com.berkay.identity.service;
 
 import com.berkay.identity.service.dto.command.*;
 import com.berkay.identity.service.handler.RegisterCustomerCommandHandler;
+import com.berkay.identity.service.handler.RegisterMerchantCommandHandler;
 import com.berkay.identity.service.ports.input.service.UserApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +16,15 @@ import org.springframework.validation.annotation.Validated;
 public class UserApplicationServiceImpl implements UserApplicationService {
 
     private final RegisterCustomerCommandHandler registerCustomerCommandHandler;
-
+    private final RegisterMerchantCommandHandler registerMerchantCommandHandler;
 
     @Override
     public CreateUserResponse registerCustomer(RegisterCustomerCommand command) {
         return registerCustomerCommandHandler.registerCustomer(command);
     }
 
-
+    @Override
+    public CreateUserResponse registerMerchant(RegisterMerchantCommand command) {
+        return registerMerchantCommandHandler.registerMerchant(command);
+    }
 }
