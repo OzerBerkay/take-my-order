@@ -7,6 +7,7 @@ import com.berkay.identity.service.domain.event.UserCreatedEvent;
 import com.berkay.identity.service.domain.valueobject.*;
 import com.berkay.identity.service.dto.command.CreateAddressCommand;
 import com.berkay.identity.service.dto.command.RegisterCustomerCommand;
+import com.berkay.identity.service.dto.command.RegisterMerchantCommand;
 import com.berkay.identity.service.dto.command.CreateUserResponse;
 import com.berkay.identity.service.outbox.model.UserEventPayload;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,21 @@ public class UserDataMapper {
                 .addresses(addressCommandsToAddresses(command.getAddresses()))
                 .roles(new ArrayList<>(Collections.singletonList(role)))
                 // Initialize metodu Type, Status ayarlayacak, o yüzden burada boş bırakıyoruz
+                .build();
+    }
+
+    // Merchant Mapping
+    public User registerMerchantCommandToUser(RegisterMerchantCommand command, Role role) {
+        return User.Builder.builder()
+                .email(new UserEmail(command.getEmail()))
+                .firstName(new FirstName(command.getFirstName()))
+                .lastName(new LastName(command.getLastName()))
+                .phoneNumber(new PhoneNumber(command.getPhoneNumber()))
+                .addresses(addressCommandsToAddresses(command.getAddresses()))
+                // new ArrayList<>(...) mutable olması ve gelecekte rol eklenmesi gerekirse patlamaması için gerekli
+                // Collections.singletonList(role) immutable çalışmakta
+                .roles(new ArrayList<>(Collections.singletonList(role)))
+                // Status ve UserType -> initiateMerchant() içinde atanacak.
                 .build();
     }
 
