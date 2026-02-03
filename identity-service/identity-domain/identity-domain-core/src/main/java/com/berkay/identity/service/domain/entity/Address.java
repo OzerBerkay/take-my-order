@@ -22,6 +22,10 @@ public class Address extends BaseEntity<AddressId> {
         this.country = builder.country;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     // FACTORY METHOD: ID üretimini ve nesne oluşturmayı garanti altına alır.
     public static Address create(String name, String street, String city, String postalCode, String country) {
         return new Builder()

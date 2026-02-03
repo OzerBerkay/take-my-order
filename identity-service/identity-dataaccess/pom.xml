@@ -5,21 +5,30 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.berkay</groupId>
-        <artifactId>take-my-order</artifactId>
+        <artifactId>identity-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>identity-service</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>identity-dataaccess</artifactId>
+
     <dependencies>
+        <dependency>
+            <groupId>com.berkay</groupId>
+            <artifactId>identity-application-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
             <version>25.0.6</version>
         </dependency>
     </dependencies>
-    <modules>
-        <module>identity-domain</module>
-        <module>identity-dataaccess</module>
-    </modules>
+
 </project>

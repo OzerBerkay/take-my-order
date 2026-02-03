@@ -7,6 +7,7 @@ import com.berkay.identity.service.domain.valueobject.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,12 +71,6 @@ public class User extends AggregateRoot<UserId> {
         if (this.roles == null) {
             this.roles = new ArrayList<>();
         }
-    }
-
-    private void initializeAudit() {
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-        this.createdAt = now;
-        this.updatedAt = now;
     }
 
     // Müşteri Oluşturma
@@ -200,7 +195,9 @@ public class User extends AggregateRoot<UserId> {
     public UserEmail getEmail() { return email; }
     public PhoneNumber getPhoneNumber() { return phoneNumber; }
     public UserType getUserType() { return userType; }
-    public List<Role> getRoles() { return roles; }
+    public List<Role> getRoles() {
+        return this.roles == null ? Collections.emptyList() : Collections.unmodifiableList(this.roles);
+    }
     public AccountStatus getStatus() { return status; }
     public boolean isEmailVerified() { return isEmailVerified; }
     public boolean isPhoneVerified() { return isPhoneVerified; }
@@ -208,6 +205,10 @@ public class User extends AggregateRoot<UserId> {
     public List<Address> getAddresses() { return addresses; }
     public ZonedDateTime getCreatedAt() { return createdAt; }
     public ZonedDateTime getUpdatedAt() { return updatedAt; }
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static final class Builder {
         private UserId userId;
