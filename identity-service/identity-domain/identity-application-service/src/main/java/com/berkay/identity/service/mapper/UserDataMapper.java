@@ -23,7 +23,7 @@ public class UserDataMapper {
 
     // Customer Mapping
     public User registerCustomerCommandToUser(RegisterCustomerCommand command, Role role) {
-        return User.Builder.builder()
+        return User.builder()
                 .email(new UserEmail(command.getEmail()))
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
@@ -36,7 +36,7 @@ public class UserDataMapper {
 
     // Merchant Mapping
     public User registerMerchantCommandToUser(RegisterMerchantCommand command, Role role) {
-        return User.Builder.builder()
+        return User.builder()
                 .email(new UserEmail(command.getEmail()))
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
@@ -51,7 +51,7 @@ public class UserDataMapper {
 
     // Internal Mapping (Rolleri dışarıdan alır)
     public User registerInternalUserCommandToUser(RegisterInternalUserCommand command, List<Role> roles) {
-        return User.Builder.builder()
+        return User.builder()
                 .email(new UserEmail(command.getEmail()))
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
