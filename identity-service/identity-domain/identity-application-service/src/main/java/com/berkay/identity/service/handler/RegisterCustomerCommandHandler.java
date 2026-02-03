@@ -48,7 +48,7 @@ public class RegisterCustomerCommandHandler {
 
         // Keycloak'a Kayıt (Bizim ID ile)
         // User nesnesinin ID'sini alıp Keycloak'a o ID ile kaydeder.
-        identityProviderPort.createUser(user, command.getPassword());
+        identityProviderPort.registerUser(user, command.getPassword());
 
         // DB Kayıt
         userRepository.save(user);

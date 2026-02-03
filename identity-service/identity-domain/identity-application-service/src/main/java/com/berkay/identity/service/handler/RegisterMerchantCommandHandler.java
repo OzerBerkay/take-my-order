@@ -48,7 +48,7 @@ public class RegisterMerchantCommandHandler {
         UserCreatedEvent userCreatedEvent = identityDomainService.initiateMerchant(user);
 
         // Keycloak'ta Kullanıcı Oluştur (Bizim ID ile)
-        identityProviderPort.createUser(user, command.getPassword());
+        identityProviderPort.registerUser(user, command.getPassword());
 
         // DB Kayıt
         userRepository.save(user);
