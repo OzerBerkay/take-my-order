@@ -53,7 +53,7 @@ public class RegisterInternalUserCommandHandler {
         UserCreatedEvent userCreatedEvent = identityDomainService.initiateInternalUser(user);
 
         // Keycloak'ta Kullanıcı Oluştur
-        identityProviderPort.createUser(user, command.getPassword());
+        identityProviderPort.registerUser(user, command.getPassword());
 
         // DB Kayıt
         // Outbox gereksiz çünkü diğer servislerde internal kullanıcının hiçbir işi yok.

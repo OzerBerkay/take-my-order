@@ -9,5 +9,5 @@ public interface IdentityProviderPort {
      * @param password Kullanıcının ham şifresi (Sadece buraya kadar gelir, DB'ye girmez)
      * User.id = Keycloak.id = Token.sub olacak
      */
-    void createUser(User user, String password);
+    void registerUser(User user, String password);
 }
