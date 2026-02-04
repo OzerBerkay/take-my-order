@@ -14,6 +14,7 @@ import java.util.UUID;
 public class User extends AggregateRoot<UserId> {
 
     // Identity Fields (Value Objects)
+    private final String externalId;  // Keycloak ID'si (Login işlemleri bunu kullanır)
     private FirstName firstName;
     private LastName lastName;
     private UserEmail email;
@@ -22,6 +23,7 @@ public class User extends AggregateRoot<UserId> {
     // Business Logic Fields
     private UserType userType;      // CUSTOMER, MERCHANT, INTERNAL
     private AccountStatus status;   // PENDING_APPROVAL, ACTIVE, BLOCKED vs.
+    private final AuthProvider authProvider;
 
     // Security & Access (GÜNCELLENDİ)
     private List<Role> roles;       // Birden fazla rol olabilir (Internal için)
@@ -40,6 +42,8 @@ public class User extends AggregateRoot<UserId> {
 
     private User(Builder builder) {
         super.setId(builder.userId);
+        this.authProvider = builder.authProvider;
+        this.externalId = builder.externalId;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.email = builder.email;
@@ -191,6 +195,8 @@ public class User extends AggregateRoot<UserId> {
     }
 
     public FirstName getFirstName() { return firstName; }
+    public String getExternalId() { return externalId; }
+    public AuthProvider getAuthProvider() { return authProvider; }
     public LastName getLastName() { return lastName; }
     public UserEmail getEmail() { return email; }
     public PhoneNumber getPhoneNumber() { return phoneNumber; }
@@ -212,6 +218,8 @@ public class User extends AggregateRoot<UserId> {
 
     public static final class Builder {
         private UserId userId;
+        private String externalId;
+        private AuthProvider authProvider;
         private FirstName firstName;
         private LastName lastName;
         private UserEmail email;
@@ -231,6 +239,8 @@ public class User extends AggregateRoot<UserId> {
         public static Builder builder() { return new Builder(); }
 
         public Builder userId(UserId val) { userId = val; return this; }
+        public Builder externalId(String val) { externalId = val; return this; }
+        public Builder authProvider(AuthProvider val) { authProvider = val; return this; }
         public Builder firstName(FirstName val) { firstName = val; return this; }
         public Builder lastName(LastName val) { lastName = val; return this; }
         public Builder email(UserEmail val) { email = val; return this; }
@@ -244,6 +254,27 @@ public class User extends AggregateRoot<UserId> {
         public Builder addresses(List<Address> val) { addresses = val; return this; }
         public Builder createdAt(ZonedDateTime val) { createdAt = val; return this; }
         public Builder updatedAt(ZonedDateTime val) { updatedAt = val; return this; }
+
+        // Copy Method (Handler'da işimize yarayacak)
+        public static Builder from(User user) {
+            return new Builder()
+                    .userId(user.getId())
+                    .externalId(user.getExternalId())
+                    .authProvider(user.getAuthProvider())
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .imageUrl(user.getImageUrl())
+                    .isEmailVerified(user.isEmailVerified())
+                    .isPhoneVerified(user.isPhoneVerified())
+                    .userType(user.getUserType())
+                    .status(user.getStatus())
+                    .addresses(user.getAddresses())
+                    .roles(user.getRoles())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt());
+        }
 
         public User build() { return new User(this); }
     }
