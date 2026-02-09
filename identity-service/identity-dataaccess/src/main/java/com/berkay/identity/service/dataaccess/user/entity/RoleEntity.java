@@ -24,6 +24,9 @@ public class RoleEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String domain;
+
     // 1 Role -> N Permission (Many-to-Many)
     // Ara tablo: role_permissions
     @Builder.Default
