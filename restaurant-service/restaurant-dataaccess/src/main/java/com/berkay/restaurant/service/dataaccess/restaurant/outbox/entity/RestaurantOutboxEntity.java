@@ -27,6 +27,7 @@ public class RestaurantOutboxEntity {
 
     private String type;
 
+    @Column(length = 4096)
     private String payload;
 
     @Enumerated(EnumType.STRING)

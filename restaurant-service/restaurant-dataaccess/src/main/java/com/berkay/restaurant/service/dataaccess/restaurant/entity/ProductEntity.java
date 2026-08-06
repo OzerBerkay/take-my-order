@@ -24,7 +24,8 @@ public class ProductEntity {
     private int stock;
     private boolean available;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 

@@ -26,6 +26,16 @@ public class RestaurantDataAccessMapper {
                 .restaurantId(restaurant.getId().getValue())
                 .restaurantName(restaurant.getRestaurantName().getRestaurantName()) // VO'dan String'e
                 .isActive(restaurant.isActive())
+                .street(restaurant.getAddress() != null ? restaurant.getAddress().getStreet() : null)
+                .city(restaurant.getAddress() != null ? restaurant.getAddress().getCity() : null)
+                .postalCode(restaurant.getAddress() != null ? restaurant.getAddress().getPostalCode() : null)
+                .phoneNumber(restaurant.getPhoneNumber())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
+                .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
+                .averageDeliveryTimeInMinutes(restaurant.getAverageDeliveryTimeInMinutes())
+                .cuisineType(restaurant.getCuisineType())
+                .description(restaurant.getDescription())
+                .logoUrl(restaurant.getLogoUrl())
                 .menu(new ArrayList<>()) // İlişkiyi aşağıda kuracağız
                 .build();
 
@@ -50,6 +60,18 @@ public class RestaurantDataAccessMapper {
                 .restaurantId(new RestaurantId(restaurantEntity.getRestaurantId()))
                 .restaurantName(new RestaurantName(restaurantEntity.getRestaurantName()))
                 .active(restaurantEntity.isActive())
+                .address(new com.berkay.restaurant.service.domain.valueobject.Address(
+                        restaurantEntity.getStreet(),
+                        restaurantEntity.getCity(),
+                        restaurantEntity.getPostalCode()
+                ))
+                .phoneNumber(restaurantEntity.getPhoneNumber())
+                .minimumOrderAmount(restaurantEntity.getMinimumOrderAmount() != null ? new Money(restaurantEntity.getMinimumOrderAmount()) : null)
+                .deliveryFee(restaurantEntity.getDeliveryFee() != null ? new Money(restaurantEntity.getDeliveryFee()) : null)
+                .averageDeliveryTimeInMinutes(restaurantEntity.getAverageDeliveryTimeInMinutes())
+                .cuisineType(restaurantEntity.getCuisineType())
+                .description(restaurantEntity.getDescription())
+                .logoUrl(restaurantEntity.getLogoUrl())
                 .menu(restaurantEntity.getMenu().stream()
                         .map(productEntity -> Product.builder()
                                 .productId(new ProductId(productEntity.getProductId()))

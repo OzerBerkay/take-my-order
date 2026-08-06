@@ -2,8 +2,9 @@ package com.berkay.restaurant.service.dataaccess.restaurant.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.math.BigDecimal;
 import java.util.List;
+import com.berkay.restaurant.service.domain.valueobject.CuisineType;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,7 +23,22 @@ public class RestaurantEntity {
     private String restaurantName;
     private boolean isActive;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private String street;
+    private String city;
+    private String postalCode;
+    
+    private String phoneNumber;
+    private BigDecimal minimumOrderAmount;
+    private BigDecimal deliveryFee;
+    private Integer averageDeliveryTimeInMinutes;
+    
+    @Enumerated(EnumType.STRING)
+    private CuisineType cuisineType;
+    
+    private String description;
+    private String logoUrl;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductEntity> menu;
 
     @Override
