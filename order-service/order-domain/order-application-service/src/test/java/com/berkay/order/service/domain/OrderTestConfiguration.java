@@ -46,6 +46,11 @@ public class OrderTestConfiguration {
     }
 
     @Bean
+    public RoleRepository roleRepository() {
+        return Mockito.mock(RoleRepository.class);
+    }
+
+    @Bean
     public OrderDomainService orderDomainService() {
         return new OrderDomainServiceImpl();
     }

@@ -22,6 +22,7 @@ public class OrderController {
         this.orderApplicationService = orderApplicationService;
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.hasPermission(authentication, 'CREATE_ORDER')")
     @PostMapping
     public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderCommand createOrderCommand) {
         log.info("Creating order for customer: {} at restaurant: {}", createOrderCommand.getCustomerId(),
@@ -31,6 +32,7 @@ public class OrderController {
         return ResponseEntity.ok(createOrderResponse);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.hasPermission(authentication, 'READ_ORDER')")
     @GetMapping("/{trackingId}")
     public ResponseEntity<TrackOrderResponse> getOrderByTrackingId(@PathVariable UUID trackingId) {
         TrackOrderResponse trackOrderResponse =

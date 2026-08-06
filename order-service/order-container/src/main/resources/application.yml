@@ -12,28 +12,41 @@ order-service:
   restaurant-approval-response-topic-name: restaurant-approval-response
   customer-topic-name: customer
   restaurant-information-topic-name: restaurant-information
+  role-topic-name: role
+  permission-topic-name: identity-permission-events
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
+security:
+  rbac:
+    domain-policies:
+      CUSTOMER: ORDER, RESTAURANT
+      MERCHANT: ORDER, RESTAURANT
+      INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
 
 spring:
   application:
     name: order-service
   jpa:
     open-in-view: false
-    show-sql: ${SHOW_SQL:true}
+    show-sql: ${SHOW_SQL:false}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5432}/takemyorder?currentSchema=order&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    # Not: Bare metal olarak kurulu olan Postgres ile Docker üzerine kurulu Postgres'in birbirinden ayrılması için DB_PORT 5433 olarak ayarlanmıştır.
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5433}/takemyorder?currentSchema=order&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
   flyway:
     enabled: true
+    clean-disabled: false
+    clean-on-validation-error: true
     baseline-on-migrate: true
     baseline-version: 1
     schemas: order
@@ -64,6 +77,8 @@ kafka-consumer-config:
   restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
   customer-group-id:  customer-topic-consumer
   restaurant-information-consumer-group-id: restaurant-information-topic-consumer
+  role-consumer-group-id: role-topic-consumer
+  permission-consumer-group-id: permission-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
