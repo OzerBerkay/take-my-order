@@ -33,6 +33,18 @@ public class RestaurantDataMapper {
                 .restaurantName(new RestaurantName(createRestaurantCommand.getRestaurantName()))
                 .active(createRestaurantCommand.isActive())
                 .menu(createProductCommandsToProducts(createRestaurantCommand.getProducts()))
+                .address(new com.berkay.restaurant.service.domain.valueobject.Address(
+                        createRestaurantCommand.getStreet(),
+                        createRestaurantCommand.getCity(),
+                        createRestaurantCommand.getPostalCode()
+                ))
+                .phoneNumber(createRestaurantCommand.getPhoneNumber())
+                .minimumOrderAmount(createRestaurantCommand.getMinimumOrderAmount() != null ? new Money(createRestaurantCommand.getMinimumOrderAmount()) : null)
+                .deliveryFee(createRestaurantCommand.getDeliveryFee() != null ? new Money(createRestaurantCommand.getDeliveryFee()) : null)
+                .averageDeliveryTimeInMinutes(createRestaurantCommand.getAverageDeliveryTimeInMinutes())
+                .cuisineType(createRestaurantCommand.getCuisineType())
+                .description(createRestaurantCommand.getDescription())
+                .logoUrl(createRestaurantCommand.getLogoUrl())
                 .build();
     }
 
@@ -81,9 +93,12 @@ public class RestaurantDataMapper {
                 .build();
     }
 
-    public RestaurantEventPayload restaurantInformationEventToRestaurantEventPayload(RestaurantInformationEvent restaurantInformationEvent) {
+    public RestaurantEventPayload restaurantInformationEventToRestaurantEventPayload(RestaurantInformationEvent restaurantInformationEvent, String merchantId, String eventType) {
         return RestaurantEventPayload.builder()
+                .eventType(eventType)
                 .restaurantId(restaurantInformationEvent.getRestaurant().getId().getValue().toString())
+                .merchantId(merchantId)
+                .name(restaurantInformationEvent.getRestaurant().getRestaurantName() != null ? restaurantInformationEvent.getRestaurant().getRestaurantName().getRestaurantName() : null)
                 .active(restaurantInformationEvent.getRestaurant().isActive())
                 .createdAt(restaurantInformationEvent.getCreatedAt())
                 .products(restaurantInformationEvent.getRestaurant().getMenu().stream().map(product ->
