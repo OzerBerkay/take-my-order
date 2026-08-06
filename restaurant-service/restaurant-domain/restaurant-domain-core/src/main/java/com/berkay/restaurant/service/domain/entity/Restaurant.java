@@ -5,6 +5,8 @@ import com.berkay.domain.valueobject.*;
 import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.valueobject.OrderApprovalId;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
+import com.berkay.restaurant.service.domain.valueobject.Address;
+import com.berkay.restaurant.service.domain.valueobject.CuisineType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,15 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private OrderApproval orderApproval;
     private boolean active;
     private OrderDetail orderDetail;
+    
+    private Address address;
+    private String phoneNumber;
+    private Money minimumOrderAmount;
+    private Money deliveryFee;
+    private Integer averageDeliveryTimeInMinutes;
+    private CuisineType cuisineType;
+    private String description;
+    private String logoUrl;
 
     public void updateName(String restaurantName) {
         if (restaurantName != null && !restaurantName.isBlank()) {
@@ -39,6 +50,18 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         if (getRestaurantName() == null) {
             throw new RestaurantDomainException("Restaurant name cannot be null!");
+        }
+
+        if (minimumOrderAmount != null && !minimumOrderAmount.isGreaterThanZero() && !minimumOrderAmount.equals(Money.ZERO)) {
+            throw new RestaurantDomainException("Minimum order amount must be greater than or equal to zero!");
+        }
+
+        if (deliveryFee != null && !deliveryFee.isGreaterThanZero() && !deliveryFee.equals(Money.ZERO)) {
+            throw new RestaurantDomainException("Delivery fee must be greater than or equal to zero!");
+        }
+
+        if (averageDeliveryTimeInMinutes != null && averageDeliveryTimeInMinutes < 0) {
+            throw new RestaurantDomainException("Average delivery time cannot be negative!");
         }
 
         if (!menu.isEmpty()) {
@@ -138,6 +161,14 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         orderApproval = builder.orderApproval;
         active = builder.active;
         orderDetail = builder.orderDetail;
+        address = builder.address;
+        phoneNumber = builder.phoneNumber;
+        minimumOrderAmount = builder.minimumOrderAmount;
+        deliveryFee = builder.deliveryFee;
+        averageDeliveryTimeInMinutes = builder.averageDeliveryTimeInMinutes;
+        cuisineType = builder.cuisineType;
+        description = builder.description;
+        logoUrl = builder.logoUrl;
     }
 
     public static Builder builder() {
@@ -164,6 +195,38 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         return orderDetail;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public Money getMinimumOrderAmount() {
+        return minimumOrderAmount;
+    }
+
+    public Money getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public Integer getAverageDeliveryTimeInMinutes() {
+        return averageDeliveryTimeInMinutes;
+    }
+
+    public CuisineType getCuisineType() {
+        return cuisineType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
     public static final class Builder {
         private RestaurantId restaurantId;
         private RestaurantName restaurantName;
@@ -171,6 +234,14 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private OrderApproval orderApproval;
         private boolean active;
         private OrderDetail orderDetail;
+        private Address address;
+        private String phoneNumber;
+        private Money minimumOrderAmount;
+        private Money deliveryFee;
+        private Integer averageDeliveryTimeInMinutes;
+        private CuisineType cuisineType;
+        private String description;
+        private String logoUrl;
 
         private Builder() {
         }
@@ -202,6 +273,46 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder orderDetail(OrderDetail val) {
             orderDetail = val;
+            return this;
+        }
+
+        public Builder address(Address val) {
+            address = val;
+            return this;
+        }
+
+        public Builder phoneNumber(String val) {
+            phoneNumber = val;
+            return this;
+        }
+
+        public Builder minimumOrderAmount(Money val) {
+            minimumOrderAmount = val;
+            return this;
+        }
+
+        public Builder deliveryFee(Money val) {
+            deliveryFee = val;
+            return this;
+        }
+
+        public Builder averageDeliveryTimeInMinutes(Integer val) {
+            averageDeliveryTimeInMinutes = val;
+            return this;
+        }
+
+        public Builder cuisineType(CuisineType val) {
+            cuisineType = val;
+            return this;
+        }
+
+        public Builder description(String val) {
+            description = val;
+            return this;
+        }
+
+        public Builder logoUrl(String val) {
+            logoUrl = val;
             return this;
         }
 
