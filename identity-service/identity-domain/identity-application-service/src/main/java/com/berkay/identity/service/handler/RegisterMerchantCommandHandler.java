@@ -4,17 +4,16 @@ import com.berkay.identity.service.domain.IdentityDomainService;
 import com.berkay.identity.service.domain.constants.RoleConstants;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.entity.User;
-import com.berkay.identity.service.domain.event.UserCreatedEvent;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
 import com.berkay.identity.service.dto.command.CreateUserResponse;
 import com.berkay.identity.service.dto.command.RegisterMerchantCommand;
 import com.berkay.identity.service.handler.helper.UserCreateHelper;
 import com.berkay.identity.service.mapper.UserDataMapper;
-import com.berkay.identity.service.outbox.model.DomainEventType;
-import com.berkay.identity.service.outbox.model.UserEventPayload;
-import com.berkay.identity.service.outbox.scheduler.UserOutboxHelper;
+import com.berkay.identity.service.ports.output.repository.AddressRepository;
 import com.berkay.identity.service.ports.output.repository.IdentityProviderPort;
 import com.berkay.identity.service.ports.output.repository.UserRepository;
+import com.berkay.identity.service.dto.command.CreateAddressCommand;
+import com.berkay.identity.service.domain.entity.Address;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,9 +26,9 @@ public class RegisterMerchantCommandHandler {
 
     private final IdentityDomainService identityDomainService;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final UserDataMapper userDataMapper;
     private final IdentityProviderPort identityProviderPort;
-    private final UserOutboxHelper userOutboxHelper;
     private final UserCreateHelper userCreateHelper;
 
     @Transactional
@@ -37,29 +36,49 @@ public class RegisterMerchantCommandHandler {
         userCreateHelper.checkUserUniqueness(command.getEmail(), command.getPhoneNumber());
 
         // Rolü Name ile Bul ve Ata (Application service'te atanıyor çünkü Rolün önce DB'den çekilmesi gerek)
-        Role merchantRole = userRepository.findRoleByName(RoleConstants.ROLE_MERCHANT)
-                .orElseThrow(() -> new IdentityDomainException("Role not found: " + RoleConstants.ROLE_MERCHANT));
+        Role merchantRole = userRepository.findRoleByName(RoleConstants.MERCHANT_BASE)
+                .orElseThrow(() -> new IdentityDomainException("Role not found: " + RoleConstants.MERCHANT_BASE));
 
-        // DTO -> Domain Entity
-        User user = userDataMapper.registerMerchantCommandToUser(command, merchantRole);
+        // Temp User (No External ID)
+        User tempUser = userDataMapper.registerMerchantCommandToUser(command, merchantRole);
 
         // Domain Service (Business Logic + Initiate)
-        // Merchant olduğu için initiateMerchant çalışır
-        UserCreatedEvent userCreatedEvent = identityDomainService.initiateMerchant(user);
+        // Merchant olduğu için initiateMerchant çalışır, ID ve Statü burada atanır
+        identityDomainService.initiateMerchant(tempUser);
 
-        // Keycloak'ta Kullanıcı Oluştur (Bizim ID ile)
-        identityProviderPort.registerUser(user, command.getPassword());
+        // Keycloak Call -> Get External ID
+        String externalId = identityProviderPort.registerUser(tempUser, command.getPassword());
 
-        // DB Kayıt
-        userRepository.save(user);
+        // Final User (With External ID)
+        User finalUser = User.Builder.from(tempUser)
+                .externalId(externalId)
+                .build();
 
-        // Outbox Kaydı
-        log.info("Saving Outbox Message for merchant id: {}", user.getId().getValue());
+        try {
+            // DB Kayıt
+            userRepository.save(finalUser);
+            
+            // Adresleri Kaydet
+            if (command.getAddresses() != null && !command.getAddresses().isEmpty()) {
+                for (CreateAddressCommand addressCommand : command.getAddresses()) {
+                    Address address = Address.create(
+                            finalUser.getId(),
+                            addressCommand.getName(),
+                            addressCommand.getStreet(),
+                            addressCommand.getCity(),
+                            addressCommand.getPostalCode(),
+                            addressCommand.getCountry()
+                    );
+                    addressRepository.save(address);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to save user in DB! Rolling back Keycloak creation for externalId: {}", externalId, e);
+            identityProviderPort.deleteUser(externalId);
+            throw new IdentityDomainException("Registration failed due to internal error! " + e.getMessage(), e);
+        }
 
-        UserEventPayload payload = userDataMapper.userCreatedEventToUserEventPayload(userCreatedEvent);
-        userOutboxHelper.saveUserOutboxMessage(payload, DomainEventType.USER_CREATED);
-
-        log.info("Merchant registered successfully with id: {}", user.getId().getValue());
-        return userDataMapper.userToCreateUserResponse(user, "Merchant registered successfully. Please verify details to create restaurant.");
+        log.info("Merchant registered successfully with id: {}", finalUser.getId().getValue());
+        return userDataMapper.userToCreateUserResponse(finalUser, "Merchant registered successfully. Please verify details to create restaurant.");
     }
 }
