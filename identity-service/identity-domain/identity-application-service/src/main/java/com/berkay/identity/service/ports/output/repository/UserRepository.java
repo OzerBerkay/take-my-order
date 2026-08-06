@@ -10,7 +10,11 @@ import java.util.Optional;
 public interface UserRepository {
     User save(User user);
 
+    Optional<User> findById(com.berkay.identity.service.domain.valueobject.UserId userId);
+
     Optional<User> findByEmail(String email);
+    
+    Optional<User> findByExternalId(String externalId);
 
     // Rolleri ID listesinden bulmak için
     List<Role> findRolesByIds(List<RoleId> roleIds);
