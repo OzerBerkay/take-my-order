@@ -8,27 +8,42 @@ logging:
 payment-service:
   payment-request-topic-name: payment-request
   payment-response-topic-name: payment-response
+  restaurant-information-topic-name: restaurant-information
+  role-topic-name: identity-role-events
+  permission-topic-name: identity-permission-events
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
+
+security:
+  rbac:
+    domain-policies:
+      CUSTOMER: ORDER, RESTAURANT
+      MERCHANT: ORDER, RESTAURANT
+      INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
 
 spring:
   application:
     name: payment-service
   jpa:
     open-in-view: false
-    show-sql: ${SHOW_SQL:true}
+    show-sql: ${SHOW_SQL:false}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5432}/takemyorder?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
-    username: ${DB_USERNAME:postgres}
+    # Not: Bare metal olarak kurulu olan Postgres ile Docker üzerine kurulu Postgres'in birbirinden ayrılması için DB_PORT 5433 olarak ayarlanmıştır.
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5433}/takemyorder?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
   flyway:
     enabled: true
+    clean-disabled: false
+    clean-on-validation-error: true
     baseline-on-migrate: true
     baseline-version: 1
     schemas: payment
@@ -36,8 +51,8 @@ spring:
 
 kafka-config:
   bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:31091,localhost:31092,localhost:31093}
-  schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:30081}
   schema-registry-url-key: schema.registry.url
+  schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:30081}
   num-of-partitions: 3
   replication-factor: 3
 
@@ -56,6 +71,9 @@ kafka-consumer-config:
   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
   payment-consumer-group-id: payment-topic-consumer
+  restaurant-information-consumer-group-id: restaurant-information-topic-consumer
+  role-consumer-group-id: role-topic-consumer
+  permission-consumer-group-id: permission-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
