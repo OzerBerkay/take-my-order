@@ -13,22 +13,23 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_outbox")
+@Table(name = "permission_outbox")
 @Entity
-public class UserOutboxEntity {
+public class PermissionOutboxEntity {
 
     @Id
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
+    @Column
     private ZonedDateTime processedAt;
 
     @Column(nullable = false)
-    private String type; // DomainEventType (USER_CREATED vs)
+    private String type;
 
-    @Column(nullable = false) // JSON Payload
+    @Column(columnDefinition = "TEXT", length = 4096, nullable = false)
     private String payload;
 
     @Enumerated(EnumType.STRING)
@@ -36,18 +37,25 @@ public class UserOutboxEntity {
     private OutboxStatus outboxStatus;
 
     @Version
-    private int version;
+    private Long version;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserOutboxEntity that = (UserOutboxEntity) o;
+        PermissionOutboxEntity that = (PermissionOutboxEntity) o;
         return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = ZonedDateTime.now();
+        }
     }
 }
