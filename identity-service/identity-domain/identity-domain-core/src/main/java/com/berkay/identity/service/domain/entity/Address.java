@@ -1,11 +1,13 @@
 package com.berkay.identity.service.domain.entity;
 
-import com.berkay.domain.entity.BaseEntity;
+import com.berkay.domain.entity.AggregateRoot;
 import com.berkay.identity.service.domain.valueobject.AddressId;
+import com.berkay.identity.service.domain.valueobject.UserId;
 
 import java.util.UUID;
 
-public class Address extends BaseEntity<AddressId> {
+public class Address extends AggregateRoot<AddressId> {
+    private final UserId userId;
     private final String name;
     private final String street;
     private final String postalCode;
@@ -15,6 +17,7 @@ public class Address extends BaseEntity<AddressId> {
     // Private Constructor: Sadece içeriden (create veya builder) erişilebilir
     private Address(Builder builder) {
         super.setId(builder.addressId);
+        this.userId = builder.userId;
         this.name = builder.name;
         this.street = builder.street;
         this.postalCode = builder.postalCode;
@@ -27,9 +30,10 @@ public class Address extends BaseEntity<AddressId> {
     }
 
     // FACTORY METHOD: ID üretimini ve nesne oluşturmayı garanti altına alır.
-    public static Address create(String name, String street, String city, String postalCode, String country) {
+    public static Address create(UserId userId, String name, String street, String city, String postalCode, String country) {
         return new Builder()
                 .addressId(new AddressId(UUID.randomUUID()))
+                .userId(userId)
                 .name(name)
                 .street(street)
                 .city(city)
@@ -38,6 +42,7 @@ public class Address extends BaseEntity<AddressId> {
                 .build();
     }
 
+    public UserId getUserId() { return userId; }
     public String getName() { return name; }
     public String getStreet() { return street; }
     public String getPostalCode() { return postalCode; }
@@ -46,6 +51,7 @@ public class Address extends BaseEntity<AddressId> {
 
     public static final class Builder {
         private AddressId addressId;
+        private UserId userId;
         private String name;
         private String street;
         private String postalCode;
@@ -56,6 +62,7 @@ public class Address extends BaseEntity<AddressId> {
 
         // create() metodu bunu kullanacak
         public Builder addressId(AddressId val) { addressId = val; return this; }
+        public Builder userId(UserId val) { userId = val; return this; }
         public Builder name(String val) { name = val; return this; }
         public Builder street(String val) { street = val; return this; }
         public Builder postalCode(String val) { postalCode = val; return this; }
