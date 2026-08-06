@@ -28,6 +28,7 @@ public class PaymentController {
         this.paymentRequestMapper = paymentRequestMapper;
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@paymentAuthService.hasPermission(authentication, 'MANAGE_PAYMENT')")
     @PostMapping("/{customerId}/operations")
     public ResponseEntity<CreditOperationResponse> createCreditOperation(@PathVariable UUID customerId,
                                                                          @RequestBody @Valid CreditOperationRequest creditOperationRequest) {
@@ -44,6 +45,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@paymentAuthService.hasPermission(authentication, 'READ_PAYMENT')")
     @GetMapping("/{customerId}/balance")
     public ResponseEntity<CreditBalanceResponse> getCreditBalance(@PathVariable UUID customerId) {
         log.info("Querying credit balance for customer id: {}", customerId);
@@ -54,6 +56,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@paymentAuthService.hasPermission(authentication, 'READ_PAYMENT')")
     @GetMapping("/{customerId}/history")
     public ResponseEntity<PagedResponse<CreditHistoryResponse>> getPagedCreditHistoriesByCustomerId(
             @PathVariable UUID customerId,
@@ -69,6 +72,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@paymentAuthService.hasPermission(authentication, 'READ_PAYMENT')")
     @GetMapping("/history/{historyId}")
     public ResponseEntity<CreditHistoryResponse> getCreditHistoryById(@PathVariable UUID historyId) {
         log.info("Received single credit history query for id: {}", historyId);

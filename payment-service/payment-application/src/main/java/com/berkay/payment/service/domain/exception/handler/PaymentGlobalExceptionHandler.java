@@ -20,7 +20,7 @@ public class PaymentGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {PaymentDomainException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleException(PaymentDomainException paymentDomainException) {
-        log.error(paymentDomainException.getMessage(), paymentDomainException);
+        log.warn(paymentDomainException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(paymentDomainException.getMessage())
@@ -31,7 +31,7 @@ public class PaymentGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {PaymentNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleException(PaymentNotFoundException paymentNotFoundException) {
-        log.error(paymentNotFoundException.getMessage(), paymentNotFoundException);
+        log.warn(paymentNotFoundException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(paymentNotFoundException.getMessage())
@@ -42,7 +42,7 @@ public class PaymentGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {PaymentApplicationServiceException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleException(PaymentApplicationServiceException paymentApplicationServiceException) {
-        log.error(paymentApplicationServiceException.getMessage(), paymentApplicationServiceException);
+        log.warn(paymentApplicationServiceException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(paymentApplicationServiceException.getMessage())
