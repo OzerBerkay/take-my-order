@@ -55,7 +55,8 @@ public class AddProductCommandHandler {
         // Order Service'in senkronize olması için bunu yapmalıyız.
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
                 restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),
-                RestaurantOutboxEventType.RESTAURANT_UPDATED
+                RestaurantOutboxEventType.RESTAURANT_UPDATED,
+                null
         );
 
         log.info("Product is added with id: {} to restaurant: {}", product.getId().getValue(), savedRestaurant.getId().getValue());

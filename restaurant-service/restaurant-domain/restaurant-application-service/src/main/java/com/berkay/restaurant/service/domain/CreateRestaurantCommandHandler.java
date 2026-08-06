@@ -8,6 +8,9 @@ import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.scheduler.RestaurantOutboxHelper;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
+import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantPersonnelRepository;
+import com.berkay.restaurant.service.domain.entity.RestaurantPersonnel;
+import com.berkay.restaurant.service.domain.valueobject.RestaurantPersonnelId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +25,18 @@ public class CreateRestaurantCommandHandler {
     private final RestaurantDataMapper restaurantDataMapper;
     private final RestaurantOutboxHelper restaurantOutboxHelper;
     private final RestaurantDomainService restaurantDomainService;
+    private final RestaurantPersonnelRepository restaurantPersonnelRepository;
 
     public CreateRestaurantCommandHandler(RestaurantRepository restaurantRepository,
                                           RestaurantDataMapper restaurantDataMapper,
                                           RestaurantOutboxHelper restaurantOutboxHelper,
-                                          RestaurantDomainService restaurantDomainService) {
+                                          RestaurantDomainService restaurantDomainService,
+                                          RestaurantPersonnelRepository restaurantPersonnelRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantDataMapper = restaurantDataMapper;
         this.restaurantOutboxHelper = restaurantOutboxHelper;
         this.restaurantDomainService = restaurantDomainService;
+        this.restaurantPersonnelRepository = restaurantPersonnelRepository;
     }
 
     @Transactional
@@ -52,8 +58,16 @@ public class CreateRestaurantCommandHandler {
         }
 
         // Outbox Kaydı
-        // Artık "savedRestaurant" değil, domain'den dönen "event"i veriyoruz.
-        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantInformationEvent, RESTAURANT_CREATED);
+        restaurantOutboxHelper.saveRestaurantOutboxMessage(restaurantInformationEvent, RESTAURANT_CREATED, createRestaurantCommand.getMerchantId());
+
+        // RestaurantPersonnel Kaydı
+        RestaurantPersonnel personnel = RestaurantPersonnel.builder()
+                .restaurantPersonnelId(new RestaurantPersonnelId(java.util.UUID.randomUUID()))
+                .restaurantId(savedRestaurant.getId())
+                .userId(java.util.UUID.fromString(createRestaurantCommand.getMerchantId()))
+                .createdAt(java.time.ZonedDateTime.now(java.time.ZoneId.of("UTC")))
+                .build();
+        restaurantPersonnelRepository.save(personnel);
 
         log.info("Restaurant is created with id: {}", savedRestaurant.getId().getValue());
         return restaurantDataMapper.restaurantToCreateRestaurantResponse(savedRestaurant);

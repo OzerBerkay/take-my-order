@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 
 import static com.berkay.domain.DomainConstants.UTC;
 import static com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType.RESTAURANT_UPDATED;
@@ -22,11 +23,14 @@ public class UpdateRestaurantCommandHandler {
 
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOutboxHelper restaurantOutboxHelper;
+    private final RestaurantDataMapper restaurantDataMapper;
 
     public UpdateRestaurantCommandHandler(RestaurantRepository restaurantRepository,
-                                          RestaurantOutboxHelper restaurantOutboxHelper) {
+                                          RestaurantOutboxHelper restaurantOutboxHelper,
+                                          RestaurantDataMapper restaurantDataMapper) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantOutboxHelper = restaurantOutboxHelper;
+        this.restaurantDataMapper = restaurantDataMapper;
     }
 
     @Transactional
@@ -45,8 +49,9 @@ public class UpdateRestaurantCommandHandler {
         // OUTBOX - Order Service'i haberdar et
         // Restoranın son halini (Snapshot) gönderiyoruz.
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
-                new RestaurantInformationEvent(savedRestaurant, ZonedDateTime.now(ZoneId.of(UTC))),
-                RESTAURANT_UPDATED
+                restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),
+                RESTAURANT_UPDATED,
+                null
         );
 
         log.info("Restaurant id: {} updated and outbox message saved.", savedRestaurant.getId().getValue());
