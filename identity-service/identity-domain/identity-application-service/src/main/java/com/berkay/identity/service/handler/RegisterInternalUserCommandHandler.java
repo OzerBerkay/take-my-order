@@ -3,15 +3,17 @@ package com.berkay.identity.service.handler;
 import com.berkay.identity.service.domain.IdentityDomainService;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.entity.User;
-import com.berkay.identity.service.domain.event.UserCreatedEvent;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
 import com.berkay.identity.service.domain.valueobject.RoleId;
 import com.berkay.identity.service.dto.command.RegisterInternalUserCommand;
 import com.berkay.identity.service.dto.command.CreateUserResponse;
 import com.berkay.identity.service.handler.helper.UserCreateHelper;
 import com.berkay.identity.service.mapper.UserDataMapper;
+import com.berkay.identity.service.ports.output.repository.AddressRepository;
 import com.berkay.identity.service.ports.output.repository.IdentityProviderPort;
 import com.berkay.identity.service.ports.output.repository.UserRepository;
+import com.berkay.identity.service.dto.command.CreateAddressCommand;
+import com.berkay.identity.service.domain.entity.Address;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ public class RegisterInternalUserCommandHandler {
 
     private final IdentityDomainService identityDomainService;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final UserDataMapper userDataMapper;
     private final IdentityProviderPort identityProviderPort;
     private final UserCreateHelper userCreateHelper;
@@ -46,21 +49,46 @@ public class RegisterInternalUserCommandHandler {
             throw new IdentityDomainException("Some roles could not be found!");
         }
 
-        // DTO -> Domain Entity
-        User user = userDataMapper.registerInternalUserCommandToUser(command, roles);
+        // Temp User (No External ID)
+        User tempUser = userDataMapper.registerInternalUserCommandToUser(command, roles);
 
         // Domain Service (initiateInternalUser -> ACTIVE)
-        UserCreatedEvent userCreatedEvent = identityDomainService.initiateInternalUser(user);
+        identityDomainService.initiateInternalUser(tempUser);
 
-        // Keycloak'ta Kullanıcı Oluştur
-        identityProviderPort.registerUser(user, command.getPassword());
+        // Keycloak Call -> Get External ID
+        String externalId = identityProviderPort.registerUser(tempUser, command.getPassword());
 
-        // DB Kayıt
-        // Outbox gereksiz çünkü diğer servislerde internal kullanıcının hiçbir işi yok.
-        userRepository.save(user);
+        // Final User (With External ID)
+        User finalUser = User.Builder.from(tempUser)
+                .externalId(externalId)
+                .build();
 
-        log.info("Internal user created successfully with id: {}", user.getId().getValue());
+        try {
+            // DB Kayıt
+            userRepository.save(finalUser);
+            
+            // Adresleri Kaydet
+            if (command.getAddresses() != null && !command.getAddresses().isEmpty()) {
+                for (CreateAddressCommand addressCommand : command.getAddresses()) {
+                    Address address = Address.create(
+                            finalUser.getId(),
+                            addressCommand.getName(),
+                            addressCommand.getStreet(),
+                            addressCommand.getCity(),
+                            addressCommand.getPostalCode(),
+                            addressCommand.getCountry()
+                    );
+                    addressRepository.save(address);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to save user in DB! Rolling back Keycloak creation for externalId: {}", externalId, e);
+            identityProviderPort.deleteUser(externalId);
+            throw new IdentityDomainException("Registration failed due to internal error! " + e.getMessage(), e);
+        }
 
-        return userDataMapper.userToCreateUserResponse(user, "Internal user created successfully");
+        log.info("Internal user created successfully with id: {}", finalUser.getId().getValue());
+
+        return userDataMapper.userToCreateUserResponse(finalUser, "Internal user created successfully");
     }
 }
