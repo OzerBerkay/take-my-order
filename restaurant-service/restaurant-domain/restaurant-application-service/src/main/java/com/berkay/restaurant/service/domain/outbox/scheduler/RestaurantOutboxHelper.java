@@ -7,6 +7,7 @@ import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantEventPayload;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxEventType;
 import com.berkay.restaurant.service.domain.outbox.model.RestaurantOutboxMessage;
+import com.berkay.restaurant.service.domain.outbox.model.RestaurantPersonnelEventPayload;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantOutboxRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +47,13 @@ public class RestaurantOutboxHelper {
                 outboxStatus);
     }
 
+    @Transactional(readOnly = true)
+    public List<RestaurantOutboxMessage> getPersonnelOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
+        return restaurantOutboxRepository.findByTypeAndOutboxStatus(
+                List.of(RestaurantOutboxEventType.PERSONNEL_ADDED.name()),
+                outboxStatus);
+    }
+
     // Her bir outbox mesajının sürecini ayrı olarak değerlendirmek gerekir.
     // Bu sebeple de her birinin transaction'u kendine olmalıdır (fault-tolerant)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -58,8 +66,9 @@ public class RestaurantOutboxHelper {
 
     @Transactional
     public void saveRestaurantOutboxMessage(RestaurantInformationEvent restaurantInformationEvent,
-                                            RestaurantOutboxEventType eventType) {
-        RestaurantEventPayload payload = restaurantDataMapper.restaurantInformationEventToRestaurantEventPayload(restaurantInformationEvent);
+                                            RestaurantOutboxEventType eventType,
+                                            String merchantId) {
+        RestaurantEventPayload payload = restaurantDataMapper.restaurantInformationEventToRestaurantEventPayload(restaurantInformationEvent, merchantId, eventType.name());
         try {
             RestaurantOutboxMessage restaurantOutboxMessage = RestaurantOutboxMessage.builder()
                     .id(UUID.randomUUID())
@@ -80,10 +89,38 @@ public class RestaurantOutboxHelper {
     }
 
     @Transactional
+    public void savePersonnelOutboxMessage(RestaurantPersonnelEventPayload payload) {
+        try {
+            RestaurantOutboxMessage restaurantOutboxMessage = RestaurantOutboxMessage.builder()
+                    .id(UUID.randomUUID())
+                    .createdAt(payload.getCreatedAt())
+                    .type(RestaurantOutboxEventType.PERSONNEL_ADDED.name())
+                    .payload(objectMapper.writeValueAsString(payload))
+                    .outboxStatus(OutboxStatus.STARTED)
+                    .version(0)
+                    .build();
+
+            restaurantOutboxRepository.save(restaurantOutboxMessage);
+            log.info("RestaurantPersonnelOutboxMessage saved with id: {}", restaurantOutboxMessage.getId());
+
+        } catch (JsonProcessingException e) {
+            log.error("Could not create RestaurantPersonnelOutboxMessage for restaurant id: {} and user id: {}", payload.getRestaurantId(), payload.getUserId(), e);
+            throw new RestaurantDomainException("Could not create RestaurantPersonnelOutboxMessage", e);
+        }
+    }
+
+    @Transactional
     public void deleteRestaurantOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
         restaurantOutboxRepository.deleteByTypeAndOutboxStatus(
                 List.of(RestaurantOutboxEventType.RESTAURANT_CREATED.name(),
                         RestaurantOutboxEventType.RESTAURANT_UPDATED.name()),
+                outboxStatus);
+    }
+
+    @Transactional
+    public void deletePersonnelOutboxMessageByOutboxStatus(OutboxStatus outboxStatus) {
+        restaurantOutboxRepository.deleteByTypeAndOutboxStatus(
+                List.of(RestaurantOutboxEventType.PERSONNEL_ADDED.name()),
                 outboxStatus);
     }
 }

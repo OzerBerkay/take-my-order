@@ -10,21 +10,31 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 
+import lombok.NoArgsConstructor;
+
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantEventPayload {
     @JsonProperty
     private String restaurantId;
+    @JsonProperty
+    private String merchantId;
+    @JsonProperty
+    private String name;
     @JsonProperty
     private boolean active;
     @JsonProperty
     private List<ProductPayload> products;
     @JsonProperty
     private ZonedDateTime createdAt;
+    @JsonProperty
+    private String eventType;
 
     @Getter
     @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class ProductPayload {
         @JsonProperty
