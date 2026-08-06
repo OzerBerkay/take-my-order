@@ -1,10 +1,8 @@
 package com.berkay.identity.service.dataaccess.user.mapper;
 
-import com.berkay.identity.service.dataaccess.user.entity.AddressEntity;
-import com.berkay.identity.service.dataaccess.user.entity.PermissionEntity;
-import com.berkay.identity.service.dataaccess.user.entity.RoleEntity;
+import com.berkay.identity.service.dataaccess.permission.entity.PermissionEntity;
+import com.berkay.identity.service.dataaccess.role.entity.RoleEntity;
 import com.berkay.identity.service.dataaccess.user.entity.UserEntity;
-import com.berkay.identity.service.domain.entity.Address;
 import com.berkay.identity.service.domain.entity.Permission;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.entity.User;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +19,8 @@ public class UserDataAccessMapper {
     public UserEntity userToUserEntity(User user) {
         UserEntity userEntity = UserEntity.builder()
                 .id(user.getId().getValue())
+                .externalId(user.getExternalId())
+                .authProvider(user.getAuthProvider())
                 .email(user.getEmail().getValue())
                 .phoneNumber(user.getPhoneNumber().getValue())
                 .firstName(user.getFirstName().getValue())
@@ -31,11 +30,9 @@ public class UserDataAccessMapper {
                 .isPhoneVerified(user.isPhoneVerified())
                 .userType(user.getUserType())
                 .status(user.getStatus())
-                .addresses(addressListToAddressEntityList(user.getAddresses()))
-                .roles(roleListToRoleEntitySet(user.getRoles())) // List -> Set Dönüşümü
+                .organizationalUnitIds(user.getOrganizationalUnitIds())
                 .build();
 
-        // Audit alanlarını Domain'den alıp Entity'ye set ediyoruz
         userEntity.setCreatedAt(user.getCreatedAt());
         userEntity.setUpdatedAt(user.getUpdatedAt());
 
@@ -45,6 +42,8 @@ public class UserDataAccessMapper {
     public User userEntityToUser(UserEntity userEntity) {
         return User.builder()
                 .userId(new UserId(userEntity.getId()))
+                .externalId(userEntity.getExternalId())
+                .authProvider(userEntity.getAuthProvider())
                 .email(new UserEmail(userEntity.getEmail()))
                 .phoneNumber(new PhoneNumber(userEntity.getPhoneNumber()))
                 .firstName(new FirstName(userEntity.getFirstName()))
@@ -54,80 +53,78 @@ public class UserDataAccessMapper {
                 .isPhoneVerified(userEntity.getIsPhoneVerified())
                 .userType(userEntity.getUserType())
                 .status(userEntity.getStatus())
-                .addresses(addressEntityListToAddressList(userEntity.getAddresses()))
-                .roles(roleEntitySetToRoleList(userEntity.getRoles())) // Set -> List Dönüşümü
+                .organizationalUnitIds(userEntity.getOrganizationalUnitIds())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
                 .build();
     }
 
-    // HELPER METHODS (Private)
-
-    private List<AddressEntity> addressListToAddressEntityList(List<Address> addresses) {
-        if (addresses == null) return new ArrayList<>();
-        return addresses.stream()
-                .map(address -> AddressEntity.builder()
-                        .id(address.getId().getValue())
-                        .name(address.getName())
-                        .street(address.getStreet())
-                        .city(address.getCity())
-                        .postalCode(address.getPostalCode())
-                        .country(address.getCountry())
-                        .build()) // User atamasını Adapter içinde veya JPA ilişki yönetiminde halledeceğiz
-                .collect(Collectors.toList());
+    public User userEntityToUserWithCollections(UserEntity userEntity, List<Object> dummyAddresses, List<Role> roles) {
+        return User.builder()
+                .userId(new UserId(userEntity.getId()))
+                .externalId(userEntity.getExternalId())
+                .authProvider(userEntity.getAuthProvider())
+                .email(new UserEmail(userEntity.getEmail()))
+                .phoneNumber(new PhoneNumber(userEntity.getPhoneNumber()))
+                .firstName(new FirstName(userEntity.getFirstName()))
+                .lastName(new LastName(userEntity.getLastName()))
+                .imageUrl(userEntity.getImageUrl())
+                .isEmailVerified(userEntity.getIsEmailVerified())
+                .isPhoneVerified(userEntity.getIsPhoneVerified())
+                .userType(userEntity.getUserType())
+                .status(userEntity.getStatus())
+                .roles(roles)
+                .organizationalUnitIds(userEntity.getOrganizationalUnitIds())
+                .createdAt(userEntity.getCreatedAt())
+                .updatedAt(userEntity.getUpdatedAt())
+                .build();
     }
 
-    private List<Address> addressEntityListToAddressList(List<AddressEntity> addressEntities) {
-        if (addressEntities == null) return new ArrayList<>();
-        return addressEntities.stream()
-                .map(entity -> Address.builder()
-                        .addressId(new AddressId(entity.getId()))
-                        .name(entity.getName())
-                        .street(entity.getStreet())
-                        .city(entity.getCity())
-                        .postalCode(entity.getPostalCode())
-                        .country(entity.getCountry())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    // List<Role> -> Set<RoleEntity>
-    private Set<RoleEntity> roleListToRoleEntitySet(List<Role> roles) {
-        if (roles == null) return null;
+    public List<RoleEntity> roleListToRoleEntityList(List<Role> roles) {
+        if (roles == null) return new ArrayList<>();
         return roles.stream()
                 .map(role -> RoleEntity.builder()
                         .id(role.getId().getValue())
                         .name(role.getName())
-                        // Permission'ları RoleEntity'ye set etmiyoruz, çünkü Role veritabanında zaten var.
-                        // Sadece User-Role ilişkisi kuruluyor.
+                        .userType(role.getUserType())
+                        .organizationalUnitId(role.getOrganizationalUnitId())
+                        .isStatic(role.isStatic())
+                        .createdByUserId(role.getCreatedByUserId() != null ? role.getCreatedByUserId().getValue() : null)
+                        .version(role.getVersion())
+                        .createdAt(role.getCreatedAt())
+                        .updatedAt(role.getUpdatedAt())
                         .build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
-    // Set<RoleEntity> -> List<Role>
-    private List<Role> roleEntitySetToRoleList(Set<RoleEntity> roleEntities) {
-        if (roleEntities == null) return new ArrayList<>();
-        return new ArrayList<>(roleEntities.stream()
-                .map(this::roleEntityToRole)
-                .collect(Collectors.toList()));
-    }
-
-    public Role roleEntityToRole(RoleEntity entity) {
+    public Role roleEntityToRoleWithPermissions(RoleEntity entity, List<PermissionEntity> permissionEntities) {
         if (entity == null) return null;
-        return new Role(
-                new RoleId(entity.getId()),
-                entity.getName(),
-                permissionEntitySetToPermissionList(entity.getPermissions())
-        );
+        return Role.builder()
+                .roleId(new RoleId(entity.getId()))
+                .name(entity.getName())
+                .userType(entity.getUserType())
+                .organizationalUnitId(entity.getOrganizationalUnitId())
+                .isStatic(entity.isStatic())
+                .createdByUserId(entity.getCreatedByUserId() != null ? new UserId(entity.getCreatedByUserId()) : null)
+                .version(entity.getVersion())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .permissions(permissionEntityListToPermissionList(permissionEntities))
+                .build();
     }
 
-    private List<Permission> permissionEntitySetToPermissionList(Set<PermissionEntity> permissionEntities) {
+    private List<Permission> permissionEntityListToPermissionList(List<PermissionEntity> permissionEntities) {
         if (permissionEntities == null) return new ArrayList<>();
         return permissionEntities.stream()
-                .map(entity -> new Permission(
-                        new PermissionId(entity.getId()),
-                        entity.getName()
-                ))
+                .map(entity -> Permission.builder()
+                        .permissionId(new PermissionId(entity.getId()))
+                        .code(entity.getCode())
+                        .description(entity.getDescription())
+                        .domain(entity.getDomain())
+                        .active(entity.isActive())
+                        .createdAt(entity.getCreatedAt())
+                        .updatedAt(entity.getUpdatedAt())
+                        .build())
                 .collect(Collectors.toList());
     }
 }
