@@ -1,0 +1,170 @@
+server:
+  # Customer'ın portu olan 8184'ü devraldık. K8s'den IDENTITY_SERVICE_PORT olarak beslenecek.
+  port: ${IDENTITY_SERVICE_PORT:8184}
+
+logging:
+  level:
+    com.berkay: ${LOG_LEVEL:DEBUG}
+    org.springframework.security: ${LOG_LEVEL:INFO}
+    org.springframework.kafka: WARN
+    org.apache.kafka: WARN
+
+spring:
+  devtools:
+    restart:
+      enabled: false
+  application:
+    name: identity-service
+  jpa:
+    open-in-view: false
+    show-sql: ${SHOW_SQL:false}
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  datasource:
+    # Not: Bare metal olarak kurulu olan Postgres ile Docker üzerine kurulu Postgres'in birbirinden ayrılması için DB_PORT 5433 olarak ayarlanmıştır.
+    url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5433}/takemyorder?currentSchema=identity&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    # DİKKAT: Spring Boot 3+ / Flyway 9+ sürümlerinde 'clean-disabled' varsayılan olarak 'true' gelir 
+    # ve veritabanının kaza ile silinmesini tamamen engeller. 
+    # Biz aşağıda 'identity-service.init.reset-db' özelliği üzerinden veritabanını geliştirme/test 
+    # aşamalarında sıfırlayabilmek için bu güvenlik kilidini 'false' yaparak açık bırakıyoruz. 
+    # Ancak sıfırlama (clean) işlemini kendi başına yapmaz; tetiği 'BeanConfiguration' sınıfındaki 
+    # @ConditionalOnProperty'ye bağlı FlywayMigrationStrategy çeker.
+    clean-disabled: false
+    baseline-on-migrate: true
+    baseline-version: 1
+    schemas: identity
+    locations: classpath:db/migration
+
+  # Orijinal ve Kurumsal Cache Yapılandırmamız
+  cache:
+    cache-names: roles_cache
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=15m
+
+# ==========================================
+# IDENTITY SERVICE ÖZEL KONFİGÜRASYONLARI
+# ==========================================
+identity-service:
+  role-events-topic-name: identity-role-events
+  permission-events-topic-name: identity-permission-events
+  user-events-topic-name: identity-user-events
+  restaurant-info-topic-name: restaurant-information
+  restaurant-personnel-topic-name: restaurant-personnel
+  outbox-scheduler-fixed-rate: 10000
+  outbox-scheduler-initial-delay: 10000
+  keycloak:
+    server-url: ${KEYCLOAK_SERVER_URL:http://localhost:30080}
+    realm: ${KEYCLOAK_REALM:take-my-order-realm}
+    master-realm: ${KEYCLOAK_MASTER_REALM:master}
+    admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+    admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+    client-id: ${KEYCLOAK_CLIENT_ID:take-my-order-client}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET:local-dummy-secret}
+  system-admin:
+    email: ${SYSTEM_ADMIN_EMAIL:admin@takemyorder.com}
+    password: ${SYSTEM_ADMIN_PASSWORD:Admin123!}
+    first-name: ${SYSTEM_ADMIN_FIRST_NAME:System}
+    last-name: ${SYSTEM_ADMIN_LAST_NAME:Admin}
+    phone-number: ${SYSTEM_ADMIN_PHONE:+905550000000}
+  init:
+    # Geliştirme (Local) ortamlarında her başlangıçta temiz bir sayfa açmak için true yapılabilir.
+    # Canlı (Production) ortamlarda KESİNLİKLE false kalmalıdır.
+    reset-db: ${RESET_DB:false}
+    reset-keycloak: ${RESET_KEYCLOAK:false}
+    # Test amaçlı örnek müşteri ve satıcı (Sample Users) hesaplarının açılışta yaratılması:
+    create-samples: ${CREATE_SAMPLES:false}
+  sample:
+    customer:
+      email: ${SAMPLE_CUSTOMER_EMAIL:customer@takemyorder.com}
+      password: ${SAMPLE_CUSTOMER_PASSWORD:Customer123!}
+      first-name: ${SAMPLE_CUSTOMER_FIRST_NAME:Test}
+      last-name: ${SAMPLE_CUSTOMER_LAST_NAME:Customer}
+      phone-number: ${SAMPLE_CUSTOMER_PHONE:+905551111111}
+    merchant:
+      email: ${SAMPLE_MERCHANT_EMAIL:merchant@takemyorder.com}
+      password: ${SAMPLE_MERCHANT_PASSWORD:Merchant123!}
+      first-name: ${SAMPLE_MERCHANT_FIRST_NAME:Test}
+      last-name: ${SAMPLE_MERCHANT_LAST_NAME:Merchant}
+      phone-number: ${SAMPLE_MERCHANT_PHONE:+905552222222}
+
+# ==========================================
+# GÜVENLİK VE RBAC POLİTİKALARI
+# ==========================================
+security:
+  rbac:
+    domain-policies:
+      MERCHANT: RESTAURANT, ORDER
+      INTERNAL: RESTAURANT, ORDER, PAYMENT, IDENTITY
+
+# ==========================================
+# INFRASTRUCTURE / KAFKA CONFIGS
+# ==========================================
+kafka-config:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:31091,localhost:31092,localhost:31093}
+  schema-registry-url-key: schema.registry.url
+  schema-registry-url: ${SCHEMA_REGISTRY_URL:http://localhost:30081}
+  num-of-partitions: 3
+  replication-factor: 3
+
+kafka-consumer-config:
+  key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+  restaurant-info-consumer-group-id: identity-restaurant-info-topic-consumer
+  restaurant-personnel-consumer-group-id: identity-restaurant-personnel-topic-consumer
+  auto-offset-reset: earliest
+  specific-avro-reader-key: specific.avro.reader
+  specific-avro-reader: true
+  batch-listener: true
+  auto-startup: true
+  concurrency-level: 3
+  session-timeout-ms: 10000
+  heartbeat-interval-ms: 3000
+  max-poll-interval-ms: 300000
+  max-poll-records: 500
+  max-partition-fetch-bytes-default: 1048576
+  max-partition-fetch-bytes-boost-factor: 1
+  poll-timeout-ms: 150
+
+kafka-producer-config:
+  key-serializer-class: org.apache.kafka.common.serialization.StringSerializer
+  value-serializer-class: io.confluent.kafka.serializers.KafkaAvroSerializer
+  compression-type: ${KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE:none}
+  acks: all
+  batch-size: 16384
+  batch-size-boost-factor: 100
+  linger-ms: 5
+  request-timeout-ms: 60000
+  retry-count: 5
+
+# ==========================================
+# GÖZLEMLENEBİLİRLİK (OBSERVABILITY & TRACING)
+# ==========================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus  # Prometheus'u dışarı açıyoruz
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name} # Grafana'da hangi servis olduğunu anlamak için
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:30094/api/v2/spans}
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0} # %100 oranında tüm istekleri izle (Production'da bu değer 0.1 yapılır)

@@ -22,5 +22,8 @@
         <module>identity-domain</module>
         <module>identity-dataaccess</module>
         <module>identity-infrastructure</module>
+        <module>identity-application</module>
+        <module>identity-container</module>
+        <module>identity-messaging</module>
     </modules>
 </project>
