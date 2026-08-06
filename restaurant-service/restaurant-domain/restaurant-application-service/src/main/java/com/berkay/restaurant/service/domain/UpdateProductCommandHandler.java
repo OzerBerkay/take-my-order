@@ -70,10 +70,10 @@ public class UpdateProductCommandHandler {
         // Restoranı Kaydet (JPA cascade ile product da güncellenir)
         restaurantRepository.saveRestaurant(restaurant);
 
-        // OUTBOX - savedRestaurant kullanarak güncel versiyonu garanti ediyoruz)
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
                 restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),
-                RESTAURANT_UPDATED
+                RESTAURANT_UPDATED,
+                null
         );
 
         log.info("Restaurant menu updated and outbox message saved for restaurant id: {}", savedRestaurant.getId().getValue());

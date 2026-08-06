@@ -66,7 +66,8 @@ public class DeleteProductCommandHandler {
         // Outbox'a Event At (Snapshot: Artık menüde o ürün yok, Consumer bunu böyle bilecek)
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
                 restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),
-                RESTAURANT_UPDATED
+                RESTAURANT_UPDATED,
+                null
         );
 
         log.info("Product with id: {} is deleted from restaurant: {}", productId, restaurantId);
