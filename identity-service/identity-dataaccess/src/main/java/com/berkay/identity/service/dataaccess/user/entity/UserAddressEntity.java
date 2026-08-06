@@ -10,9 +10,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "addresses")
+@Table(name = "user_addresses")
 @Entity
-public class AddressEntity extends BaseEntity {
+public class UserAddressEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,15 +33,14 @@ public class AddressEntity extends BaseEntity {
     @Column(nullable = false)
     private String country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AddressEntity that = (AddressEntity) o;
+        UserAddressEntity that = (UserAddressEntity) o;
         return id != null && id.equals(that.id);
     }
 

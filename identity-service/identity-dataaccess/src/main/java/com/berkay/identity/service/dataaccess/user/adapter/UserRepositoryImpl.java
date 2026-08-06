@@ -1,11 +1,22 @@
 package com.berkay.identity.service.dataaccess.user.adapter;
 
-import com.berkay.identity.service.dataaccess.user.entity.RoleEntity;
+import com.berkay.identity.service.dataaccess.user.entity.UserAddressEntity;
 import com.berkay.identity.service.dataaccess.user.entity.UserEntity;
+import com.berkay.identity.service.dataaccess.user.entity.UserRoleEntity;
+import com.berkay.identity.service.dataaccess.role.entity.RoleEntity;
+import com.berkay.identity.service.dataaccess.permission.entity.PermissionEntity;
+import com.berkay.identity.service.dataaccess.role.entity.RolePermissionEntity;
+
 import com.berkay.identity.service.dataaccess.user.exception.IdentityDataaccessException;
 import com.berkay.identity.service.dataaccess.user.mapper.UserDataAccessMapper;
-import com.berkay.identity.service.dataaccess.user.repository.RoleJpaRepository;
+
+import com.berkay.identity.service.dataaccess.user.repository.UserAddressJpaRepository;
 import com.berkay.identity.service.dataaccess.user.repository.UserJpaRepository;
+import com.berkay.identity.service.dataaccess.user.repository.UserRoleJpaRepository;
+import com.berkay.identity.service.dataaccess.role.repository.RoleJpaRepository;
+import com.berkay.identity.service.dataaccess.permission.repository.PermissionJpaRepository;
+import com.berkay.identity.service.dataaccess.role.repository.RolePermissionJpaRepository;
+
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.entity.User;
 import com.berkay.identity.service.domain.valueobject.RoleId;
@@ -22,73 +33,109 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
     private final RoleJpaRepository roleJpaRepository;
+    private final UserAddressJpaRepository addressJpaRepository;
+    private final UserRoleJpaRepository userRoleJpaRepository;
+    private final RolePermissionJpaRepository rolePermissionJpaRepository;
+    private final PermissionJpaRepository permissionJpaRepository;
     private final UserDataAccessMapper userDataAccessMapper;
 
     @Override
     public User save(User user) {
-        // Domain -> Entity çevir
-        UserEntity userEntity = userDataAccessMapper.userToUserEntity(user);
+        Optional<UserEntity> existingOpt = userJpaRepository.findById(user.getId().getValue());
+        UserEntity entityToSave;
 
-        // Adreslerin User ile olan ilişkisini set et (JPA gerekliliği)
-        // Mapper'da userEntity.setAddresses(...) dedik ama
-        // addressEntity.setUser(userEntity) demedik. Burada diyoruz.
-        if (userEntity.getAddresses() != null) {
-            userEntity.getAddresses().forEach(address -> address.setUser(userEntity));
-        }
-
-        // --- ROL İLİŞKİSİ (KRİTİK DÜZELTME) ---
-        // Mapper 'detached' role nesneleri oluşturdu. Cascade kullanmadığımız için
-        // bunları DB'den çekilen 'managed' nesnelerle değiştirmeliyiz.
-        if (userEntity.getRoles() != null && !userEntity.getRoles().isEmpty()) {
-            Set<UUID> roleIds = userEntity.getRoles().stream()
-                    .map(RoleEntity::getId)
-                    .collect(Collectors.toSet());
-
-            // Veritabanındaki gerçek kayıtları getir
-            List<RoleEntity> managedRoles = roleJpaRepository.findAllById(roleIds);
-
-            if (managedRoles.size() != roleIds.size()) {
-                throw new IdentityDataaccessException("One or more roles not found in database! Requested: " + roleIds);
+        if (existingOpt.isPresent()) {
+            entityToSave = existingOpt.get();
+            // Update fields manually
+            entityToSave.setFirstName(user.getFirstName().getValue());
+            entityToSave.setLastName(user.getLastName().getValue());
+            entityToSave.setPhoneNumber(user.getPhoneNumber().getValue());
+            entityToSave.setImageUrl(user.getImageUrl());
+            entityToSave.setStatus(user.getStatus());
+            entityToSave.setUpdatedAt(user.getUpdatedAt());
+            
+            // Clear and add all for ElementCollection
+            List<UUID> newOrgUnits = user.getOrganizationalUnitIds() != null ? new ArrayList<>(user.getOrganizationalUnitIds()) : new ArrayList<>();
+            if (entityToSave.getOrganizationalUnitIds() != null) {
+                entityToSave.getOrganizationalUnitIds().clear();
+                entityToSave.getOrganizationalUnitIds().addAll(newOrgUnits);
+            } else {
+                entityToSave.setOrganizationalUnitIds(newOrgUnits);
             }
-
-            // UserEntity içindeki seti bunlarla değiştir
-            userEntity.setRoles(new HashSet<>(managedRoles));
+        } else {
+            entityToSave = userDataAccessMapper.userToUserEntity(user);
         }
 
-        // Kaydet
-        UserEntity savedUserEntity = userJpaRepository.save(userEntity);
+        UserEntity savedUserEntity = userJpaRepository.save(entityToSave);
 
-        // Entity -> Domain çevir ve dön
-        return userDataAccessMapper.userEntityToUser(savedUserEntity);
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            userRoleJpaRepository.deleteByUserId(savedUserEntity.getId());
+            List<UserRoleEntity> userRoleEntities = user.getRoles().stream().map(r ->
+                    UserRoleEntity.builder()
+                            .userId(savedUserEntity.getId())
+                            .roleId(r.getId().getValue())
+                            .build()
+            ).collect(Collectors.toList());
+            userRoleJpaRepository.saveAll(userRoleEntities);
+        }
+
+        return findById(new com.berkay.identity.service.domain.valueobject.UserId(savedUserEntity.getId())).orElseThrow();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email)
-                .map(userDataAccessMapper::userEntityToUser);
+        return userJpaRepository.findByEmail(email).map(this::reconstructUser);
     }
 
     @Override
     public Optional<User> findByPhoneNumber(String phoneNumber) {
-        return userJpaRepository.findByPhoneNumber(phoneNumber)
-                .map(userDataAccessMapper::userEntityToUser);
+        return userJpaRepository.findByPhoneNumber(phoneNumber).map(this::reconstructUser);
+    }
+
+    @Override
+    public Optional<User> findByExternalId(String externalId) {
+        return userJpaRepository.findByExternalId(externalId).map(this::reconstructUser);
+    }
+
+    @Override
+    public Optional<User> findById(com.berkay.identity.service.domain.valueobject.UserId id) {
+        return userJpaRepository.findById(id.getValue()).map(this::reconstructUser);
     }
 
     @Override
     public List<Role> findRolesByIds(List<RoleId> roleIds) {
-        // VO Listesini UUID Listesine çevir
         List<UUID> roleUuids = roleIds.stream()
                 .map(RoleId::getValue)
                 .collect(Collectors.toList());
-
         return roleJpaRepository.findAllById(roleUuids).stream()
-                .map(userDataAccessMapper::roleEntityToRole)
+                .map(this::reconstructRole)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Role> findRoleByName(String roleName) {
-        return roleJpaRepository.findByName(roleName)
-                .map(userDataAccessMapper::roleEntityToRole);
+        return roleJpaRepository.findByName(roleName).map(this::reconstructRole);
+    }
+
+    private User reconstructUser(UserEntity userEntity) {
+        List<UUID> roleIds = userRoleJpaRepository.findByUserId(userEntity.getId()).stream()
+                .map(UserRoleEntity::getRoleId)
+                .collect(Collectors.toList());
+        
+        List<Role> roles = roleJpaRepository.findAllById(roleIds).stream()
+                .map(this::reconstructRole)
+                .collect(Collectors.toList());
+
+        return userDataAccessMapper.userEntityToUserWithCollections(userEntity, new ArrayList<>(), roles);
+    }
+
+    private Role reconstructRole(RoleEntity roleEntity) {
+        List<UUID> permissionIds = rolePermissionJpaRepository.findByRoleId(roleEntity.getId()).stream()
+                .map(RolePermissionEntity::getPermissionId)
+                .collect(Collectors.toList());
+        
+        List<PermissionEntity> permissions = permissionJpaRepository.findAllById(permissionIds);
+        
+        return userDataAccessMapper.roleEntityToRoleWithPermissions(roleEntity, permissions);
     }
 }

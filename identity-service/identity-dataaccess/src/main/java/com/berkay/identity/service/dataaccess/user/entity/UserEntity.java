@@ -1,12 +1,13 @@
 package com.berkay.identity.service.dataaccess.user.entity;
 
 import com.berkay.identity.service.domain.valueobject.AccountStatus;
+import com.berkay.identity.service.domain.valueobject.AuthProvider;
 import com.berkay.identity.service.domain.valueobject.UserType;
 import lombok.*;
 
 import jakarta.persistence.*;
 
-import java.util.*;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,6 +21,13 @@ public class UserEntity extends BaseEntity {
     @Id
     @Column(name = "id")
     private UUID id;
+
+    @Column(name = "external_id", nullable = false, unique = true)
+    private String externalId; // Keycloak ID
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider", nullable = false)
+    private AuthProvider authProvider;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -50,22 +58,15 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private AccountStatus status;
 
-    // --- İLİŞKİLER ---
+    @Version
+    private Long version;
 
-    // Kullanıcının adresleri User silinirse adresler de silinsin (CascadeType.ALL)
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AddressEntity> addresses = new ArrayList<>();;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_organizational_units", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "organizational_unit_id")
+    private java.util.List<UUID> organizationalUnitIds;
 
-    // Kullanıcının Rolleri (user_roles tablosu)
-    @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles = new HashSet<>();
+
 
     @Override
     public boolean equals(Object o) {
