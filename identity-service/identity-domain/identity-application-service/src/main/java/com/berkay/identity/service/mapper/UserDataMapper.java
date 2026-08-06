@@ -3,14 +3,12 @@ package com.berkay.identity.service.mapper;
 import com.berkay.identity.service.domain.entity.Address;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.entity.User;
-import com.berkay.identity.service.domain.event.UserCreatedEvent;
 import com.berkay.identity.service.domain.valueobject.*;
 import com.berkay.identity.service.dto.command.CreateAddressCommand;
 import com.berkay.identity.service.dto.command.RegisterInternalUserCommand;
 import com.berkay.identity.service.dto.command.RegisterCustomerCommand;
 import com.berkay.identity.service.dto.command.RegisterMerchantCommand;
 import com.berkay.identity.service.dto.command.CreateUserResponse;
-import com.berkay.identity.service.outbox.model.UserEventPayload;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class UserDataMapper {
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
                 .phoneNumber(new PhoneNumber(command.getPhoneNumber()))
-                .addresses(addressCommandsToAddresses(command.getAddresses()))
+                .authProvider(AuthProvider.LOCAL) // VARSAYILAN
                 .roles(new ArrayList<>(Collections.singletonList(role)))
                 // Initialize metodu Type, Status ayarlayacak, o yüzden burada boş bırakıyoruz
                 .build();
@@ -41,7 +39,7 @@ public class UserDataMapper {
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
                 .phoneNumber(new PhoneNumber(command.getPhoneNumber()))
-                .addresses(addressCommandsToAddresses(command.getAddresses()))
+                .authProvider(AuthProvider.LOCAL)// VARSAYILAN
                 // new ArrayList<>(...) mutable olması ve gelecekte rol eklenmesi gerekirse patlamaması için gerekli
                 // Collections.singletonList(role) immutable çalışmakta
                 .roles(new ArrayList<>(Collections.singletonList(role)))
@@ -56,7 +54,7 @@ public class UserDataMapper {
                 .firstName(new FirstName(command.getFirstName()))
                 .lastName(new LastName(command.getLastName()))
                 .phoneNumber(new PhoneNumber(command.getPhoneNumber()))
-                .addresses(addressCommandsToAddresses(command.getAddresses()))
+                .authProvider(AuthProvider.LOCAL) // VARSAYILAN
                 .roles(new ArrayList<>(roles)) // Internal user rolleri buradan alır
                 .build();
     }
@@ -68,46 +66,51 @@ public class UserDataMapper {
                 .build();
     }
 
-    private List<Address> addressCommandsToAddresses(List<CreateAddressCommand> commands) {
-        if (commands == null) return Collections.emptyList();
-        return commands.stream()
-                .map(this::commandToAddress)
-                .collect(Collectors.toList());
-    }
-
-    private Address commandToAddress(CreateAddressCommand command) {
-        return Address.create(
-                command.getName(),
-                command.getStreet(),
-                command.getCity(),
-                command.getPostalCode(),
-                command.getCountry()
-        );
-    }
-
-    public UserEventPayload userCreatedEventToUserEventPayload(UserCreatedEvent event) {
-        return UserEventPayload.builder()
-                .userId(event.getUser().getId().getValue().toString())
-                .email(event.getUser().getEmail().getValue())
-                .phoneNumber(event.getUser().getPhoneNumber().getValue())
-                .firstName(event.getUser().getFirstName().getValue())
-                .lastName(event.getUser().getLastName().getValue())
-                .userType(event.getUser().getUserType().name())
-                .accountStatus(event.getUser().getStatus().name())
-                .createdAt(event.getCreatedAt())
+    public com.berkay.identity.service.dto.query.UserResponse userToUserResponse(User user, List<java.util.UUID> allowedOrgUnitIds) {
+        return com.berkay.identity.service.dto.query.UserResponse.builder()
+                .id(user.getId().getValue())
+                .externalId(user.getExternalId())
+                .email(user.getEmail().getValue())
+                .firstName(user.getFirstName().getValue())
+                .lastName(user.getLastName().getValue())
+                .phoneNumber(user.getPhoneNumber().getValue())
+                .userType(user.getUserType())
+                .status(user.getStatus())
+                .authProvider(user.getAuthProvider())
+                .isEmailVerified(user.isEmailVerified())
+                .isPhoneVerified(user.isPhoneVerified())
+                .imageUrl(user.getImageUrl())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .organizationalUnitIds(user.getOrganizationalUnitIds())
+                .roles(user.getRoles().stream()
+                        .filter(role -> {
+                            if (allowedOrgUnitIds == null) return true; // Admin gets everything
+                            if (role.getOrganizationalUnitId() == null) return false; // Exclude global roles for merchant
+                            return allowedOrgUnitIds.contains(role.getOrganizationalUnitId());
+                        })
+                        .map(this::roleToRoleResponse)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
-    public UserEventPayload userToUserEventPayload(User user) {
-        return UserEventPayload.builder()
-                .userId(user.getId().getValue().toString())
-                .email(user.getEmail().getValue())
-                .phoneNumber(user.getPhoneNumber().getValue())
-                .firstName(user.getFirstName().getValue())
-                .lastName(user.getLastName().getValue())
-                .userType(user.getUserType().name())
-                .accountStatus(user.getStatus().name())
-                .createdAt(user.getCreatedAt())
+    private com.berkay.identity.service.dto.query.RoleResponse roleToRoleResponse(Role role) {
+        return com.berkay.identity.service.dto.query.RoleResponse.builder()
+                .id(role.getId().getValue())
+                .name(role.getName())
+                .isStatic(role.isStatic())
+                .organizationalUnitId(role.getOrganizationalUnitId())
+                .userType(role.getUserType().name())
+                .createdAt(role.getCreatedAt())
+                .permissions(role.getPermissions().stream()
+                        .map(p -> com.berkay.identity.service.dto.query.PermissionResponse.builder()
+                                .id(p.getId().getValue())
+                                .name(p.getCode())
+                                .description(p.getDescription())
+                                .active(p.isActive())
+                                .isRestricted(p.isRestricted())
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
