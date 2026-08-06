@@ -53,6 +53,8 @@ public class RestaurantMessagingDataMapper {
     public RestaurantInformationAvroModel restaurantEventPayloadToRestaurantInformationAvroModel(RestaurantEventPayload restaurantEventPayload) {
         return RestaurantInformationAvroModel.newBuilder()
                 .setRestaurantId(java.util.UUID.fromString(restaurantEventPayload.getRestaurantId()))
+                .setMerchantId(restaurantEventPayload.getMerchantId() != null ? java.util.UUID.fromString(restaurantEventPayload.getMerchantId()) : null)
+                .setName(restaurantEventPayload.getName())
                 .setActive(restaurantEventPayload.isActive())
                 .setCreatedAt(restaurantEventPayload.getCreatedAt().toInstant())
                 .setProducts(restaurantEventPayload.getProducts().stream().map(productPayload ->
@@ -62,6 +64,7 @@ public class RestaurantMessagingDataMapper {
                                 .setPrice(productPayload.getPrice())
                                 .setAvailable(productPayload.isAvailable())
                                 .build()).collect(java.util.stream.Collectors.toList()))
+                .setEventType(restaurantEventPayload.getEventType())
                 .build();
     }
 
