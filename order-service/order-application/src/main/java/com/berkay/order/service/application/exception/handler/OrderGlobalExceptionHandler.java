@@ -19,7 +19,7 @@ public class OrderGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {OrderDomainException.class}) // This method will call when this type of exception is thrown
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleException(OrderDomainException orderDomainException) {
-        log.error(orderDomainException.getMessage(), orderDomainException);
+        log.warn(orderDomainException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(orderDomainException.getMessage())
@@ -30,7 +30,7 @@ public class OrderGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {OrderNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleException(OrderNotFoundException orderNotFoundException) {
-        log.error(orderNotFoundException.getMessage(), orderNotFoundException);
+        log.warn(orderNotFoundException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(orderNotFoundException.getMessage())

@@ -49,13 +49,25 @@ public class RestaurantInformationKafkaListener implements KafkaConsumer<Restaur
                 log.info("Processing Restaurant Model for restaurant id: {}",
                         restaurantInformationAvroModel.getRestaurantId());
 
-                RestaurantModel restaurantModel = orderMessagingDataMapper
-                        .restaurantInformationAvroModelToRestaurantModel(restaurantInformationAvroModel);
+                String eventType = restaurantInformationAvroModel.getEventType() != null ? restaurantInformationAvroModel.getEventType() : "";
 
-                restaurantInformationMessageListener.restaurantInformationReceived(restaurantModel);
+                switch (eventType) {
+                    case "RESTAURANT_CREATED":
+                    case "RESTAURANT_UPDATED":
+                    case "": // Fallback for old messages
+                        RestaurantModel restaurantModel = orderMessagingDataMapper
+                                .restaurantInformationAvroModelToRestaurantModel(restaurantInformationAvroModel);
 
-                log.info("Restaurant Model processed successfully for restaurant id: {}",
-                        restaurantInformationAvroModel.getRestaurantId());
+                        restaurantInformationMessageListener.restaurantInformationReceived(restaurantModel);
+
+                        log.info("Restaurant Model processed successfully for restaurant id: {}",
+                                restaurantInformationAvroModel.getRestaurantId());
+                        break;
+                    default:
+                        log.debug("Received eventType '{}' for restaurant id: {}. Ignored in Order Service.",
+                                eventType, restaurantInformationAvroModel.getRestaurantId());
+                        break;
+                }
 
             } catch (OptimisticLockingFailureException e) {
                 // UPDATE senaryoları için koruma
