@@ -19,7 +19,7 @@ public class RestaurantGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {RestaurantDomainException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleException(RestaurantDomainException restaurantDomainException) {
-        log.error(restaurantDomainException.getMessage(), restaurantDomainException);
+        log.warn(restaurantDomainException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(restaurantDomainException.getMessage())
@@ -30,7 +30,7 @@ public class RestaurantGlobalExceptionHandler extends GlobalExceptionHandler {
     @ExceptionHandler(value = {RestaurantNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleException(RestaurantNotFoundException restaurantNotFoundException) {
-        log.error(restaurantNotFoundException.getMessage(), restaurantNotFoundException);
+        log.warn(restaurantNotFoundException.getMessage());
         return ErrorDTO.builder()
                 .code(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(restaurantNotFoundException.getMessage())

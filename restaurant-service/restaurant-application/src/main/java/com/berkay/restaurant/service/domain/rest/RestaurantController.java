@@ -42,13 +42,17 @@ public class RestaurantController {
         this.productRequestMapper = productRequestMapper;
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMerchant(authentication)")
     @PostMapping
-    public ResponseEntity<CreateRestaurantResponse> createRestaurant(@RequestBody CreateRestaurantCommand createRestaurantCommand) {
+    public ResponseEntity<CreateRestaurantResponse> createRestaurant(@RequestBody CreateRestaurantCommand createRestaurantCommand,
+                                                                     @org.springframework.security.core.annotation.AuthenticationPrincipal java.util.UUID internalId) {
+        createRestaurantCommand.setMerchantId(internalId.toString());
         log.info("Creating restaurant with name: {}", createRestaurantCommand.getRestaurantName());
         CreateRestaurantResponse response = restaurantApplicationService.createRestaurant(createRestaurantCommand);
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_create_product', #restaurantId)")
     @PostMapping("/{restaurantId}/products")
     public ResponseEntity<AddProductResponse> addProduct(@PathVariable UUID restaurantId,
                                                          @RequestBody @Valid AddProductRequest addProductRequest) {
@@ -60,6 +64,7 @@ public class RestaurantController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_manage_restaurant', #restaurantId)")
     @PutMapping("/{restaurantId}")
     public ResponseEntity<String> updateRestaurant(@PathVariable UUID restaurantId,
                                                    @RequestBody @Valid UpdateRestaurantRequest updateRestaurantRequest) {
@@ -81,6 +86,7 @@ public class RestaurantController {
      EVET. Peki bu ürün, URL'deki restaurantId'ye mi ait? HAYIR! O zaman hata fırlat.
      TODO: Authorization kısmı projeye eklendiğinde bu kısım da anlamlı olacak.
      */
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_update_product', #restaurantId)")
     @PutMapping("/{restaurantId}/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable UUID restaurantId,
                                                 @PathVariable UUID productId,
@@ -94,6 +100,7 @@ public class RestaurantController {
         return ResponseEntity.ok("Product updated");
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_delete_product', #restaurantId)")
     @DeleteMapping("/{restaurantId}/products/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable UUID restaurantId,
                                                 @PathVariable UUID productId) {
@@ -110,6 +117,7 @@ public class RestaurantController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMemberOfRestaurant(authentication, #restaurantId)")
     @GetMapping("/{restaurantId}")
     public ResponseEntity<GetRestaurantQueryResponse> getRestaurant(@PathVariable UUID restaurantId) {
         log.info("Getting restaurant with id: {}", restaurantId);
@@ -122,6 +130,7 @@ public class RestaurantController {
         return ResponseEntity.ok(response);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMemberOfRestaurant(authentication, #restaurantId)")
     @GetMapping("/{restaurantId}/products/{productId}")
     public ResponseEntity<GetProductQueryResponse> getProduct(@PathVariable UUID restaurantId,
                                                               @PathVariable UUID productId) {
