@@ -1,0 +1,11 @@
+{"namespace": "com.berkay.kafka.order.avro.model",
+  "type": "record",
+  "name": "RestaurantPersonnelAvroModel",
+  "fields": [
+    {"name": "restaurantId", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "userId", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "addedByMerchantId", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "createdAt", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+    {"name": "eventType", "type": ["null", "string"], "default": null}
+  ]
+}

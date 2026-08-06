@@ -1,0 +1,30 @@
+{
+  "namespace": "com.berkay.kafka.identity.avro.model",
+  "type": "record",
+  "name": "RoleEventAvroModel",
+  "fields": [
+    {"name": "id", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "roleId", "type": ["null", {"type": "string", "logicalType": "uuid"}], "default": null},
+    {"name": "name", "type": ["null", "string"], "default": null},
+    {"name": "userType", "type": ["null", "string"], "default": null},
+    {"name": "organizationalUnitId", "type": ["null", {"type": "string", "logicalType": "uuid"}], "default": null},
+    {"name": "version", "type": ["null", "long"], "default": null},
+    {"name": "eventType", "type": "string"},
+    {"name": "permissions", "type": ["null", {
+      "type": "array",
+      "items": {
+        "type": "record",
+        "name": "PermissionAvroModel",
+        "fields": [
+          {"name": "id", "type": {"type": "string", "logicalType": "uuid"}},
+          {"name": "code", "type": "string"},
+          {"name": "domain", "type": "string"},
+          {"name": "active", "type": ["null", "boolean"], "default": null},
+          {"name": "isRestricted", "type": ["null", "boolean"], "default": null},
+          {"name": "createdAt", "type": ["null", {"type": "string", "avro.java.string": "String"}], "default": null},
+          {"name": "updatedAt", "type": ["null", {"type": "string", "avro.java.string": "String"}], "default": null}
+        ]
+      }
+    }], "default": null}
+  ]
+}

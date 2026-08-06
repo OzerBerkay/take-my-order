@@ -1,5 +1,5 @@
 server:
-  port: ${GATEWAY_SERVICE_PORT:8184}
+  port: ${GATEWAY_SERVICE_PORT:8080}
 
 logging:
   level:
@@ -17,16 +17,17 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URI:http://localhost:8184}
+          predicates:
+            - Path=/auth/**,/admin/**,/merchant/**,/users/**,/roles/**,/permissions/**,/addresses/**,/profile/**,/verify/**
+
         - id: order-service
           # localhost is for if you run gateway-service and order-service on ide
           uri: ${ORDER_SERVICE_URI:http://localhost:8181}
           predicates:
             - Path=/orders/**
 
-        - id: customer-service
-          uri: ${CUSTOMER_SERVICE_URI:http://localhost:8184}
-          predicates:
-            - Path=/customers/**
 
         - id: payment-service
           uri: ${PAYMENT_SERVICE_URI:http://localhost:8182}

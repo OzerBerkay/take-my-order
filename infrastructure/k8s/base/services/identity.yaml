@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer-service # Deployment İsmi
+  name: identity-service # Deployment İsmi
   namespace: take-my-order
   labels:
-    app: customer-service # Deployment Etiketi
+    app: identity-service # Deployment Etiketi
 spec:
   replicas: 1 # Kaç kopya çalışacak?
   selector:
     matchLabels:
-      app: customer-service # Pod Seçicisi
+      app: identity-service # Pod Seçicisi
   template:
     metadata:
       labels:
-        app: customer-service # Pod Etiketi
+        app: identity-service # Pod Etiketi
     spec:
       nodeSelector:
         node-type: app
       containers:
-        - name: customer-service # Konteyner İsmi
-          image: berkayozr/customer-service:v1 # Dockerhub'da build ettiğimiz imaj
+        - name: identity-service # Konteyner İsmi
+          image: berkayozr/identity-service:v1 # Dockerhub'da build ettiğimiz imaj
           imagePullPolicy: Always            # Docker Hub'dan çek
           ports:
-            - containerPort: 8184           # Application.yml içindeki customer portu
+            - containerPort: 8184           # Application.yml içindeki identity portu
           resources:
             requests:
               memory: "300Mi"
@@ -52,11 +52,11 @@ spec:
             failureThreshold: 10
 
           env:
-            - name: CUSTOMER_SERVICE_PORT
+            - name: IDENTITY_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
                   name: service-config
-                  key: CUSTOMER_SERVICE_PORT
+                  key: IDENTITY_SERVICE_PORT
 
             # --- Veritabanı Ayarları (ConfigMap ve Secret'tan) ---
             - name: MASTER_PRIVATE_IP
@@ -175,12 +175,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: customer-service # Gateway buna bu isimle ulaşacak Servis İsmi
+  name: identity-service # Gateway buna bu isimle ulaşacak Servis İsmi
   namespace: take-my-order
 spec:
   type: ClusterIP
   selector:
-    app: customer-service # Servis Bağlantısı
+    app: identity-service # Servis Bağlantısı
   ports:
     - name: http
       port: 80

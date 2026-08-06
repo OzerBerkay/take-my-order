@@ -83,11 +83,11 @@ spec:
       nodePort: 32093
       targetPort: 9092
 ---
-# Customer Service
+# Identity Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: customer-service
+  name: identity-service
   namespace: take-my-order
 spec:
   type: NodePort

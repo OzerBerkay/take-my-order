@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         // Aktüatör gibi sağlık kontrolü endpointlerine izin ver
                         .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/customers").permitAll()
+                        // Kullanıcı kayıt ve giriş (Auth) endpointlerine dışarıdan yetkisiz erişime izin ver
+                        .pathMatchers(HttpMethod.POST, "/auth/login", "/auth/register/**", "/auth/refresh-token").permitAll()
                         // Diğer TÜM istekler için Token (Authentication) zorunlu kıl
                         .anyExchange().authenticated()
                 )

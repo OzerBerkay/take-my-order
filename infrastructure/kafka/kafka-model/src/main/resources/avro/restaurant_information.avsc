@@ -11,6 +11,17 @@
       }
     },
     {
+      "name": "merchantId",
+      "type": [
+        "null",
+        {
+          "type": "string",
+          "logicalType": "uuid"
+        }
+      ],
+      "default": null
+    },
+    {
       "name": "name",
       "type": "string"
     },
@@ -60,6 +71,11 @@
         "type": "long",
         "logicalType": "timestamp-millis"
       }
+    },
+    {
+      "name": "eventType",
+      "type": ["null", "string"],
+      "default": null
     }
   ]
 }
