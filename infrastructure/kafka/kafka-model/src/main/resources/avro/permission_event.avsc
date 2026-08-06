@@ -1,0 +1,16 @@
+{
+  "namespace": "com.berkay.kafka.identity.avro.model",
+  "type": "record",
+  "name": "PermissionEventAvroModel",
+  "fields": [
+    {"name": "id", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "permissionId", "type": {"type": "string", "logicalType": "uuid"}},
+    {"name": "code", "type": "string"},
+    {"name": "domain", "type": "string"},
+    {"name": "active", "type": ["null", "boolean"], "default": null},
+    {"name": "isRestricted", "type": ["null", "boolean"], "default": null},
+    {"name": "createdAt", "type": ["null", {"type": "string", "avro.java.string": "String"}], "default": null},
+    {"name": "updatedAt", "type": ["null", {"type": "string", "avro.java.string": "String"}], "default": null},
+    {"name": "eventType", "type": ["null", "string"], "default": null}
+  ]
+}

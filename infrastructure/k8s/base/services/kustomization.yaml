@@ -4,5 +4,5 @@ resources:
   - order.yaml
   - payment.yaml
   - restaurant.yaml
-  - customer.yaml
   - gateway.yaml
+  - identity.yaml

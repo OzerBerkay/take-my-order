@@ -59,11 +59,11 @@ spec:
                   name: service-config
                   key: ORDER_SERVICE_URI
 
-            - name: CUSTOMER_SERVICE_URI
+            - name: IDENTITY_SERVICE_URI
               valueFrom:
                 configMapKeyRef:
                   name: service-config
-                  key: CUSTOMER_SERVICE_URI
+                  key: IDENTITY_SERVICE_URI
 
             - name: PAYMENT_SERVICE_URI
               valueFrom:
