@@ -144,3 +144,5 @@ infrastructure/docker-compose/volumes/**/**
 #Hide project secrets
 infrastructure/k8s/overlays/central-hub/monitoring-secrets.env
 infrastructure/k8s/overlays/central-hub/central-secrets.env
+# Local developer notes and context (Not for Git)
+.local-notes/
