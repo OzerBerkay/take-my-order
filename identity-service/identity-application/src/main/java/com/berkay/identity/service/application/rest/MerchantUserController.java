@@ -31,8 +31,11 @@ public class MerchantUserController {
 
         log.info("Received GET request for merchant users with page: {}, size: {}", page, size);
 
-        // Fetch authorized org unit ids from JWT
-        java.util.List<UUID> authorizedOrgUnitIds = getAuthorizedOrgUnitIds();
+        java.util.List<UUID> authorizedOrgUnitIds = null;
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {
+            authorizedOrgUnitIds = jwtAuth.getOrganizationalUnitIds();
+        }
 
         com.berkay.identity.service.dto.query.GetMerchantUsersQuery query = com.berkay.identity.service.dto.query.GetMerchantUsersQuery.builder()
                 .page(page)
@@ -53,7 +56,11 @@ public class MerchantUserController {
             @PathVariable("userId") UUID userId,
             @RequestParam(value = "orgUnitId", required = true) UUID orgUnitId) {
         log.info("Received GET request for merchant user details: {}", userId);
-        java.util.List<UUID> authorizedOrgUnitIds = getAuthorizedOrgUnitIds();
+        java.util.List<UUID> authorizedOrgUnitIds = null;
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {
+            authorizedOrgUnitIds = jwtAuth.getOrganizationalUnitIds();
+        }
         return ResponseEntity.ok(userApplicationService.getMerchantUserById(userId, orgUnitId, authorizedOrgUnitIds));
     }
 
@@ -103,11 +110,5 @@ public class MerchantUserController {
         return ResponseEntity.ok().build();
     }
 
-    private java.util.List<UUID> getAuthorizedOrgUnitIds() {
-        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {
-            return jwtAuth.getOrganizationalUnitIds();
-        }
-        return java.util.Collections.emptyList();
-    }
+
 }

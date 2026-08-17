@@ -86,6 +86,9 @@ public class JwtSecurityFilterTest {
         String orgId1 = java.util.UUID.randomUUID().toString();
         String orgId2 = java.util.UUID.randomUUID().toString();
 
+        String roleId1 = java.util.UUID.randomUUID().toString();
+        String roleId2 = java.util.UUID.randomUUID().toString();
+
         // Simulate a token payload where organizational_unit_ids is a single String containing a JSON-like array
         String payloadJson = "{" +
                 "\"sub\":\"1234\"," +
@@ -93,6 +96,7 @@ public class JwtSecurityFilterTest {
                 "\"internal_id\":\"" + internalId + "\"," +
                 "\"sid\":\"session-123\"," +
                 "\"user_type\":\"MERCHANT\"," +
+                "\"role_ids\": [\"" + roleId1 + "\", \"" + roleId2 + "\"]," +
                 "\"organizational_unit_ids\":\"[" + orgId1 + ", " + orgId2 + "]\"" +
                 "}";
 
@@ -118,12 +122,12 @@ public class JwtSecurityFilterTest {
         org.junit.jupiter.api.Assertions.assertTrue(auth instanceof JwtAuthenticationToken);
         
         JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
-        java.util.List<java.util.UUID> orgUnits = jwtAuth.getOrganizationalUnitIds();
         
-        org.junit.jupiter.api.Assertions.assertNotNull(orgUnits);
-        org.junit.jupiter.api.Assertions.assertEquals(2, orgUnits.size());
-        org.junit.jupiter.api.Assertions.assertTrue(orgUnits.contains(java.util.UUID.fromString(orgId1)));
-        org.junit.jupiter.api.Assertions.assertTrue(orgUnits.contains(java.util.UUID.fromString(orgId2)));
+        org.junit.jupiter.api.Assertions.assertNotNull(jwtAuth.getOrganizationalUnitIds());
+        org.junit.jupiter.api.Assertions.assertEquals(2, jwtAuth.getOrganizationalUnitIds().size());
+        org.junit.jupiter.api.Assertions.assertTrue(jwtAuth.getOrganizationalUnitIds().contains(java.util.UUID.fromString(orgId1)));
+        org.junit.jupiter.api.Assertions.assertTrue(jwtAuth.getOrganizationalUnitIds().contains(java.util.UUID.fromString(orgId2)));
+        org.junit.jupiter.api.Assertions.assertEquals("session-123", jwtAuth.getSid());
         
         // Clean up Context
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
