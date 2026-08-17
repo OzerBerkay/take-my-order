@@ -47,7 +47,17 @@ public class RoleRepositoryImpl implements RoleRepository {
 
         // 2. Yetkileri (Permissions) filtrele ve Bulk Insert yap (Sıfır N+1 Kuralı)
         if (payload.getPermissions() != null && !payload.getPermissions().isEmpty()) {
-            Set<UUID> incomingPermissionIds = payload.getPermissions().stream()
+            List<com.berkay.payment.service.domain.dto.message.PermissionPayload> domainPermissions = payload.getPermissions().stream()
+                    .filter(p -> "PAYMENT".equals(p.getDomain()))
+                    .toList();
+
+            rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
+
+            if (domainPermissions.isEmpty()) {
+                return;
+            }
+
+            Set<UUID> incomingPermissionIds = domainPermissions.stream()
                     .map(p -> p.getId())
                     .collect(Collectors.toSet());
 
@@ -58,7 +68,7 @@ public class RoleRepositoryImpl implements RoleRepository {
                     .collect(Collectors.toSet());
 
             // RAM üzerinde Set Difference işlemi ile "yepyeni" yetkileri bul
-            List<PermissionReplicaEntity> newPermissionsToInsert = payload.getPermissions().stream()
+            List<PermissionReplicaEntity> newPermissionsToInsert = domainPermissions.stream()
                     .filter(p -> !existingPermissionIds.contains(p.getId()))
                     .map(p -> PermissionReplicaEntity.builder()
                             .id(p.getId())
@@ -76,7 +86,6 @@ public class RoleRepositoryImpl implements RoleRepository {
             }
 
             // 3. Ara Tabloyu (Junction) Yenile (Replace-All)
-            rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
             List<RolePermissionReplicaEntity> newRolePermissions = incomingPermissionIds.stream()
                     .map(permId -> RolePermissionReplicaEntity.builder()
                             .roleId(payload.getRoleId())
@@ -84,6 +93,8 @@ public class RoleRepositoryImpl implements RoleRepository {
                             .build())
                     .toList();
             rolePermissionReplicaRepository.saveAll(newRolePermissions);
+        } else {
+            rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
         }
     }
 
