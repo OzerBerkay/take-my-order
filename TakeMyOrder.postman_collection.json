@@ -1,2182 +1,2285 @@
 {
-  "info": {
-    "name": "Take My Order",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:8184",
-      "type": "string"
+    "info": {
+        "name": "Take My Order",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
-    {
-      "key": "identity_service_url",
-      "value": "http://localhost:8184",
-      "type": "string"
-    },
-    {
-      "key": "restaurant_service_url",
-      "value": "http://localhost:8183",
-      "type": "string"
-    }
-  ],
-  "item": [
-    {
-      "name": "Identity Service",
-      "item": [
+    "variable": [
         {
-          "name": "1. Auth & Registration",
-          "item": [
-            {
-              "name": "[SUCCESS] Register Customer",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/register/customer",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "register",
-                    "customer"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"new.customer@takemyorder.com\",\n    \"password\": \"Customer123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Customer\",\n    \"phoneNumber\": \"+905555555555\",\n    \"addresses\": [\n        {\n            \"name\": \"Ev\",\n            \"street\": \"Mimar Sinan Mah.\",\n            \"city\": \"Istanbul\",\n            \"postalCode\": \"34000\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Register Merchant",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/register/merchant",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "register",
-                    "merchant"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"new.merchant@takemyorder.com\",\n    \"password\": \"Merchant123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Merchant\",\n    \"phoneNumber\": \"+905555555556\",\n    \"addresses\": [\n        {\n            \"name\": \"Merkez\",\n            \"street\": \"Levent Mah.\",\n            \"city\": \"Istanbul\",\n            \"postalCode\": \"34330\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Login User",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/login",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"new.customer@takemyorder.com\",\n    \"password\": \"Customer123!\"\n}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "if (pm.response.code === 200) {",
-                      "    var data = pm.response.json();",
-                      "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
-                      "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "[SUCCESS] Login Merchant",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/login",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"merchant@takemyorder.com\",\n    \"password\": \"Merchant123!\"\n}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "if (pm.response.code === 200) {",
-                      "    var data = pm.response.json();",
-                      "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
-                      "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "[SUCCESS] Refresh Token",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/refresh",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "refresh"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "if (pm.response.code === 200) {",
-                      "    var data = pm.response.json();",
-                      "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
-                      "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "[SUCCESS] Update Password (Auth)",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/password",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "password"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"newPassword\": \"Customer1234!\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Admin Login",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/auth/login",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"admin@takemyorder.com\",\n    \"password\": \"Admin123!\"\n}"
-                }
-              },
-              "response": [],
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "if (pm.response.code === 200) {",
-                      "    var data = pm.response.json();",
-                      "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
-                      "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "Single Logout",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/logout",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "logout"
-                  ]
-                },
-                "description": "Logs out the user from the current session (Single Logout).",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Global Logout",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/logout-all",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "logout-all"
-                  ]
-                },
-                "description": "Logs out the user from all sessions (Global Logout).",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
+            "key": "baseUrl",
+            "value": "http://localhost:8184",
+            "type": "string"
         },
         {
-          "name": "2. User Profile",
-          "item": [
-            {
-              "name": "[SUCCESS] Update User Profile",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/profile",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "profile"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"firstName\": \"Updated Name\",\n    \"lastName\": \"Updated Last Name\",\n    \"imageUrl\": \"https://example.com/image.jpg\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Get My Profile",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Get My Organizational Units",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/organizational-units",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "organizational-units"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
+            "key": "identity_service_url",
+            "value": "http://localhost:8184",
+            "type": "string"
         },
         {
-          "name": "3. User Addresses",
-          "item": [
-            {
-              "name": "[SUCCESS] Add Address",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/addresses",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "addresses"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"Home\",\n    \"street\": \"Main St\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34000\",\n    \"country\": \"Turkey\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Update Address",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "addresses",
-                    "{{addressId}}"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"addressId\": \"{{addressId}}\",\n    \"name\": \"Work\",\n    \"street\": \"Work St\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34001\",\n    \"country\": \"Turkey\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Get My Addresses",
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{access_token}}",
-                    "type": "text"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/addresses",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "addresses"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Get My Address By ID",
-              "request": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{access_token}}",
-                    "type": "text"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "addresses",
-                    "{{addressId}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Delete My Address",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{access_token}}",
-                    "type": "text"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "users",
-                    "me",
-                    "addresses",
-                    "{{addressId}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "4. Admin Operations",
-          "item": [
-            {
-              "name": "[SUCCESS] Register Internal User",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"new.admin@takemyorder.com\",\n    \"password\": \"Admin123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Admin\",\n    \"phoneNumber\": \"+905555555558\",\n    \"roleIds\": [\n        \"{{roleId}}\"\n    ],\n    \"addresses\": [\n        {\n            \"name\": \"HQ\",\n            \"street\": \"Admin St\",\n            \"city\": \"Ankara\",\n            \"postalCode\": \"06000\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Update User Status",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "status"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"status\": \"PASSIVE\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Force Reset Password",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{userId}}/password",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "password"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"newPassword\": \"NewPassword123!\"\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Revoke Access Token",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-access",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "revoke-access"
-                  ]
-                },
-                "description": "Revokes the access token of the user with the given userId. Requires 'can_revoke_user' permission.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Revoke All Tokens",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-all",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "revoke-all"
-                  ]
-                },
-                "description": "Revokes all tokens of the user with the given userId. Requires 'can_revoke_user' permission.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Assign Role to User (Admin)",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "roles",
-                    "{{roleId}}"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Unassign Role from User (Admin)",
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "roles",
-                    "{{roleId}}"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Update User Status",
-              "request": {
-                "method": "PATCH",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "admin",
-                    "users",
-                    "{{userId}}",
-                    "status"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"status\": \"BANNED\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "5. Merchant Operations",
-          "item": [
-            {
-              "name": "Assign Role to User (Merchant)",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "merchant",
-                    "users",
-                    "{{userId}}",
-                    "roles",
-                    "{{roleId}}"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            },
-            {
-              "name": "Unassign Role from User (Merchant)",
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "merchant",
-                    "users",
-                    "{{userId}}",
-                    "roles",
-                    "{{roleId}}"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "6. Permissions",
-          "item": [
-            {
-              "name": "[SUCCESS] Update Permission",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/permissions/{{permissionId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "permissions",
-                    "{{permissionId}}"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"code\": \"TEST_PERMISSION_UPDATED\",\n    \"description\": \"Updated Test Permission\",\n    \"domain\": \"PRODUCT\",\n    \"active\": true\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "7. Roles",
-          "item": [
-            {
-              "name": "[SUCCESS] Create Role",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/roles?organizationalUnitId={{organizationalUnitId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "roles"
-                  ],
-                  "query": [
-                    {
-                      "key": "organizationalUnitId",
-                      "value": "{{organizationalUnitId}}"
-                    }
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"TEST_ROLE\",\n    \"permissionIds\": [\n        \"{{permissionId}}\"\n    ]\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Update Role",
-              "request": {
-                "method": "PUT",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "roles",
-                    "{{roleId}}"
-                  ],
-                  "query": [
-                    {
-                      "key": "organizationalUnitId",
-                      "value": "{{organizationalUnitId}}"
-                    }
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"name\": \"UPDATED_TEST_ROLE\",\n    \"permissionIds\": [\n        \"{{permissionId}}\"\n    ]\n}"
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "[SUCCESS] Delete Role",
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "roles",
-                    "{{roleId}}"
-                  ],
-                  "query": [
-                    {
-                      "key": "organizationalUnitId",
-                      "value": "{{organizationalUnitId}}"
-                    }
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "8. Internal / Sync",
-          "item": [
-            {
-              "name": "[SUCCESS] Sync Roles",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{identity_service_url}}/internal/sync/roles?cursor=2024-01-01T00:00:00Z&limit=100",
-                  "host": [
-                    "{{identity_service_url}}"
-                  ],
-                  "path": [
-                    "internal",
-                    "sync",
-                    "roles"
-                  ],
-                  "query": [
-                    {
-                      "key": "cursor",
-                      "value": "2024-01-01T00:00:00Z"
-                    },
-                    {
-                      "key": "limit",
-                      "value": "100"
-                    }
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{accessToken}}",
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "9. Queries (GET APIs)",
-          "item": [
-            {
-              "name": "Internal Queries",
-              "item": [
-                {
-                  "name": "Get Admin Users (All)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users?page=0&size=10",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "10"
-                        },
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Admin Users (Filtered)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users?page=0&size=10&email=customer@takemyorder.com&firstName=Ahmet&lastName=Yilmaz&status=ACTIVE&userType=CUSTOMER",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "10"
-                        },
-                        {
-                          "key": "email",
-                          "value": "customer@takemyorder.com"
-                        },
-                        {
-                          "key": "firstName",
-                          "value": "Ahmet"
-                        },
-                        {
-                          "key": "lastName",
-                          "value": "Yilmaz"
-                        },
-                        {
-                          "key": "status",
-                          "value": "ACTIVE"
-                        },
-                        {
-                          "key": "userType",
-                          "value": "CUSTOMER"
-                        },
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Admin User by ID",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users/{{userId}}",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users",
-                        "{{userId}}"
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 401] Get Admin Users (No Token)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "noauth"
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 403] Get Admin Users (Customer/Merchant Token)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 404] Get Admin User by ID (Not Found)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/admin/users/00000000-0000-0000-0000-000000000000",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "admin",
-                        "users",
-                        "00000000-0000-0000-0000-000000000000"
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "name": "Merchant Queries",
-              "item": [
-                {
-                  "name": "Get Merchant Users (All)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "merchant",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "10"
-                        },
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}"
-                        },
-                        {
-                          "key": "firstName",
-                          "value": "Ahmet",
-                          "disabled": true
-                        },
-                        {
-                          "key": "lastName",
-                          "value": "Yilmaz",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Merchant Users (Filtered)",
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}&email=merchant@takemyorder.com",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "merchant",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "10"
-                        },
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}"
-                        },
-                        {
-                          "key": "email",
-                          "value": "merchant@takemyorder.com"
-                        },
-                        {
-                          "key": "firstName",
-                          "value": "Ahmet",
-                          "disabled": true
-                        },
-                        {
-                          "key": "lastName",
-                          "value": "Yilmaz",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "Get Merchant User by ID",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/merchant/users/{{userId}}?orgUnitId={{organizationalUnitId}}",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "merchant",
-                        "users",
-                        "{{userId}}"
-                      ],
-                      "query": [
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}"
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 400] Get Merchant Users (Missing OrgUnitId)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/merchant/users",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "merchant",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "firstName",
-                          "value": "Ahmet",
-                          "disabled": true
-                        },
-                        {
-                          "key": "lastName",
-                          "value": "Yilmaz",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 403] Get Merchant Users (Unauthorized OrgUnitId)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/merchant/users?orgUnitId=00000000-0000-0000-0000-000000000000",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "merchant",
-                        "users"
-                      ],
-                      "query": [
-                        {
-                          "key": "orgUnitId",
-                          "value": "00000000-0000-0000-0000-000000000000"
-                        },
-                        {
-                          "key": "firstName",
-                          "value": "Ahmet",
-                          "disabled": true
-                        },
-                        {
-                          "key": "lastName",
-                          "value": "Yilmaz",
-                          "disabled": true
-                        },
-                        {
-                          "key": "roleId",
-                          "value": "{{roleId}}",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "name": "Common Queries",
-              "item": [
-                {
-                  "name": "Get Roles (Paginated)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/roles?page=0&size=10&orgUnitId={{organizationalUnitId}}&userType=INTERNAL",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "roles"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "10"
-                        },
-                        {
-                          "key": "orgUnitId",
-                          "value": "{{organizationalUnitId}}"
-                        },
-                        {
-                          "key": "userType",
-                          "value": "INTERNAL",
-                          "description": "Optional: Filter by User Type (INTERNAL, MERCHANT, CUSTOMER)"
-                        },
-                        {
-                          "key": "name",
-                          "value": "RESTAURANT_OWNER",
-                          "description": "Optional: Filter by Role Name",
-                          "disabled": true
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Role by ID",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/roles/{{roleId}}",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "roles",
-                        "{{roleId}}"
-                      ],
-                      "query": []
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Permissions (Paginated)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/permissions?page=0&size=20",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "permissions"
-                      ],
-                      "query": [
-                        {
-                          "key": "page",
-                          "value": "0"
-                        },
-                        {
-                          "key": "size",
-                          "value": "20"
-                        }
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "Get Permissions Grouped by Domain",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/permissions/grouped",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "permissions",
-                        "grouped"
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                },
-                {
-                  "name": "[ERROR 400] Get Roles (Missing OrgUnitId)",
-                  "request": {
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{identity_service_url}}/roles",
-                      "host": [
-                        "{{identity_service_url}}"
-                      ],
-                      "path": [
-                        "roles"
-                      ]
-                    },
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{accessToken}}",
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          ]
+            "key": "restaurant_service_url",
+            "value": "http://localhost:8183",
+            "type": "string"
         }
-      ]
-    },
-    {
-      "name": "Restaurant Service",
-      "item": [
+    ],
+    "item": [
         {
-          "name": "Create Restaurant (Success)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true\n        }\n    ]\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+            "name": "Identity Service",
+            "item": [
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
+                    "name": "1. Auth & Registration",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Register Customer",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/register/customer",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "register",
+                                        "customer"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"new.customer@takemyorder.com\",\n    \"password\": \"Customer123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Customer\",\n    \"phoneNumber\": \"+905555555555\",\n    \"addresses\": [\n        {\n            \"name\": \"Ev\",\n            \"street\": \"Mimar Sinan Mah.\",\n            \"city\": \"Istanbul\",\n            \"postalCode\": \"34000\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Register Merchant",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/register/merchant",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "register",
+                                        "merchant"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"new.merchant@takemyorder.com\",\n    \"password\": \"Merchant123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Merchant\",\n    \"phoneNumber\": \"+905555555556\",\n    \"addresses\": [\n        {\n            \"name\": \"Merkez\",\n            \"street\": \"Levent Mah.\",\n            \"city\": \"Istanbul\",\n            \"postalCode\": \"34330\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Login User",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "login"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"new.customer@takemyorder.com\",\n    \"password\": \"Customer123!\"\n}"
+                                }
+                            },
+                            "response": [],
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 200) {",
+                                            "    var data = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
+                                            "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "[SUCCESS] Login Merchant",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "login"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"merchant@takemyorder.com\",\n    \"password\": \"Merchant123!\"\n}"
+                                }
+                            },
+                            "response": [],
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 200) {",
+                                            "    var data = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
+                                            "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "[SUCCESS] Refresh Token",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/refresh",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "refresh"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+                                }
+                            },
+                            "response": [],
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 200) {",
+                                            "    var data = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
+                                            "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "[SUCCESS] Update Password (Auth)",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/password",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "password"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"newPassword\": \"Customer1234!\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Admin Login",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "auth",
+                                        "login"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"admin@takemyorder.com\",\n    \"password\": \"Admin123!\"\n}"
+                                }
+                            },
+                            "response": [],
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 200) {",
+                                            "    var data = pm.response.json();",
+                                            "    pm.collectionVariables.set(\"accessToken\", data.accessToken);",
+                                            "    pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Single Logout",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/logout",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "logout"
+                                    ]
+                                },
+                                "description": "Logs out the user from the current session (Single Logout).",
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Global Logout",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/logout-all",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "logout-all"
+                                    ]
+                                },
+                                "description": "Logs out the user from all sessions (Global Logout).",
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "2. User Profile",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Update User Profile",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/profile",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "profile"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"firstName\": \"Updated Name\",\n    \"lastName\": \"Updated Last Name\",\n    \"imageUrl\": \"https://example.com/image.jpg\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Get My Profile",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Get My Organizational Units",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/organizational-units",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "organizational-units"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "3. User Addresses",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Add Address",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/addresses",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "addresses"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Home\",\n    \"street\": \"Main St\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34000\",\n    \"country\": \"Turkey\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Update Address",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "addresses",
+                                        "{{addressId}}"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"addressId\": \"{{addressId}}\",\n    \"name\": \"Work\",\n    \"street\": \"Work St\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34001\",\n    \"country\": \"Turkey\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Get My Addresses",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/addresses",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "addresses"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Get My Address By ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "addresses",
+                                        "{{addressId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Delete My Address",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "addresses",
+                                        "{{addressId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "4. Admin Operations",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Register Internal User",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"email\": \"new.admin@takemyorder.com\",\n    \"password\": \"Admin123!\",\n    \"firstName\": \"New\",\n    \"lastName\": \"Admin\",\n    \"phoneNumber\": \"+905555555558\",\n    \"roleIds\": [\n        \"{{roleId}}\"\n    ],\n    \"addresses\": [\n        {\n            \"name\": \"HQ\",\n            \"street\": \"Admin St\",\n            \"city\": \"Ankara\",\n            \"postalCode\": \"06000\",\n            \"country\": \"Turkey\"\n        }\n    ]\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Update User Status",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "status"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"status\": \"PASSIVE\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Force Reset Password",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/password",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "password"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"newPassword\": \"NewPassword123!\"\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Revoke Access Token",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-access",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "revoke-access"
+                                    ]
+                                },
+                                "description": "Revokes the access token of the user with the given userId. Requires 'can_revoke_user' permission.",
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Revoke All Tokens",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-all",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "revoke-all"
+                                    ]
+                                },
+                                "description": "Revokes all tokens of the user with the given userId. Requires 'can_revoke_user' permission.",
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Assign Role to User (Admin)",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "roles",
+                                        "{{roleId}}"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Unassign Role from User (Admin)",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "roles",
+                                        "{{roleId}}"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Update User Status",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "{{userId}}",
+                                        "status"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{access_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"status\": \"BANNED\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "5. Merchant Operations",
+                    "item": [
+                        {
+                            "name": "Assign Role to User (Merchant)",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "merchant",
+                                        "users",
+                                        "{{userId}}",
+                                        "roles",
+                                        "{{roleId}}"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Unassign Role from User (Merchant)",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "merchant",
+                                        "users",
+                                        "{{userId}}",
+                                        "roles",
+                                        "{{roleId}}"
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "6. Permissions",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Update Permission",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/permissions/{{permissionId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "permissions",
+                                        "{{permissionId}}"
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"code\": \"TEST_PERMISSION_UPDATED\",\n    \"description\": \"Updated Test Permission\",\n    \"domain\": \"PRODUCT\",\n    \"active\": true\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "7. Roles",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Create Role",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/roles?organizationalUnitId={{organizationalUnitId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "roles"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "organizationalUnitId",
+                                            "value": "{{organizationalUnitId}}"
+                                        }
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"TEST_ROLE\",\n    \"permissionIds\": [\n        \"{{permissionId}}\"\n    ]\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Update Role",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "roles",
+                                        "{{roleId}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "organizationalUnitId",
+                                            "value": "{{organizationalUnitId}}"
+                                        }
+                                    ]
+                                },
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"UPDATED_TEST_ROLE\",\n    \"permissionIds\": [\n        \"{{permissionId}}\"\n    ]\n}"
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "[SUCCESS] Delete Role",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "roles",
+                                        "{{roleId}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "organizationalUnitId",
+                                            "value": "{{organizationalUnitId}}"
+                                        }
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "8. Internal / Sync",
+                    "item": [
+                        {
+                            "name": "[SUCCESS] Sync Roles",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{identity_service_url}}/internal/sync/roles?cursor=2024-01-01T00:00:00Z&limit=100",
+                                    "host": [
+                                        "{{identity_service_url}}"
+                                    ],
+                                    "path": [
+                                        "internal",
+                                        "sync",
+                                        "roles"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "cursor",
+                                            "value": "2024-01-01T00:00:00Z"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "100"
+                                        }
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "9. Queries (GET APIs)",
+                    "item": [
+                        {
+                            "name": "Internal Queries",
+                            "item": [
+                                {
+                                    "name": "Get Admin Users (All)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users?page=0&size=10",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                },
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Admin Users (Filtered)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users?page=0&size=10&email=customer@takemyorder.com&firstName=Ahmet&lastName=Yilmaz&status=ACTIVE&userType=CUSTOMER",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                },
+                                                {
+                                                    "key": "email",
+                                                    "value": "customer@takemyorder.com"
+                                                },
+                                                {
+                                                    "key": "firstName",
+                                                    "value": "Ahmet"
+                                                },
+                                                {
+                                                    "key": "lastName",
+                                                    "value": "Yilmaz"
+                                                },
+                                                {
+                                                    "key": "status",
+                                                    "value": "ACTIVE"
+                                                },
+                                                {
+                                                    "key": "userType",
+                                                    "value": "CUSTOMER"
+                                                },
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Admin User by ID",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users/{{userId}}",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users",
+                                                "{{userId}}"
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 401] Get Admin Users (No Token)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "noauth"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 403] Get Admin Users (Customer/Merchant Token)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 404] Get Admin User by ID (Not Found)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/admin/users/00000000-0000-0000-0000-000000000000",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "admin",
+                                                "users",
+                                                "00000000-0000-0000-0000-000000000000"
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Merchant Queries",
+                            "item": [
+                                {
+                                    "name": "Get Merchant Users (All)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "merchant",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                },
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}"
+                                                },
+                                                {
+                                                    "key": "firstName",
+                                                    "value": "Ahmet",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "lastName",
+                                                    "value": "Yilmaz",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Merchant Users (Filtered)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}&email=merchant@takemyorder.com",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "merchant",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                },
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}"
+                                                },
+                                                {
+                                                    "key": "email",
+                                                    "value": "merchant@takemyorder.com"
+                                                },
+                                                {
+                                                    "key": "firstName",
+                                                    "value": "Ahmet",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "lastName",
+                                                    "value": "Yilmaz",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Get Merchant User by ID",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/merchant/users/{{userId}}?orgUnitId={{organizationalUnitId}}",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "merchant",
+                                                "users",
+                                                "{{userId}}"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}"
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 400] Get Merchant Users (Missing OrgUnitId)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/merchant/users",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "merchant",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "firstName",
+                                                    "value": "Ahmet",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "lastName",
+                                                    "value": "Yilmaz",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 403] Get Merchant Users (Unauthorized OrgUnitId)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/merchant/users?orgUnitId=00000000-0000-0000-0000-000000000000",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "merchant",
+                                                "users"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "00000000-0000-0000-0000-000000000000"
+                                                },
+                                                {
+                                                    "key": "firstName",
+                                                    "value": "Ahmet",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "lastName",
+                                                    "value": "Yilmaz",
+                                                    "disabled": true
+                                                },
+                                                {
+                                                    "key": "roleId",
+                                                    "value": "{{roleId}}",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Common Queries",
+                            "item": [
+                                {
+                                    "name": "Get Roles (Paginated)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/roles?page=0&size=10&orgUnitId={{organizationalUnitId}}&userType=INTERNAL",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "roles"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                },
+                                                {
+                                                    "key": "orgUnitId",
+                                                    "value": "{{organizationalUnitId}}"
+                                                },
+                                                {
+                                                    "key": "userType",
+                                                    "value": "INTERNAL",
+                                                    "description": "Optional: Filter by User Type (INTERNAL, MERCHANT, CUSTOMER)"
+                                                },
+                                                {
+                                                    "key": "name",
+                                                    "value": "RESTAURANT_OWNER",
+                                                    "description": "Optional: Filter by Role Name",
+                                                    "disabled": true
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Role by ID",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/roles/{{roleId}}",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "roles",
+                                                "{{roleId}}"
+                                            ],
+                                            "query": []
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Permissions (Paginated)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/permissions?page=0&size=20",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "permissions"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "20"
+                                                }
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Get Permissions Grouped by Domain",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/permissions/grouped",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "permissions",
+                                                "grouped"
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "[ERROR 400] Get Roles (Missing OrgUnitId)",
+                                    "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{identity_service_url}}/roles",
+                                            "host": [
+                                                "{{identity_service_url}}"
+                                            ],
+                                            "path": [
+                                                "roles"
+                                            ]
+                                        },
+                                        "auth": {
+                                            "type": "bearer",
+                                            "bearer": [
+                                                {
+                                                    "key": "token",
+                                                    "value": "{{accessToken}}",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
-              ]
-            }
-          }
+            ]
         },
         {
-          "name": "Create Restaurant (Failure - Missing Required Field)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": -10.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": []\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+            "name": "Restaurant Service",
+            "item": [
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
+                    "name": "Create Restaurant (Success)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true\n        }\n    ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Restaurant (Failure - Missing Required Field)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": -10.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": []\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Product (Success)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Pepperoni Pizza\",\n    \"price\": 14.0,\n    \"stock\": 50,\n    \"available\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "products"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Restaurant (Success)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"active\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Product (Success)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "products",
+                                "{{product_id}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Product (Success)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "products",
+                                "{{product_id}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Restaurant (Success)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Product (Success)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "products",
+                                "{{product_id}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Personnel (Success)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"staff@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "personnel"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Personnel (Failure - Missing Email)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "personnel"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
                 }
-              ]
-            }
-          }
+            ]
         },
         {
-          "name": "Add Product (Success)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Pepperoni Pizza\",\n    \"price\": 14.0,\n    \"stock\": 50,\n    \"available\": true\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "products"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+            "name": "Payment Service",
+            "item": [
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Restaurant (Success)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"active\": false\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+                    "name": "Deposit to Wallet",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"amount\": 100.00\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/deposit",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8182",
+                            "path": [
+                                "wallets",
+                                "{{owner_id}}",
+                                "deposit"
+                            ]
+                        }
+                    }
+                },
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Update Product (Success)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "products",
-                "{{product_id}}"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+                    "name": "Withdraw from Wallet",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"amount\": 50.00\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/withdraw",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8182",
+                            "path": [
+                                "wallets",
+                                "{{owner_id}}",
+                                "withdraw"
+                            ]
+                        }
+                    }
+                },
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete Product (Success)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "products",
-                "{{product_id}}"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+                    "name": "Get Wallet Balance",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/balance",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8182",
+                            "path": [
+                                "wallets",
+                                "{{owner_id}}",
+                                "balance"
+                            ]
+                        }
+                    }
+                },
                 {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
+                    "name": "Get Wallet History",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/history",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8182",
+                            "path": [
+                                "wallets",
+                                "{{owner_id}}",
+                                "history"
+                            ]
+                        }
+                    }
                 }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Restaurant (Success)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Product (Success)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "products",
-                "{{product_id}}"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Add Personnel (Success)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"staff@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "personnel"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Add Personnel (Failure - Missing Email)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"\"\n}"
-            },
-            "url": {
-              "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
-              "host": [
-                "{{restaurant_service_url}}"
-              ],
-              "path": [
-                "restaurants",
-                "{{restaurant_id}}",
-                "personnel"
-              ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
