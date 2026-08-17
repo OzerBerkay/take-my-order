@@ -15,7 +15,7 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("roles");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("roles", "role_org_units");
         cacheManager.setCaffeine(caffeineCacheBuilder());
         return cacheManager;
     }
