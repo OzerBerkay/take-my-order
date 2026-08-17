@@ -11,4 +11,5 @@ public class IdentityServiceConfigData {
     private String roleEventsTopicName;
     private String permissionEventsTopicName;
     private String userEventsTopicName;
+    private String customerTopicName;
 }

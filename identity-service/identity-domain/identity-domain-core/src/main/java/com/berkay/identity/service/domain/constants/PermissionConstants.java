@@ -36,6 +36,8 @@ public final class PermissionConstants {
 
     // Payment Permissions
     public static final String CAN_REFUND_PAYMENT = "can_refund_payment";
+    public static final String CAN_MANAGE_PAYMENT = "can_manage_payment";
+    public static final String CAN_READ_PAYMENT = "can_read_payment";
 
     // System & Admin Permissions
     public static final String CAN_MANAGE_SYSTEM_SETTINGS = "can_manage_system_settings";

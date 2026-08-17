@@ -57,6 +57,7 @@ identity-service:
   role-events-topic-name: identity-role-events
   permission-events-topic-name: identity-permission-events
   user-events-topic-name: identity-user-events
+  customer-topic-name: customer
   restaurant-info-topic-name: restaurant-information
   restaurant-personnel-topic-name: restaurant-personnel
   outbox-scheduler-fixed-rate: 10000

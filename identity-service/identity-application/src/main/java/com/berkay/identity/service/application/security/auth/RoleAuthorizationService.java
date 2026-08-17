@@ -19,6 +19,7 @@ import java.util.UUID;
 public class RoleAuthorizationService {
 
     private final RoleRepository roleRepository;
+    private final com.berkay.identity.service.ports.output.repository.UserRepository userRepository;
 
     @Cacheable(value = "roles_cache", key = "#roleId")
     public Role getRoleWithCache(UUID roleId) {
@@ -65,7 +66,13 @@ public class RoleAuthorizationService {
             return false; // Customer rol yönetemez.
         }
 
-        // 2. Multi-Tenant Yetki Taraması
+        // 2. Fetch User to get authorized organizational unit IDs
+        com.berkay.identity.service.domain.entity.User user = userRepository.findById(new com.berkay.identity.service.domain.valueobject.UserId(jwtToken.getInternalId())).orElse(null);
+        if (user == null) {
+            return false;
+        }
+
+        // 3. Multi-Tenant Yetki Taraması
         for (UUID roleId : jwtToken.getRoleIds()) {
             Role role = getRoleWithCache(roleId);
 
@@ -75,8 +82,8 @@ public class RoleAuthorizationService {
                 if (UserType.MERCHANT.equals(userType)) {
                     if (targetOrganizationalUnitId != null) {
                         if (role.isStatic()) {
-                            // Statik roller (Örn: RESTAURANT_OWNER) globaldir. Yetkinin restoranda geçerli olması için JWT'deki orgUnit listesinde bulunması gerekir.
-                            isOrganizationalUnitMatch = jwtToken.getOrganizationalUnitIds() != null && jwtToken.getOrganizationalUnitIds().contains(targetOrganizationalUnitId);
+                            // Statik roller (Örn: RESTAURANT_OWNER) globaldir. Yetkinin restoranda geçerli olması için veritabanındaki orgUnit listesinde bulunması gerekir.
+                            isOrganizationalUnitMatch = user.getOrganizationalUnitIds() != null && user.getOrganizationalUnitIds().contains(targetOrganizationalUnitId);
                         } else {
                             // Dinamik roller doğrudan belirli bir restorana aittir.
                             isOrganizationalUnitMatch = role.getOrganizationalUnitId() != null && role.getOrganizationalUnitId().equals(targetOrganizationalUnitId);

@@ -25,6 +25,8 @@ public class RoleConstants {
                     PermissionConstants.CAN_REJECT_RESTAURANT,
                     PermissionConstants.CAN_VIEW_ALL_ORDERS,
                     PermissionConstants.CAN_REFUND_PAYMENT,
+                    PermissionConstants.CAN_MANAGE_PAYMENT,
+                    PermissionConstants.CAN_READ_PAYMENT,
                     PermissionConstants.CAN_VIEW_USERS,
                     PermissionConstants.CAN_VIEW_ROLES,
                     PermissionConstants.CAN_VIEW_PERMISSIONS
@@ -53,7 +55,9 @@ public class RoleConstants {
                     PermissionConstants.CAN_VIEW_MERCHANT_USERS,
                     PermissionConstants.CAN_VIEW_USERS,
                     PermissionConstants.CAN_VIEW_ROLES,
-                    PermissionConstants.CAN_VIEW_PERMISSIONS
+                    PermissionConstants.CAN_VIEW_PERMISSIONS,
+                    PermissionConstants.CAN_MANAGE_PAYMENT,
+                    PermissionConstants.CAN_READ_PAYMENT
             )
     );
 }

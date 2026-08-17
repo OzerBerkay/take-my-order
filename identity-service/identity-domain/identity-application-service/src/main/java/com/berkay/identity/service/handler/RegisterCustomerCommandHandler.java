@@ -12,6 +12,7 @@ import com.berkay.identity.service.mapper.UserDataMapper;
 import com.berkay.identity.service.ports.output.repository.AddressRepository;
 import com.berkay.identity.service.ports.output.repository.IdentityProviderPort;
 import com.berkay.identity.service.ports.output.repository.UserRepository;
+import com.berkay.identity.service.ports.output.message.publisher.CustomerMessagePublisher;
 import com.berkay.identity.service.dto.command.CreateAddressCommand;
 import com.berkay.identity.service.domain.entity.Address;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class RegisterCustomerCommandHandler {
     private final UserDataMapper userDataMapper;
     private final IdentityProviderPort identityProviderPort;
     private final UserCreateHelper userCreateHelper;
+    private final CustomerMessagePublisher customerMessagePublisher;
 
     @Transactional
     public CreateUserResponse registerCustomer(RegisterCustomerCommand command) {
@@ -80,6 +82,8 @@ public class RegisterCustomerCommandHandler {
         }
 
         log.info("Customer registered successfully with id: {}", finalUser.getId().getValue());
+        customerMessagePublisher.publish(finalUser);
+        
         return userDataMapper.userToCreateUserResponse(finalUser, "Customer registered successfully. Please verify your email/phone.");
     }
 }

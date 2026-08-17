@@ -115,11 +115,13 @@ public class RoleController {
         
         Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {
-            java.util.List<UUID> authorizedOrgUnitIds = null;
+            com.berkay.identity.service.dto.query.RoleResponse response = roleApplicationService.getRoleById(roleId, null);
             if (jwtAuth.getUserType() == com.berkay.identity.service.domain.valueobject.UserType.MERCHANT) {
-                authorizedOrgUnitIds = jwtAuth.getOrganizationalUnitIds();
+                if (response.getOrganizationalUnitId() == null || !roleAuthService.hasPermissionForOrg(jwtAuth, response.getOrganizationalUnitId(), "can_view_roles")) {
+                    throw new org.springframework.security.access.AccessDeniedException("Access Denied: Missing can_view_roles permission for this role's organizational unit.");
+                }
             }
-            return ResponseEntity.ok(roleApplicationService.getRoleById(roleId, authorizedOrgUnitIds));
+            return ResponseEntity.ok(response);
         }
         throw new com.berkay.identity.service.domain.exception.IdentityDomainException("Could not extract user type from security context");
     }
