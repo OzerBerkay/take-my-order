@@ -1,13 +1,9 @@
 package com.berkay.payment.service.domain;
 
-import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.domain.valueobject.PaymentStatus;
 import com.berkay.outbox.OutboxStatus;
 import com.berkay.payment.service.domain.dto.PaymentRequest;
-import com.berkay.payment.service.domain.entity.CreditEntry;
 import com.berkay.payment.service.domain.entity.Payment;
-import com.berkay.payment.service.domain.event.PaymentCancelledEvent;
-import com.berkay.payment.service.domain.event.PaymentCompletedEvent;
 import com.berkay.payment.service.domain.event.PaymentEvent;
 import com.berkay.payment.service.domain.exception.PaymentApplicationServiceException;
 import com.berkay.payment.service.domain.exception.PaymentNotFoundException;
@@ -15,9 +11,10 @@ import com.berkay.payment.service.domain.mapper.PaymentDataMapper;
 import com.berkay.payment.service.domain.outbox.model.OrderOutboxMessage;
 import com.berkay.payment.service.domain.outbox.scheduler.OrderOutboxHelper;
 import com.berkay.payment.service.domain.ports.output.message.publisher.PaymentResponseMessagePublisher;
-import com.berkay.payment.service.domain.ports.output.repository.CreditEntryRepository;
-import com.berkay.payment.service.domain.ports.output.repository.CreditHistoryRepository;
 import com.berkay.payment.service.domain.ports.output.repository.PaymentRepository;
+import com.berkay.payment.service.domain.ports.output.repository.WalletRepository;
+import com.berkay.payment.service.domain.ports.output.repository.WalletTransactionRepository;
+import com.berkay.payment.service.domain.strategy.PaymentProcessorStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,33 +28,32 @@ import java.util.UUID;
 @Component
 public class PaymentRequestHelper {
 
-    private final PaymentDomainService paymentDomainService;
+    private final List<PaymentProcessorStrategy> paymentStrategies;
     private final PaymentDataMapper paymentDataMapper;
     private final PaymentRepository paymentRepository;
-    private final CreditEntryRepository creditEntryRepository;
-    private final CreditHistoryRepository creditHistoryRepository;
+    private final WalletRepository walletRepository;
+    private final WalletTransactionRepository walletTransactionRepository;
     private final OrderOutboxHelper orderOutboxHelper;
     private final PaymentResponseMessagePublisher paymentResponseMessagePublisher;
 
-    public PaymentRequestHelper(PaymentDomainService paymentDomainService,
+    public PaymentRequestHelper(List<PaymentProcessorStrategy> paymentStrategies,
                                 PaymentDataMapper paymentDataMapper,
                                 PaymentRepository paymentRepository,
-                                CreditEntryRepository creditEntryRepository,
-                                CreditHistoryRepository creditHistoryRepository,
+                                WalletRepository walletRepository,
+                                WalletTransactionRepository walletTransactionRepository,
                                 OrderOutboxHelper orderOutboxHelper,
                                 PaymentResponseMessagePublisher paymentResponseMessagePublisher) {
-        this.paymentDomainService = paymentDomainService;
+        this.paymentStrategies = paymentStrategies;
         this.paymentDataMapper = paymentDataMapper;
         this.paymentRepository = paymentRepository;
-        this.creditEntryRepository = creditEntryRepository;
-        this.creditHistoryRepository = creditHistoryRepository;
+        this.walletRepository = walletRepository;
+        this.walletTransactionRepository = walletTransactionRepository;
         this.orderOutboxHelper = orderOutboxHelper;
         this.paymentResponseMessagePublisher = paymentResponseMessagePublisher;
     }
 
     @Transactional
     public void persistPayment(PaymentRequest paymentRequest) {
-
         if (publishIfOutboxMessageProcessedForPayment(paymentRequest, PaymentStatus.COMPLETED)) {
             log.info("An outbox message with saga id: {} is already saved to database!", paymentRequest.getSagaId());
             return;
@@ -65,13 +61,14 @@ public class PaymentRequestHelper {
 
         log.info("Received payment complete event for order id: {}", paymentRequest.getOrderId());
         Payment payment = paymentDataMapper.paymentRequestModelToPayment(paymentRequest);
-        CreditEntry creditEntry = getCreditEntry(payment.getCustomerId());
+        
+        // Strategy Pattern - find the right processor (default to WALLET for now)
+        PaymentProcessorStrategy strategy = getStrategy("WALLET");
 
         List<String> failureMessages = new ArrayList<>();
-        PaymentEvent paymentEvent =
-                paymentDomainService.validateAndInitiatePayment(payment, creditEntry, failureMessages);
+        PaymentEvent paymentEvent = strategy.processPayment(payment, failureMessages);
 
-        persistDbObjects(payment, creditEntry, paymentEvent, failureMessages);
+        persistDbObjects(payment, paymentEvent, failureMessages);
 
         orderOutboxHelper.saveOrderOutboxMessage(paymentDataMapper.paymentEventToOrderEventPayload(paymentEvent),
                 paymentEvent.getPayment().getPaymentStatus(),
@@ -81,7 +78,6 @@ public class PaymentRequestHelper {
 
     @Transactional
     public void persistCancelPayment(PaymentRequest paymentRequest) {
-
         if (publishIfOutboxMessageProcessedForPayment(paymentRequest, PaymentStatus.CANCELLED)) {
             log.info("An outbox message with saga id: {} is already saved to database!", paymentRequest.getSagaId());
             return;
@@ -96,12 +92,13 @@ public class PaymentRequestHelper {
                     paymentRequest.getOrderId() + " could not be found!");
         }
         Payment payment = paymentResponse.get();
-        CreditEntry creditEntry = getCreditEntry(payment.getCustomerId());
+
+        PaymentProcessorStrategy strategy = getStrategy("WALLET");
 
         List<String> failureMessages = new ArrayList<>();
-        PaymentEvent paymentEvent = paymentDomainService
-                .validateAndCancelPayment(payment, creditEntry, failureMessages);
-        persistDbObjects(payment, creditEntry, paymentEvent, failureMessages);
+        PaymentEvent paymentEvent = strategy.refundPayment(payment, failureMessages);
+        
+        persistDbObjects(payment, paymentEvent, failureMessages);
 
         orderOutboxHelper.saveOrderOutboxMessage(paymentDataMapper.paymentEventToOrderEventPayload(paymentEvent),
                 paymentEvent.getPayment().getPaymentStatus(),
@@ -109,34 +106,26 @@ public class PaymentRequestHelper {
                 UUID.fromString(paymentRequest.getSagaId()));
     }
 
-    private CreditEntry getCreditEntry(CustomerId customerId) {
-        Optional<CreditEntry> creditEntry = creditEntryRepository.findByCustomerIdWithLock(customerId);
-        if (creditEntry.isEmpty()) {
-            log.error("Could not find credit entry for customer: {}", customerId.getValue());
-            throw new PaymentApplicationServiceException("Could not find credit entry for customer: " +
-                    customerId.getValue());
-        }
-        return creditEntry.get();
+    private PaymentProcessorStrategy getStrategy(String paymentMethod) {
+        return paymentStrategies.stream()
+                .filter(s -> s.supports(paymentMethod))
+                .findFirst()
+                .orElseThrow(() -> new PaymentApplicationServiceException("No strategy found for method: " + paymentMethod));
     }
 
     private void persistDbObjects(Payment payment,
-                                  CreditEntry creditEntry,
                                   PaymentEvent paymentEvent,
                                   List<String> failureMessages) {
         paymentRepository.save(payment);
 
-        // Yalnızca herhangi bir hata bulunmadığında kullanıcının cüzdan hareketleri güncellenir!
-        // Aksi durumda sadece bilgilendirme amaçlı olarak ödeme bilgisi tabloya yazılır ve bitirilir.
         if (failureMessages.isEmpty()) {
-            // Cüzdanın yeni bakiyesini kaydet
-            creditEntryRepository.save(creditEntry);
-
-            // History Kaydı: Event tipine göre içinden çekiyoruz
-            if (paymentEvent instanceof PaymentCompletedEvent completedEvent) {
-                creditHistoryRepository.save(completedEvent.getCreditHistory());
-            }
-            else if (paymentEvent instanceof PaymentCancelledEvent cancelledEvent) {
-                creditHistoryRepository.save(cancelledEvent.getCreditHistory());
+            // Since wallet strategy updates the wallet and emits a transaction, we need to save the transaction.
+            // The wallet itself should be saved as well. Let's fetch it from repository via the transaction's walletId.
+            // Wait, Wallet is updated in-memory in the strategy. But it wasn't explicitly saved! 
+            // We must save the Wallet and the WalletTransaction.
+            if (paymentEvent.getWalletTransaction() != null && paymentEvent.getWallet() != null) {
+                walletRepository.save(paymentEvent.getWallet());
+                walletTransactionRepository.save(paymentEvent.getWalletTransaction());
             }
         }
     }
@@ -148,13 +137,9 @@ public class PaymentRequestHelper {
                         UUID.fromString(paymentRequest.getSagaId()),
                         paymentStatus);
         if (orderOutboxMessage.isPresent()) {
-            // İptal talebinin tekrar gelmesi durumunda zaten ilk isteğin işlenmiş olduğu görülürse yeniden publish edilir.
-            // Order'ın bir sebepten dolayı (ağ hatası, kafka çökmesi vs.) ilk mesajı alamadığı düşünülür.
             paymentResponseMessagePublisher.publish(orderOutboxMessage.get(), orderOutboxHelper::updateOutboxMessage);
             return true;
         }
         return false;
-
     }
-
 }
