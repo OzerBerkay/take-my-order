@@ -4,16 +4,9 @@ import com.berkay.domain.valueobject.CustomerId;
 import com.berkay.domain.valueobject.Money;
 import com.berkay.domain.valueobject.OrderId;
 import com.berkay.payment.service.domain.dto.PaymentRequest;
-import com.berkay.payment.service.domain.dto.create.CreditOperationCommand;
-import com.berkay.payment.service.domain.dto.create.CreditOperationResponse;
-import com.berkay.payment.service.domain.dto.query.CreditBalanceResponse;
-import com.berkay.payment.service.domain.dto.query.CreditHistoryResponse;
-import com.berkay.payment.service.domain.entity.CreditEntry;
-import com.berkay.payment.service.domain.entity.CreditHistory;
 import com.berkay.payment.service.domain.entity.Payment;
 import com.berkay.payment.service.domain.event.PaymentEvent;
 import com.berkay.payment.service.domain.outbox.model.OrderEventPayload;
-import com.berkay.payment.service.domain.valueobject.CreditHistoryId;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
@@ -45,36 +38,4 @@ public class PaymentDataMapper {
                 .build();
     }
 
-    public CreditHistory creditHistoryFromCreditOperationCommand(CreditOperationCommand command) {
-        return CreditHistory.builder()
-                .creditHistoryId(new CreditHistoryId(UUID.randomUUID()))
-                .customerId(new CustomerId(command.getCustomerId()))
-                .amount(new Money(command.getAmount()))
-                .transactionType(command.getTransactionType())
-                .createdAt(ZonedDateTime.now(ZoneId.of(UTC)))
-                .build();
-    }
-
-    public CreditOperationResponse creditOperationResponseFromCreditEntry(CreditEntry creditEntry) {
-        return CreditOperationResponse.builder()
-                .customerId(creditEntry.getCustomerId().getValue())
-                .newBalance(creditEntry.getTotalCreditAmount().getAmount())
-                .build();
-    }
-
-    public CreditBalanceResponse creditEntryTocCreditBalanceResponse(CreditEntry creditEntry) {
-        return CreditBalanceResponse.builder()
-                .customerId(creditEntry.getCustomerId().getValue())
-                .currentBalance(creditEntry.getTotalCreditAmount().getAmount())
-                .build();
-    }
-
-    public CreditHistoryResponse creditHistoryResponseFromCreditHistory(CreditHistory creditHistory) {
-        return CreditHistoryResponse.builder()
-                .creditHistoryId(creditHistory.getId().getValue())
-                .transactionType(creditHistory.getTransactionType())
-                .amount(creditHistory.getAmount().getAmount())
-                .createdAt(creditHistory.getCreatedAt())
-                .build();
-    }
 }
