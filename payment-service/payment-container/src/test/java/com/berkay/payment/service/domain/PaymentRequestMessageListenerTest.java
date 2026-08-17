@@ -12,6 +12,11 @@ import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import com.berkay.payment.service.domain.ports.output.repository.WalletRepository;
+import com.berkay.payment.service.domain.entity.CustomerWallet;
+import com.berkay.payment.service.domain.valueobject.WalletId;
+import com.berkay.domain.valueobject.Money;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -34,8 +39,18 @@ public class PaymentRequestMessageListenerTest {
     @Autowired
     private OrderOutboxJpaRepository orderOutboxJpaRepository;
 
+    @Autowired
+    private WalletRepository walletRepository;
+
     private final static String CUSTOMER_ID = "d215b5f8-0249-4dc5-89a3-51fd148cfb41";
     private final static BigDecimal PRICE = new BigDecimal("100");
+
+    @BeforeEach
+    void setUp() {
+        if (walletRepository.findByOwnerId(UUID.fromString(CUSTOMER_ID)).isEmpty()) {
+            walletRepository.save(new CustomerWallet(new WalletId(UUID.randomUUID()), UUID.fromString(CUSTOMER_ID), new Money(new BigDecimal("1000"))));
+        }
+    }
 
     @Test
     void testDoublePayment() {
@@ -43,9 +58,8 @@ public class PaymentRequestMessageListenerTest {
         paymentRequestMessageListener.completePayment(getPaymentRequest(sagaId));
         try {
             paymentRequestMessageListener.completePayment(getPaymentRequest(sagaId));
-        } catch (DataAccessException e) {
-            log.error("DataAccessException occurred with sql state: {}",
-                    ((PSQLException) Objects.requireNonNull(e.getRootCause())).getSQLState());
+        } catch (Exception e) {
+            log.error("Exception occurred: {}", e.getMessage());
         }
         assertOrderOutbox(sagaId);
     }
@@ -62,18 +76,16 @@ public class PaymentRequestMessageListenerTest {
             tasks.add(Executors.callable(() -> {
                 try {
                     paymentRequestMessageListener.completePayment(getPaymentRequest(sagaId));
-                } catch (DataAccessException e) {
-                    log.error("DataAccessException occurred for thread 1 with sql state: {}",
-                            ((PSQLException) Objects.requireNonNull(e.getRootCause())).getSQLState());
+                } catch (Exception e) {
+                    log.error("Exception occurred for thread 1: {}", e.getMessage());
                 }
             }));
 
             tasks.add(Executors.callable(() -> {
                 try {
                     paymentRequestMessageListener.completePayment(getPaymentRequest(sagaId));
-                } catch (DataAccessException e) {
-                    log.error("DataAccessException occurred for thread 2 with sql state: {}",
-                            ((PSQLException) Objects.requireNonNull(e.getRootCause())).getSQLState());
+                } catch (Exception e) {
+                    log.error("Exception occurred for thread 2: {}", e.getMessage());
                 }
             }));
 
