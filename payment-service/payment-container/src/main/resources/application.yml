@@ -8,6 +8,7 @@ logging:
 payment-service:
   payment-request-topic-name: payment-request
   payment-response-topic-name: payment-response
+  customer-topic-name: customer
   restaurant-information-topic-name: restaurant-information
   role-topic-name: identity-role-events
   permission-topic-name: identity-permission-events
@@ -71,6 +72,7 @@ kafka-consumer-config:
   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
   payment-consumer-group-id: payment-topic-consumer
+  customer-group-id: customer-topic-consumer
   restaurant-information-consumer-group-id: restaurant-information-topic-consumer
   role-consumer-group-id: role-topic-consumer
   permission-consumer-group-id: permission-topic-consumer
