@@ -9,7 +9,7 @@ public class Money {
     public static final Money ZERO = new Money(BigDecimal.ZERO);
 
     public Money(BigDecimal amount) {
-        this.amount = amount;
+        this.amount = amount != null ? setScale(amount) : null;
     }
 
     public boolean isGreaterThanZero() {
@@ -39,9 +39,12 @@ public class Money {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Money money = (Money) o;
-        return Objects.equals(amount, money.amount);
+        if (amount == null && money.amount == null) return true;
+        if (amount == null || money.amount == null) return false;
+        return amount.compareTo(money.amount) == 0;
     }
 
     @Override
@@ -50,6 +53,6 @@ public class Money {
     }
 
     private BigDecimal setScale(BigDecimal amount) {
-        return amount.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        return amount.setScale(2, java.math.RoundingMode.DOWN);
     }
 }
