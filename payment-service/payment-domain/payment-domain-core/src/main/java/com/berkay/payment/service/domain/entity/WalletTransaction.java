@@ -16,6 +16,7 @@ public class WalletTransaction extends BaseEntity<WalletTransactionId> {
     private final Money amount;
     private final WalletTransactionType transactionType;
     private final String referenceId;
+    private final String idempotencyKey;
     private final ZonedDateTime createdAt;
 
     private WalletTransaction(Builder builder) {
@@ -24,6 +25,7 @@ public class WalletTransaction extends BaseEntity<WalletTransactionId> {
         amount = builder.amount;
         transactionType = builder.transactionType;
         referenceId = builder.referenceId;
+        idempotencyKey = builder.idempotencyKey;
         createdAt = builder.createdAt;
     }
 
@@ -47,6 +49,10 @@ public class WalletTransaction extends BaseEntity<WalletTransactionId> {
         return referenceId;
     }
 
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
     public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
@@ -57,6 +63,7 @@ public class WalletTransaction extends BaseEntity<WalletTransactionId> {
         private Money amount;
         private WalletTransactionType transactionType;
         private String referenceId;
+        private String idempotencyKey;
         private ZonedDateTime createdAt;
 
         private Builder() {
@@ -84,6 +91,11 @@ public class WalletTransaction extends BaseEntity<WalletTransactionId> {
 
         public Builder referenceId(String val) {
             referenceId = val;
+            return this;
+        }
+
+        public Builder idempotencyKey(String val) {
+            idempotencyKey = val;
             return this;
         }
 
