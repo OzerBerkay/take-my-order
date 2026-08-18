@@ -22,7 +22,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import org.springframework.dao.DataIntegrityViolationException;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,5 +96,24 @@ class WalletApplicationServiceImplTest {
         verify(walletRepository, times(1)).findByOwnerIdWithLock(ownerId);
         verify(walletRepository, times(1)).save(wallet);
         verify(walletTransactionRepository, times(1)).save(any(WalletTransaction.class));
+    }
+
+    @Test
+    void testDeposit_WithDuplicateIdempotencyKey_ShouldThrowException() {
+        // Given
+        WalletDepositCommand command = WalletDepositCommand.builder()
+                .ownerId(ownerId)
+                .amount(new BigDecimal("50.00"))
+                .idempotencyKey("duplicate-key-123")
+                .build();
+
+        when(walletRepository.findByOwnerIdWithLock(ownerId)).thenReturn(Optional.of(wallet));
+        when(walletTransactionRepository.save(any(WalletTransaction.class)))
+                .thenThrow(new DataIntegrityViolationException("Unique index or primary key violation"));
+
+        // When & Then
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            walletApplicationService.deposit(command);
+        });
     }
 }

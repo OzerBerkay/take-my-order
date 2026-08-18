@@ -51,6 +51,7 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
                 .walletId(wallet.getId())
                 .amount(new Money(command.getAmount()))
                 .transactionType(WalletTransactionType.DEPOSIT)
+                .idempotencyKey(command.getIdempotencyKey())
                 .createdAt(ZonedDateTime.now(ZoneId.of(UTC)))
                 .build();
         walletTransactionRepository.save(transaction);
@@ -72,6 +73,7 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
                 .walletId(wallet.getId())
                 .amount(new Money(command.getAmount()))
                 .transactionType(WalletTransactionType.WITHDRAWAL)
+                .idempotencyKey(command.getIdempotencyKey())
                 .createdAt(ZonedDateTime.now(ZoneId.of(UTC)))
                 .build();
         walletTransactionRepository.save(transaction);

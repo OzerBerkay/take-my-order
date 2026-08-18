@@ -22,4 +22,5 @@ public class WalletDepositCommand {
     @NotNull
     @Positive
     private BigDecimal amount;
+    private String idempotencyKey;
 }

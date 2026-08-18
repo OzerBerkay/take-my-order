@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
 @ControllerAdvice
@@ -46,6 +47,17 @@ public class PaymentGlobalExceptionHandler extends GlobalExceptionHandler {
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(paymentApplicationServiceException.getMessage())
+                .build();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {DataIntegrityViolationException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorDTO handleException(DataIntegrityViolationException dataIntegrityViolationException) {
+        log.warn("Data integrity violation occurred, possibly a duplicate idempotency key: {}", dataIntegrityViolationException.getMessage());
+        return ErrorDTO.builder()
+                .code(HttpStatus.CONFLICT.getReasonPhrase())
+                .message("This request has already been processed or violates data integrity.")
                 .build();
     }
 }

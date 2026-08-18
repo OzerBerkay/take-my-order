@@ -34,6 +34,9 @@ public class WalletTransactionEntity {
     @Column(name = "reference_id")
     private String referenceId;
 
+    @Column(name = "idempotency_key", unique = true)
+    private String idempotencyKey;
+
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 }

@@ -48,6 +48,7 @@ public class WalletDataAccessMapper {
                 .amount(walletTransaction.getAmount().getAmount())
                 .transactionType(walletTransaction.getTransactionType())
                 .referenceId(walletTransaction.getReferenceId())
+                .idempotencyKey(walletTransaction.getIdempotencyKey())
                 .createdAt(walletTransaction.getCreatedAt())
                 .build();
     }
@@ -59,6 +60,7 @@ public class WalletDataAccessMapper {
                 .amount(new Money(walletTransactionEntity.getAmount()))
                 .transactionType(walletTransactionEntity.getTransactionType())
                 .referenceId(walletTransactionEntity.getReferenceId())
+                .idempotencyKey(walletTransactionEntity.getIdempotencyKey())
                 .createdAt(walletTransactionEntity.getCreatedAt())
                 .build();
     }

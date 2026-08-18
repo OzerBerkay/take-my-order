@@ -26,9 +26,11 @@ public class WalletController {
     @PostMapping("/{ownerId}/deposit")
     @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_manage_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> deposit(@PathVariable("ownerId") UUID ownerId,
+                                        @RequestHeader("Idempotency-Key") String idempotencyKey,
                                         @RequestBody WalletDepositCommand command) {
         log.info("Received deposit request for owner id: {}", ownerId);
         command.setOwnerId(ownerId);
+        command.setIdempotencyKey(idempotencyKey);
         WalletBalanceResponse response = walletApplicationService.deposit(command);
         return ResponseEntity.ok(response);
     }
@@ -36,9 +38,11 @@ public class WalletController {
     @PostMapping("/{ownerId}/withdraw")
     @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_manage_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> withdraw(@PathVariable("ownerId") UUID ownerId,
+                                         @RequestHeader("Idempotency-Key") String idempotencyKey,
                                          @RequestBody WalletWithdrawCommand command) {
         log.info("Received withdraw request for owner id: {}", ownerId);
         command.setOwnerId(ownerId);
+        command.setIdempotencyKey(idempotencyKey);
         WalletBalanceResponse response = walletApplicationService.withdraw(command);
         return ResponseEntity.ok(response);
     }
