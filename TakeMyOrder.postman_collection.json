@@ -2175,6 +2175,33 @@
                             ]
                         }
                     }
+                },
+                {
+                    "name": "Remove Personnel from Restaurant",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/vnd.api.v1+json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{API_GATEWAY_URL}}/restaurant-service/restaurants/{{restaurantId}}/personnel/{{userId}}",
+                            "host": [
+                                "{{API_GATEWAY_URL}}"
+                            ],
+                            "path": [
+                                "restaurant-service",
+                                "restaurants",
+                                "{{restaurantId}}",
+                                "personnel",
+                                "{{userId}}"
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
