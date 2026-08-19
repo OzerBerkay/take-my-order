@@ -23,6 +23,7 @@ public class ProductEntity {
     private BigDecimal price;
     private int stock;
     private boolean available;
+    private boolean hidden;
 
     @ManyToOne
 

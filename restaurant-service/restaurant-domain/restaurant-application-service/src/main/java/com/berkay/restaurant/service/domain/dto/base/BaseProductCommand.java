@@ -30,4 +30,7 @@ public abstract class BaseProductCommand {
 
     @NotNull(message = "Availability status cannot be null!")
     private final Boolean available;
+
+    @NotNull(message = "Product hidden status cannot be null!")
+    private final Boolean hidden;
 }
