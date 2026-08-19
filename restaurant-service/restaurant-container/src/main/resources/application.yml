@@ -77,8 +77,8 @@ kafka-consumer-config:
   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
   restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
-  role-consumer-group-id: role-topic-consumer
-  permission-consumer-group-id: permission-topic-consumer
+  role-consumer-group-id: restaurant-role-topic-consumer
+  permission-consumer-group-id: restaurant-permission-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true

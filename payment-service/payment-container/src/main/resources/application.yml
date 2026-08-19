@@ -6,6 +6,8 @@ logging:
     com.berkay: ${LOG_LEVEL:DEBUG}
 
 payment-service:
+  init:
+    reset-db: ${RESET_DB:false}
   payment-request-topic-name: payment-request
   payment-response-topic-name: payment-response
   customer-topic-name: customer
@@ -74,8 +76,8 @@ kafka-consumer-config:
   payment-consumer-group-id: payment-topic-consumer
   customer-group-id: customer-topic-consumer
   restaurant-information-consumer-group-id: restaurant-information-topic-consumer
-  role-consumer-group-id: role-topic-consumer
-  permission-consumer-group-id: permission-topic-consumer
+  role-consumer-group-id: payment-role-topic-consumer
+  permission-consumer-group-id: payment-permission-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
