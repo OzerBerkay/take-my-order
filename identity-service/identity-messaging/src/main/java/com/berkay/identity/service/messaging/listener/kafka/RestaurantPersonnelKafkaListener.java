@@ -40,7 +40,7 @@ public class RestaurantPersonnelKafkaListener implements KafkaConsumer<Restauran
                         restaurantPersonnelMessageListener.personnelAdded(avroModel);
                         break;
                     case "PERSONNEL_REMOVED":
-                        log.debug("Received PERSONNEL_REMOVED event for user {}. Not implemented yet.", avroModel.getUserId());
+                        restaurantPersonnelMessageListener.personnelRemoved(avroModel);
                         break;
                     default:
                         // Fallback

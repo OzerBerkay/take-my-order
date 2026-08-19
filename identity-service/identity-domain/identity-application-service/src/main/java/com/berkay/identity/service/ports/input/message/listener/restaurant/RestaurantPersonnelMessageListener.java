@@ -4,4 +4,5 @@ import com.berkay.kafka.order.avro.model.RestaurantPersonnelAvroModel;
 
 public interface RestaurantPersonnelMessageListener {
     void personnelAdded(RestaurantPersonnelAvroModel payload);
+    void personnelRemoved(RestaurantPersonnelAvroModel payload);
 }
