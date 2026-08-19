@@ -31,4 +31,7 @@ public class UpdateProductRequest {
 
     @NotNull(message = "Availability status cannot be null!")
     private Boolean available;
+
+    @NotNull(message = "Product hidden status cannot be null!")
+    private Boolean hidden;
 }

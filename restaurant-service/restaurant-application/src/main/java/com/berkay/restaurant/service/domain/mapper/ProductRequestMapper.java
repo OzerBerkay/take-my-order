@@ -18,6 +18,7 @@ public class ProductRequestMapper {
                 .price(addProductRequest.getPrice())
                 .stock(addProductRequest.getStock())
                 .available(addProductRequest.getAvailable())
+                .hidden(addProductRequest.getHidden())
                 .build();
     }
 
@@ -31,6 +32,7 @@ public class ProductRequestMapper {
                 .price(updateProductRequest.getPrice())
                 .stock(updateProductRequest.getStock())
                 .available(updateProductRequest.getAvailable())
+                .hidden(updateProductRequest.getHidden())
                 .build();
     }
 }
