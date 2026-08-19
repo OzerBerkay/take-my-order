@@ -30,4 +30,7 @@ public class AddProductRequest {
 
     @NotNull(message = "Availability status cannot be null!")
     private Boolean available; // Aynı şekilde 'boolean' yerine 'Boolean' wrapper sınıfı daha güvenlidir. Domain entity'de primitive ile dolu olmak zorunda olabilir ancak burada esneklik kazandırır
+
+    @NotNull(message = "Product hidden status cannot be null!")
+    private Boolean hidden;
 }
