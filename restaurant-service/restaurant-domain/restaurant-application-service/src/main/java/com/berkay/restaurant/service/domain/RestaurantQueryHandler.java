@@ -1,7 +1,10 @@
 package com.berkay.restaurant.service.domain;
 
+import com.berkay.restaurant.service.domain.dto.read.GetProductListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.entity.Product;
@@ -14,8 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -50,6 +55,41 @@ public class RestaurantQueryHandler {
         }
 
         return restaurantDataMapper.productToGetProductQueryResponse(productResult.get());
+    }
+
+    @Transactional(readOnly = true)
+    public GetProductListQueryResponse getProducts(UUID restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        List<GetProductQueryResponse> products = restaurant.getMenu().stream()
+                .map(restaurantDataMapper::productToGetProductQueryResponse)
+                .collect(Collectors.toList());
+        return new GetProductListQueryResponse(restaurantId, products);
+    }
+
+    @Transactional(readOnly = true)
+    public GetPublicProductListQueryResponse getPublicProducts(UUID restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        List<GetPublicProductQueryResponse> products = restaurant.getMenu().stream()
+                .filter(product -> !product.isHidden())
+                .map(restaurantDataMapper::productToGetPublicProductQueryResponse)
+                .collect(Collectors.toList());
+        return new GetPublicProductListQueryResponse(restaurantId, products);
+    }
+
+    @Transactional(readOnly = true)
+    public GetPublicProductQueryResponse getPublicProduct(UUID restaurantId, UUID productId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        
+        Optional<Product> productResult = restaurant.getMenu().stream()
+                .filter(product -> product.getId().getValue().equals(productId) && !product.isHidden())
+                .findFirst();
+
+        if (productResult.isEmpty()) {
+            log.warn("Public product with id: {} not found in restaurant: {}", productId, restaurantId);
+            throw new ProductNotFoundException("Product not found with id: " + productId);
+        }
+
+        return restaurantDataMapper.productToGetPublicProductQueryResponse(productResult.get());
     }
 
     private Restaurant findRestaurantById(UUID restaurantId) {

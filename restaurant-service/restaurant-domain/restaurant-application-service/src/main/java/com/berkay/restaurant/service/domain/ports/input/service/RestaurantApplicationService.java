@@ -9,9 +9,14 @@ import com.berkay.restaurant.service.domain.dto.read.GetProductQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetProductListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
 import com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateRestaurantCommand;
 import jakarta.validation.Valid;
+
+import java.util.UUID;
 
 public interface RestaurantApplicationService {
     CreateRestaurantResponse createRestaurant(@Valid CreateRestaurantCommand createRestaurantCommand);
@@ -27,4 +32,10 @@ public interface RestaurantApplicationService {
     GetRestaurantQueryResponse getRestaurant(GetRestaurantQuery getRestaurantQuery);
 
     GetProductQueryResponse getProduct(GetProductQuery getProductQuery);
+
+    GetProductListQueryResponse getProducts(UUID restaurantId);
+
+    GetPublicProductListQueryResponse getPublicProducts(UUID restaurantId);
+
+    GetPublicProductQueryResponse getPublicProduct(UUID restaurantId, UUID productId);
 }
