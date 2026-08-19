@@ -6,6 +6,8 @@ logging:
     com.berkay: ${LOG_LEVEL:DEBUG}
 
 order-service:
+  init:
+    reset-db: ${RESET_DB:false}
   payment-request-topic-name: payment-request
   payment-response-topic-name: payment-response
   restaurant-approval-request-topic-name: restaurant-approval-request
@@ -77,8 +79,8 @@ kafka-consumer-config:
   restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
   customer-group-id:  customer-topic-consumer
   restaurant-information-consumer-group-id: restaurant-information-topic-consumer
-  role-consumer-group-id: role-topic-consumer
-  permission-consumer-group-id: permission-topic-consumer
+  role-consumer-group-id: order-role-topic-consumer
+  permission-consumer-group-id: order-permission-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
