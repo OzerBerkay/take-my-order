@@ -1918,7 +1918,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"Pepperoni Pizza\",\n    \"price\": 14.0,\n    \"stock\": 50,\n    \"available\": true\n}"
+                            "raw": "{\n  \"name\": \"Pepperoni Pizza\",\n  \"price\": 14.0,\n  \"stock\": 50,\n  \"available\": true,\n  \"hidden\": false\n}"
                         },
                         "url": {
                             "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
@@ -1991,7 +1991,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true\n}"
+                            "raw": "{\n  \"name\": \"Updated Pizza\",\n  \"price\": 15.0,\n  \"stock\": 120,\n  \"available\": true,\n  \"hidden\": false\n}"
                         },
                         "url": {
                             "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
@@ -2202,6 +2202,73 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Get All Products (Success)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{merchant_access_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Public APIs",
+                    "item": [
+                        {
+                            "name": "Get Public Products",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}/products",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "products"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "Get Public Product",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "products",
+                                        "{{product_id}}"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
                 }
             ]
         },
