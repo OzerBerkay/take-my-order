@@ -6,7 +6,10 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductRespons
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateProductCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetProductListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.entity.Product;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
@@ -55,6 +58,7 @@ public class RestaurantDataMapper {
                         .price(new Money(productCommand.getPrice()))
                         .stock(productCommand.getStock())
                         .available(productCommand.getAvailable())
+                        .hidden(productCommand.getHidden())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -83,6 +87,7 @@ public class RestaurantDataMapper {
                 .price(new Money(addProductCommand.getPrice()))
                 .stock(addProductCommand.getStock())
                 .available(addProductCommand.getAvailable())
+                .hidden(addProductCommand.getHidden())
                 .build();
     }
 
@@ -130,6 +135,16 @@ public class RestaurantDataMapper {
                 .price(product.getPrice().getAmount())
                 .stock(product.getStock())
                 .available(product.isAvailable())
+                .hidden(product.isHidden())
+                .build();
+    }
+
+    public GetPublicProductQueryResponse productToGetPublicProductQueryResponse(Product product) {
+        return GetPublicProductQueryResponse.builder()
+                .productId(product.getId().getValue())
+                .name(product.getName())
+                .price(product.getPrice().getAmount())
+                .inStock(product.getStock() > 0)
                 .build();
     }
 

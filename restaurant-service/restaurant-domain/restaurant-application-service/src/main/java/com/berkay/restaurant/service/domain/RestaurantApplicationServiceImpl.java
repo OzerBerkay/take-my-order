@@ -5,8 +5,11 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductRespons
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.dto.delete.DeleteProductCommand;
+import com.berkay.restaurant.service.domain.dto.read.GetProductListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.dto.update.product.UpdateProductCommand;
@@ -15,6 +18,8 @@ import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -75,5 +80,20 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     @Override
     public GetProductQueryResponse getProduct(GetProductQuery getProductQuery) {
         return restaurantQueryHandler.getProduct(getProductQuery);
+    }
+
+    @Override
+    public GetProductListQueryResponse getProducts(UUID restaurantId) {
+        return restaurantQueryHandler.getProducts(restaurantId);
+    }
+
+    @Override
+    public GetPublicProductListQueryResponse getPublicProducts(UUID restaurantId) {
+        return restaurantQueryHandler.getPublicProducts(restaurantId);
+    }
+
+    @Override
+    public GetPublicProductQueryResponse getPublicProduct(UUID restaurantId, UUID productId) {
+        return restaurantQueryHandler.getPublicProduct(restaurantId, productId);
     }
 }

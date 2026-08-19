@@ -10,11 +10,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetProductQueryResponse {
+public class GetPublicProductQueryResponse {
     private final UUID productId;
     private final String name;
     private final BigDecimal price;
-    private final Integer stock;
-    private final Boolean available;
-    private final Boolean hidden;
+    private final Boolean inStock;
 }
