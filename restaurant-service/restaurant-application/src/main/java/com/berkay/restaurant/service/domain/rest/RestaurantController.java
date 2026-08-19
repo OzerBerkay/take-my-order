@@ -6,6 +6,7 @@ import com.berkay.restaurant.service.domain.dto.create.product.AddProductRespons
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantCommand;
 import com.berkay.restaurant.service.domain.dto.create.restaurant.CreateRestaurantResponse;
 import com.berkay.restaurant.service.domain.dto.delete.DeleteProductCommand;
+import com.berkay.restaurant.service.domain.dto.read.GetProductListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQuery;
 import com.berkay.restaurant.service.domain.dto.read.GetProductQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
@@ -142,6 +143,15 @@ public class RestaurantController {
                 .build();
 
         GetProductQueryResponse response = restaurantApplicationService.getProduct(getProductQuery);
+        return ResponseEntity.ok(response);
+    }
+
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMemberOfRestaurant(authentication, #restaurantId)")
+    @GetMapping("/{restaurantId}/products")
+    public ResponseEntity<GetProductListQueryResponse> getProducts(@PathVariable UUID restaurantId) {
+        log.info("Getting all products from restaurant: {}", restaurantId);
+
+        GetProductListQueryResponse response = restaurantApplicationService.getProducts(restaurantId);
         return ResponseEntity.ok(response);
     }
 }
