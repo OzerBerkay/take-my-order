@@ -31,11 +31,17 @@ public interface RestaurantApplicationService {
 
     GetRestaurantQueryResponse getRestaurant(GetRestaurantQuery getRestaurantQuery);
 
+    com.berkay.restaurant.service.domain.dto.read.GetRestaurantListQueryResponse getRestaurants(java.util.UUID userId);
+
     GetProductQueryResponse getProduct(GetProductQuery getProductQuery);
 
-    GetProductListQueryResponse getProducts(UUID restaurantId);
+    GetProductListQueryResponse getProducts(java.util.UUID restaurantId);
 
-    GetPublicProductListQueryResponse getPublicProducts(UUID restaurantId);
+    GetPublicProductListQueryResponse getPublicProducts(java.util.UUID restaurantId);
 
-    GetPublicProductQueryResponse getPublicProduct(UUID restaurantId, UUID productId);
+    GetPublicProductQueryResponse getPublicProduct(java.util.UUID restaurantId, java.util.UUID productId);
+    
+    com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse getPublicRestaurants(com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery getPublicRestaurantListQuery);
+    
+    com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse getPublicRestaurant(java.util.UUID restaurantId);
 }

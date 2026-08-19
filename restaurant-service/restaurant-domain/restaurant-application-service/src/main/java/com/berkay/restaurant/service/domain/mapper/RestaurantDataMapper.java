@@ -35,6 +35,7 @@ public class RestaurantDataMapper {
                 // ID atanmıyor, Domain Service'deki initializeRestaurant metodunda atanacak.
                 .restaurantName(new RestaurantName(createRestaurantCommand.getRestaurantName()))
                 .active(createRestaurantCommand.isActive())
+                .available(false)
                 .menu(createProductCommandsToProducts(createRestaurantCommand.getProducts()))
                 .address(new com.berkay.restaurant.service.domain.valueobject.Address(
                         createRestaurantCommand.getStreet(),
@@ -105,6 +106,7 @@ public class RestaurantDataMapper {
                 .merchantId(merchantId)
                 .name(restaurantInformationEvent.getRestaurant().getRestaurantName() != null ? restaurantInformationEvent.getRestaurant().getRestaurantName().getRestaurantName() : null)
                 .active(restaurantInformationEvent.getRestaurant().isActive())
+                .available(restaurantInformationEvent.getRestaurant().isAvailable())
                 .createdAt(restaurantInformationEvent.getCreatedAt())
                 .products(restaurantInformationEvent.getRestaurant().getMenu().stream().map(product ->
                         RestaurantEventPayload.ProductPayload.builder()
@@ -156,6 +158,22 @@ public class RestaurantDataMapper {
                 .menu(restaurant.getMenu().stream()
                         .map(this::productToGetProductQueryResponse)
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    public com.berkay.restaurant.service.domain.dto.read.RestaurantModel restaurantToRestaurantModel(Restaurant restaurant) {
+        return com.berkay.restaurant.service.domain.dto.read.RestaurantModel.builder()
+                .restaurantId(restaurant.getId().getValue())
+                .name(restaurant.getRestaurantName().getRestaurantName())
+                .description(restaurant.getDescription())
+                .logoUrl(restaurant.getLogoUrl())
+                .cuisineType(restaurant.getCuisineType())
+                .averageDeliveryTimeInMinutes(restaurant.getAverageDeliveryTimeInMinutes())
+                .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
+                .address(restaurant.getAddress())
+                .active(restaurant.isActive())
+                .available(restaurant.isAvailable())
                 .build();
     }
 }
