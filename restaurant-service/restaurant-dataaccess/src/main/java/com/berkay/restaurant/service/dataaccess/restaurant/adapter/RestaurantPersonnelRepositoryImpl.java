@@ -32,4 +32,9 @@ public class RestaurantPersonnelRepositoryImpl implements RestaurantPersonnelRep
     public boolean existsByRestaurantIdAndUserId(UUID restaurantId, UUID userId) {
         return restaurantPersonnelJpaRepository.existsByRestaurantIdAndUserId(restaurantId, userId);
     }
+
+    @Override
+    public void deleteByRestaurantIdAndUserId(UUID restaurantId, UUID userId) {
+        restaurantPersonnelJpaRepository.deleteByRestaurantIdAndUserId(restaurantId, userId);
+    }
 }

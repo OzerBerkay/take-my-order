@@ -11,4 +11,5 @@ import java.util.List;
 public interface RestaurantPersonnelJpaRepository extends JpaRepository<RestaurantPersonnelEntity, UUID> {
     List<RestaurantPersonnelEntity> findByRestaurantId(UUID restaurantId);
     boolean existsByRestaurantIdAndUserId(UUID restaurantId, UUID userId);
+    void deleteByRestaurantIdAndUserId(UUID restaurantId, UUID userId);
 }
