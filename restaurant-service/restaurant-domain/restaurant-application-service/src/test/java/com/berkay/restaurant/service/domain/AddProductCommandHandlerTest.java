@@ -57,6 +57,7 @@ public class AddProductCommandHandlerTest {
                 .price(new BigDecimal("15.50"))
                 .stock(100)
                 .available(true)
+                .hidden(false)
                 .build();
 
         Restaurant restaurant = Restaurant.builder()

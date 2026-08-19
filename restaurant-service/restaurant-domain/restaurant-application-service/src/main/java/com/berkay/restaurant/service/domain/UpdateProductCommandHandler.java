@@ -59,7 +59,8 @@ public class UpdateProductCommandHandler {
                 command.getName(),
                 new Money(command.getPrice()),
                 command.getAvailable(),
-                command.getStock()
+                command.getStock(),
+                command.getHidden()
         );
 
         log.info("Product updated with id: {}", product.getId().getValue());
