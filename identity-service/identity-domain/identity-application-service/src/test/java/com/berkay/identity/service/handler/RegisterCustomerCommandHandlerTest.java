@@ -60,6 +60,9 @@ class RegisterCustomerCommandHandlerTest {
     @Mock
     private UserCreateHelper userCreateHelper;
 
+    @Mock
+    private com.berkay.identity.service.ports.output.message.publisher.CustomerMessagePublisher customerMessagePublisher;
+
     @InjectMocks
     private RegisterCustomerCommandHandler handler;
 
@@ -100,6 +103,7 @@ class RegisterCustomerCommandHandlerTest {
         verify(identityDomainService).initiateCustomer(tempUser);
         verify(identityProviderPort).registerUser(tempUser, command.getPassword());
         verify(userRepository).save(any(User.class));
+        verify(customerMessagePublisher).publish(tempUser);
         verify(userDataMapper).userToCreateUserResponse(any(User.class), eq("Customer registered successfully. Please verify your email/phone."));
     }
 
@@ -143,6 +147,7 @@ class RegisterCustomerCommandHandlerTest {
         assertNotNull(result);
         verify(userRepository).save(any(User.class));
         verify(addressRepository).save(any(Address.class)); // Adresin kaydedildiğini test et
+        verify(customerMessagePublisher).publish(tempUser);
     }
 
     @Test
