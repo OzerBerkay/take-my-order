@@ -42,6 +42,7 @@ public class UpdateRestaurantCommandHandler {
 
         restaurant.updateName(command.getRestaurantName());
         restaurant.updateActiveStatus(command.getActive());
+        restaurant.updateAvailability(command.getAvailable());
 
         // Kaydet
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);

@@ -118,6 +118,16 @@ public class RestaurantController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMerchant(authentication)")
+    @GetMapping
+    public ResponseEntity<com.berkay.restaurant.service.domain.dto.read.GetRestaurantListQueryResponse> getRestaurants(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal UUID internalId) {
+        log.info("Getting all restaurants for merchant with id: {}", internalId);
+        com.berkay.restaurant.service.domain.dto.read.GetRestaurantListQueryResponse response = 
+                restaurantApplicationService.getRestaurants(internalId);
+        return ResponseEntity.ok(response);
+    }
+
     @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMemberOfRestaurant(authentication, #restaurantId)")
     @GetMapping("/{restaurantId}")
     public ResponseEntity<GetRestaurantQueryResponse> getRestaurant(@PathVariable UUID restaurantId) {

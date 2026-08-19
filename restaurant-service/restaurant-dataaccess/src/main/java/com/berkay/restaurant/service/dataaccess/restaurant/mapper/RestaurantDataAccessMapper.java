@@ -26,6 +26,7 @@ public class RestaurantDataAccessMapper {
                 .restaurantId(restaurant.getId().getValue())
                 .restaurantName(restaurant.getRestaurantName().getRestaurantName()) // VO'dan String'e
                 .isActive(restaurant.isActive())
+                .available(restaurant.isAvailable())
                 .street(restaurant.getAddress() != null ? restaurant.getAddress().getStreet() : null)
                 .city(restaurant.getAddress() != null ? restaurant.getAddress().getCity() : null)
                 .postalCode(restaurant.getAddress() != null ? restaurant.getAddress().getPostalCode() : null)
@@ -60,6 +61,7 @@ public class RestaurantDataAccessMapper {
                 .restaurantId(new RestaurantId(restaurantEntity.getRestaurantId()))
                 .restaurantName(new RestaurantName(restaurantEntity.getRestaurantName()))
                 .active(restaurantEntity.isActive())
+                .available(restaurantEntity.isAvailable())
                 .address(new com.berkay.restaurant.service.domain.valueobject.Address(
                         restaurantEntity.getStreet(),
                         restaurantEntity.getCity(),

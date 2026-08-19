@@ -20,6 +20,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private final List<Product> menu;
     private OrderApproval orderApproval;
     private boolean active;
+    private boolean available;
     private OrderDetail orderDetail;
     
     private Address address;
@@ -40,6 +41,12 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     public void updateActiveStatus(Boolean active) {
         if (active != null) {
             this.active = active;
+        }
+    }
+
+    public void updateAvailability(Boolean available) {
+        if (available != null) {
+            this.available = available;
         }
     }
 
@@ -97,6 +104,11 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         // 1. KURAL: Restoran Aktif mi?
         if (!this.isActive()) {
             failureMessages.add("Restaurant with name " + this.restaurantName + " is currently not active!");
+        }
+
+        // 1.5 KURAL: Restoran Açık mı?
+        if (!this.isAvailable()) {
+            failureMessages.add("Restaurant with name " + this.restaurantName + " is currently not accepting orders!");
         }
 
         // 2. KURAL: Ödeme Tamamlanmış mı?
@@ -160,6 +172,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         menu = builder.menu != null ? builder.menu : new ArrayList<>();
         orderApproval = builder.orderApproval;
         active = builder.active;
+        available = builder.available;
         orderDetail = builder.orderDetail;
         address = builder.address;
         phoneNumber = builder.phoneNumber;
@@ -189,6 +202,10 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 
     public OrderDetail getOrderDetail() {
@@ -233,6 +250,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private List<Product> menu;
         private OrderApproval orderApproval;
         private boolean active;
+        private boolean available;
         private OrderDetail orderDetail;
         private Address address;
         private String phoneNumber;
@@ -268,6 +286,11 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder active(boolean val) {
             active = val;
+            return this;
+        }
+
+        public Builder available(boolean val) {
+            available = val;
             return this;
         }
 

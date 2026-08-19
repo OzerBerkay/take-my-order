@@ -78,22 +78,37 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     }
 
     @Override
+    public com.berkay.restaurant.service.domain.dto.read.GetRestaurantListQueryResponse getRestaurants(java.util.UUID userId) {
+        return restaurantQueryHandler.getRestaurants(userId);
+    }
+
+    @Override
     public GetProductQueryResponse getProduct(GetProductQuery getProductQuery) {
         return restaurantQueryHandler.getProduct(getProductQuery);
     }
 
     @Override
-    public GetProductListQueryResponse getProducts(UUID restaurantId) {
+    public GetProductListQueryResponse getProducts(java.util.UUID restaurantId) {
         return restaurantQueryHandler.getProducts(restaurantId);
     }
 
     @Override
-    public GetPublicProductListQueryResponse getPublicProducts(UUID restaurantId) {
+    public GetPublicProductListQueryResponse getPublicProducts(java.util.UUID restaurantId) {
         return restaurantQueryHandler.getPublicProducts(restaurantId);
     }
 
     @Override
-    public GetPublicProductQueryResponse getPublicProduct(UUID restaurantId, UUID productId) {
+    public GetPublicProductQueryResponse getPublicProduct(java.util.UUID restaurantId, java.util.UUID productId) {
         return restaurantQueryHandler.getPublicProduct(restaurantId, productId);
+    }
+
+    @Override
+    public com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse getPublicRestaurants(com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery getPublicRestaurantListQuery) {
+        return restaurantQueryHandler.getPublicRestaurants(getPublicRestaurantListQuery);
+    }
+
+    @Override
+    public com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse getPublicRestaurant(java.util.UUID restaurantId) {
+        return restaurantQueryHandler.getPublicRestaurant(restaurantId);
     }
 }

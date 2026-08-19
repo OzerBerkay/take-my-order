@@ -22,6 +22,7 @@ public class RestaurantEntity {
 
     private String restaurantName;
     private boolean isActive;
+    private boolean available;
 
     private String street;
     private String city;

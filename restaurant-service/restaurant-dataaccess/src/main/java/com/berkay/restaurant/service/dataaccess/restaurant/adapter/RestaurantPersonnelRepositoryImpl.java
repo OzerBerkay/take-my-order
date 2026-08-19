@@ -37,4 +37,18 @@ public class RestaurantPersonnelRepositoryImpl implements RestaurantPersonnelRep
     public void deleteByRestaurantIdAndUserId(UUID restaurantId, UUID userId) {
         restaurantPersonnelJpaRepository.deleteByRestaurantIdAndUserId(restaurantId, userId);
     }
+
+    @Override
+    public java.util.List<RestaurantPersonnel> findByRestaurantId(UUID restaurantId) {
+        return restaurantPersonnelJpaRepository.findByRestaurantId(restaurantId).stream()
+                .map(restaurantPersonnelDataAccessMapper::restaurantPersonnelEntityToRestaurantPersonnel)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public java.util.List<RestaurantPersonnel> findByUserId(UUID userId) {
+        return restaurantPersonnelJpaRepository.findByUserId(userId).stream()
+                .map(restaurantPersonnelDataAccessMapper::restaurantPersonnelEntityToRestaurantPersonnel)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

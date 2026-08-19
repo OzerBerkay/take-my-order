@@ -34,4 +34,30 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
         RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);
         return restaurantDataAccessMapper.restaurantEntityToRestaurant(savedEntity);
     }
+
+    @Override
+    public java.util.List<Restaurant> findAllByIdIn(java.util.List<UUID> restaurantIds) {
+        return restaurantJpaRepository.findAllByRestaurantIdIn(restaurantIds).stream()
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, com.berkay.restaurant.service.domain.valueobject.CuisineType cuisineType, Boolean available, int page, int size) {
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(name, cuisineType, available, pageRequest);
+        
+        java.util.List<Restaurant> restaurants = pagedResult.getContent().stream()
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant)
+                .collect(java.util.stream.Collectors.toList());
+
+        return new com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult(
+                restaurants,
+                pagedResult.getNumber(),
+                pagedResult.getSize(),
+                pagedResult.getTotalElements(),
+                pagedResult.getTotalPages(),
+                pagedResult.isLast()
+        );
+    }
 }

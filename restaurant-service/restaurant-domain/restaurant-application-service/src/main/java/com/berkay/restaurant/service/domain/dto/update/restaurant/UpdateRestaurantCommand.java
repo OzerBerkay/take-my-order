@@ -19,4 +19,6 @@ public class UpdateRestaurantCommand {
     private final String restaurantName;
 
     private final Boolean active;
+
+    private final Boolean available;
 }

@@ -13,4 +13,6 @@ public class UpdateRestaurantRequest {
     private String restaurantName;
 
     private Boolean active;
+
+    private Boolean available;
 }

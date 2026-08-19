@@ -26,6 +26,8 @@ public class RestaurantEventPayload {
     @JsonProperty
     private boolean active;
     @JsonProperty
+    private boolean available;
+    @JsonProperty
     private List<ProductPayload> products;
     @JsonProperty
     private ZonedDateTime createdAt;
