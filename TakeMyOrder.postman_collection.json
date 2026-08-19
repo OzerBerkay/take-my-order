@@ -1955,7 +1955,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"active\": false\n}"
+                            "raw": "{\n    \"restaurantName\": \"Berkay's Updated Diner\",\n    \"active\": true,\n    \"available\": true\n}"
                         },
                         "url": {
                             "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
@@ -2267,8 +2267,97 @@
                                     ]
                                 }
                             }
+                        },
+                        {
+                            "name": "Get Public Restaurants",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/public/restaurants?page=0&size=10",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "restaurants"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "searchName",
+                                            "value": "",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "cuisineType",
+                                            "value": "TURKISH",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "available",
+                                            "value": "true",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Public Restaurant",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "public",
+                                        "restaurants",
+                                        "{{restaurant_id}}"
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
                     ]
+                },
+                {
+                    "name": "Get Merchant Restaurants",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "restaurants"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{merchant_access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
