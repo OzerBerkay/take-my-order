@@ -33,6 +33,7 @@ public final class PermissionConstants {
     public static final String CAN_UPDATE_PRODUCT = "can_update_product";
     public static final String CAN_DELETE_PRODUCT = "can_delete_product";
     public static final String CAN_ADD_PERSONNEL = "can_add_personnel";
+    public static final String CAN_REMOVE_PERSONNEL = "can_remove_personnel";
 
     // Payment Permissions
     public static final String CAN_REFUND_PAYMENT = "can_refund_payment";
