@@ -66,7 +66,7 @@ public class RestaurantController {
     }
 
     @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_manage_restaurant', #restaurantId)")
-    @PutMapping("/{restaurantId}")
+    @PatchMapping("/{restaurantId}")
     public ResponseEntity<String> updateRestaurant(@PathVariable UUID restaurantId,
                                                    @RequestBody @Valid UpdateRestaurantRequest updateRestaurantRequest) {
         log.info("Updating restaurant with id: {}", restaurantId);
