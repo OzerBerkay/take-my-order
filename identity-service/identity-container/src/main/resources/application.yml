@@ -5,11 +5,18 @@ server:
 logging:
   level:
     com.berkay: ${LOG_LEVEL:DEBUG}
+
     org.springframework.security: ${LOG_LEVEL:INFO}
     org.springframework.kafka: WARN
     org.apache.kafka: WARN
 
 spring:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}
   devtools:
     restart:
       enabled: false

@@ -38,8 +38,8 @@ public class SecurityConfig {
                 // Session tutmuyoruz (Stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Auth (Login/Register/Refresh) ve Swagger endpointleri herkese açık
-                        .requestMatchers("/auth/login", "/auth/register/**", "/auth/refresh", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // Auth (Login/Register/Refresh), Swagger endpointleri herkese açık
+                        .requestMatchers("/auth/login", "/auth/register/**", "/auth/refresh", "/internal/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Geri kalan her yer token gerektirir
                         .anyRequest().authenticated()
                 )

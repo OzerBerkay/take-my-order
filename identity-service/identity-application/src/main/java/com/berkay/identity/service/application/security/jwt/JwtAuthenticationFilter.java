@@ -27,14 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
     private final org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver;
+    private final org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder;
 
     public JwtAuthenticationFilter(ObjectMapper objectMapper, 
                                    org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
                                    @org.springframework.beans.factory.annotation.Qualifier("handlerExceptionResolver") 
-                                   org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver) {
+                                   org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver,
+                                   @org.springframework.beans.factory.annotation.Autowired(required = false) org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder) {
         this.objectMapper = objectMapper;
         this.redisTemplate = redisTemplate;
         this.handlerExceptionResolver = handlerExceptionResolver;
+        this.jwtDecoder = jwtDecoder;
     }
 
     @Override
@@ -46,6 +49,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
+                if (jwtDecoder != null) {
+                    try {
+                        org.springframework.security.oauth2.jwt.Jwt jwt = jwtDecoder.decode(token);
+                        log.debug("JWT Signature successfully verified for user: {}", jwt.getSubject());
+                    } catch (org.springframework.security.oauth2.jwt.JwtException e) {
+                        log.warn("JWT Signature verification failed: {}", e.getMessage());
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Signature");
+                        return;
+                    }
+                } else {
+                    log.warn("JwtDecoder is not configured! Skipping signature verification.");
+                }
+
                 String[] chunks = token.split("\\.");
                 if (chunks.length > 1) {
                     String payloadJson = new String(Base64.getUrlDecoder().decode(chunks[1]));
@@ -63,30 +79,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         }
                     }
 
+                    String clientId = payload.hasNonNull("clientId") ? payload.get("clientId").asText() : 
+                                     (payload.hasNonNull("azp") ? payload.get("azp").asText() : null);
+                    
+                    boolean isM2M = !payload.hasNonNull("internal_id") && "take-my-order-client".equals(clientId);
+
                     // Token Validation (Check if all required custom claims exist)
-                    if (!payload.hasNonNull("sub") || 
+                    if (!isM2M && (!payload.hasNonNull("sub") || 
                         (!payload.hasNonNull("account_status") && !payload.hasNonNull("accountStatus")) || 
                         !payload.hasNonNull("internal_id") || 
-                        !payload.hasNonNull("user_type")) {
+                        !payload.hasNonNull("user_type"))) {
                         log.error("JWT Token is missing critical custom claims! This might be an old token or a token generated before mapping fixes.");
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token Payload: Missing custom claims.");
                         return;
                     }
 
-                    // 1. Döküman Request Flow Adım 3: Account Status Kontrolü (BANNED Check)
-                    String statusString = payload.hasNonNull("account_status") ? payload.get("account_status").asText() : payload.get("accountStatus").asText();
-                    AccountStatus accountStatus = AccountStatus.valueOf(statusString);
-                    if (AccountStatus.BANNED.equals(accountStatus)) {
-                        log.warn("BANNED user tried to access! External ID: {}", payload.get("sub").asText());
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Account is BANNED!");
-                        return; // Filtreyi kes, içeri alma!
-                    }
+                    AccountStatus accountStatus = AccountStatus.ACTIVE;
+                    UUID externalId = null;
+                    UUID internalId = null;
+                    UserType userType = UserType.M2M;
+                    String email = "";
 
-                    // 2. Claim'leri Oku
-                    UUID externalId = UUID.fromString(payload.get("sub").asText());
-                    UUID internalId = UUID.fromString(payload.get("internal_id").asText());
-                    UserType userType = UserType.valueOf(payload.get("user_type").asText());
-                    String email = payload.hasNonNull("email") ? payload.get("email").asText() : "";
+                    if (!isM2M) {
+                        // 1. Döküman Request Flow Adım 3: Account Status Kontrolü (BANNED Check)
+                        String statusString = payload.hasNonNull("account_status") ? payload.get("account_status").asText() : payload.get("accountStatus").asText();
+                        accountStatus = AccountStatus.valueOf(statusString);
+                        if (AccountStatus.BANNED.equals(accountStatus)) {
+                            log.warn("BANNED user tried to access! External ID: {}", payload.get("sub").asText());
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Account is BANNED!");
+                            return; // Filtreyi kes, içeri alma!
+                        }
+
+                        // 2. Claim'leri Oku
+                        externalId = UUID.fromString(payload.get("sub").asText());
+                        internalId = UUID.fromString(payload.get("internal_id").asText());
+                        userType = UserType.valueOf(payload.get("user_type").asText());
+                        email = payload.hasNonNull("email") ? payload.get("email").asText() : "";
+                    } else {
+                        // M2M Mock values
+                        externalId = UUID.nameUUIDFromBytes(clientId.getBytes());
+                        internalId = externalId;
+                    }
 
                     List<UUID> roleIds = new ArrayList<>();
                     if (payload.hasNonNull("role_ids") && payload.get("role_ids").isArray()) {
