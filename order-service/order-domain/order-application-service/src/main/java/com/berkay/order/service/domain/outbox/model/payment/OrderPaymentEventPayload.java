@@ -17,6 +17,8 @@ public class OrderPaymentEventPayload { //DB'de kaydedilecek olan outbox mesajı
     @JsonProperty
     private String customerId;
     @JsonProperty
+    private String restaurantId;
+    @JsonProperty
     private BigDecimal price;
     @JsonProperty
     private ZonedDateTime createdAt;

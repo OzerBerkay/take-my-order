@@ -23,47 +23,53 @@ public class PaymentDomainServiceImpl implements PaymentDomainService {
 
     @Override
     public PaymentEvent validateAndInitiatePayment(Payment payment,
-                                                   Wallet wallet,
+                                                   Wallet customerWallet,
+                                                   Wallet restaurantWallet,
                                                    List<String> failureMessages) {
         payment.validatePayment(failureMessages);
         payment.initializePayment();
         
         try {
-            wallet.subtractBalance(payment.getPrice());
+            customerWallet.subtractBalance(payment.getPrice());
         } catch (PaymentDomainException e) {
             failureMessages.add(e.getMessage());
             log.error("Customer with id: {} doesn't have enough credit for payment!", payment.getCustomerId().getValue());
         }
 
         if (failureMessages.isEmpty()) {
-            WalletTransaction transaction = createWalletTransaction(payment, wallet, WalletTransactionType.PAYMENT);
+            restaurantWallet.addBalance(payment.getPrice());
+            WalletTransaction customerTransaction = createWalletTransaction(payment, customerWallet, WalletTransactionType.PAYMENT);
+            WalletTransaction restaurantTransaction = createWalletTransaction(payment, restaurantWallet, WalletTransactionType.DEPOSIT);
             log.info("Payment is initiated for order id: {}", payment.getOrderId().getValue());
             payment.updateStatus(PaymentStatus.COMPLETED);
-            return new PaymentCompletedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), transaction, wallet);
+            return new PaymentCompletedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), customerTransaction, customerWallet, restaurantTransaction, restaurantWallet);
         } else {
             log.info("Payment initiation is failed for order id: {}", payment.getOrderId().getValue());
             payment.updateStatus(PaymentStatus.FAILED);
-            return new PaymentFailedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), failureMessages, wallet);
+            return new PaymentFailedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), failureMessages, customerWallet);
         }
     }
 
     @Override
     public PaymentEvent validateAndCancelPayment(Payment payment,
-                                                 Wallet wallet,
+                                                 Wallet customerWallet,
+                                                 Wallet restaurantWallet,
                                                  List<String> failureMessages) {
         payment.validatePaymentForCancellation(failureMessages);
         
         if (failureMessages.isEmpty()) {
-            wallet.addBalance(payment.getPrice());
-            WalletTransaction transaction = createWalletTransaction(payment, wallet, WalletTransactionType.REFUND);
+            customerWallet.addBalance(payment.getPrice());
+            restaurantWallet.subtractBalance(payment.getPrice());
+            WalletTransaction customerTransaction = createWalletTransaction(payment, customerWallet, WalletTransactionType.REFUND);
+            WalletTransaction restaurantTransaction = createWalletTransaction(payment, restaurantWallet, WalletTransactionType.WITHDRAWAL);
 
             log.info("Payment is cancelled for order id: {}", payment.getOrderId().getValue());
             payment.updateStatus(PaymentStatus.CANCELLED);
-            return new PaymentCancelledEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), transaction, wallet);
+            return new PaymentCancelledEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), customerTransaction, customerWallet, restaurantTransaction, restaurantWallet);
         } else {
             log.info("Payment cancellation is failed for order id: {}", payment.getOrderId().getValue());
             payment.updateStatus(PaymentStatus.FAILED);
-            return new PaymentFailedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), failureMessages, wallet);
+            return new PaymentFailedEvent(payment, ZonedDateTime.now(ZoneId.of(UTC)), failureMessages, customerWallet);
         }
     }
 

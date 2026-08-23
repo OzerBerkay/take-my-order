@@ -5,4 +5,5 @@ import java.util.UUID;
 
 public interface RolePermissionQueryPort {
     Set<String> getPermissionCodesByRoleId(UUID roleId);
+    UUID getOrganizationalUnitIdByRoleId(UUID roleId);
 }

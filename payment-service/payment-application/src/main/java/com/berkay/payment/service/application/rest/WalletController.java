@@ -24,7 +24,7 @@ public class WalletController {
     }
 
     @PostMapping("/{ownerId}/deposit")
-    @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_manage_payment', #ownerId)")
+    @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_manage_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> deposit(@PathVariable("ownerId") UUID ownerId,
                                         @RequestHeader("Idempotency-Key") String idempotencyKey,
                                         @RequestBody WalletDepositCommand command) {
@@ -36,7 +36,7 @@ public class WalletController {
     }
 
     @PostMapping("/{ownerId}/withdraw")
-    @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_manage_payment', #ownerId)")
+    @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_manage_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> withdraw(@PathVariable("ownerId") UUID ownerId,
                                          @RequestHeader("Idempotency-Key") String idempotencyKey,
                                          @RequestBody WalletWithdrawCommand command) {
@@ -48,7 +48,7 @@ public class WalletController {
     }
 
     @GetMapping("/{ownerId}/balance")
-    @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_read_payment', #ownerId)")
+    @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_read_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> getBalance(@PathVariable("ownerId") UUID ownerId) {
         log.info("Received get balance request for owner id: {}", ownerId);
         WalletBalanceResponse response = walletApplicationService.getBalance(ownerId);
@@ -56,7 +56,7 @@ public class WalletController {
     }
 
     @GetMapping("/{ownerId}/history")
-    @PreAuthorize("@paymentAuthService.hasPermission(authentication, 'can_read_payment', #ownerId)")
+    @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_read_payment', #ownerId)")
     public ResponseEntity<WalletHistoryResponse> getHistory(@PathVariable("ownerId") UUID ownerId) {
         log.info("Received get history request for owner id: {}", ownerId);
         WalletHistoryResponse response = walletApplicationService.getHistory(ownerId);

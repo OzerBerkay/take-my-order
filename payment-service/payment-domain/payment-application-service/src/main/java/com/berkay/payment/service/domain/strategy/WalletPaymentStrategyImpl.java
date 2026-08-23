@@ -27,14 +27,16 @@ public class WalletPaymentStrategyImpl implements PaymentProcessorStrategy {
 
     @Override
     public PaymentEvent processPayment(Payment payment, List<String> failureMessages) {
-        Wallet wallet = getWallet(payment);
-        return paymentDomainService.validateAndInitiatePayment(payment, wallet, failureMessages);
+        Wallet customerWallet = getWallet(payment.getCustomerId().getValue(), "customer");
+        Wallet restaurantWallet = getWallet(payment.getRestaurantId().getValue(), "restaurant");
+        return paymentDomainService.validateAndInitiatePayment(payment, customerWallet, restaurantWallet, failureMessages);
     }
 
     @Override
     public PaymentEvent refundPayment(Payment payment, List<String> failureMessages) {
-        Wallet wallet = getWallet(payment);
-        return paymentDomainService.validateAndCancelPayment(payment, wallet, failureMessages);
+        Wallet customerWallet = getWallet(payment.getCustomerId().getValue(), "customer");
+        Wallet restaurantWallet = getWallet(payment.getRestaurantId().getValue(), "restaurant");
+        return paymentDomainService.validateAndCancelPayment(payment, customerWallet, restaurantWallet, failureMessages);
     }
 
     @Override
@@ -42,12 +44,11 @@ public class WalletPaymentStrategyImpl implements PaymentProcessorStrategy {
         return "WALLET".equalsIgnoreCase(paymentMethod);
     }
 
-    private Wallet getWallet(Payment payment) {
-        Optional<Wallet> walletResult = walletRepository.findByOwnerId(payment.getCustomerId().getValue());
+    private Wallet getWallet(java.util.UUID ownerId, String ownerType) {
+        Optional<Wallet> walletResult = walletRepository.findByOwnerId(ownerId);
         if (walletResult.isEmpty()) {
-            log.error("Could not find wallet for customer id: {}", payment.getCustomerId().getValue());
-            throw new PaymentApplicationServiceException("Could not find wallet for customer id: " +
-                    payment.getCustomerId().getValue());
+            log.error("Could not find wallet for {} id: {}", ownerType, ownerId);
+            throw new PaymentApplicationServiceException("Could not find wallet for " + ownerType + " id: " + ownerId);
         }
         return walletResult.get();
     }

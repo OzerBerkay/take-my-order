@@ -43,12 +43,26 @@ public class PaymentRequestMessageListenerTest {
     private WalletRepository walletRepository;
 
     private final static String CUSTOMER_ID = "d215b5f8-0249-4dc5-89a3-51fd148cfb41";
+    private final static String RESTAURANT_ID = "c315b5f8-0249-4dc5-89a3-51fd148cfb42";
     private final static BigDecimal PRICE = new BigDecimal("100");
 
     @BeforeEach
     void setUp() {
-        if (walletRepository.findByOwnerId(UUID.fromString(CUSTOMER_ID)).isEmpty()) {
-            walletRepository.save(new CustomerWallet(new WalletId(UUID.randomUUID()), UUID.fromString(CUSTOMER_ID), new Money(new BigDecimal("1000"))));
+        Optional<com.berkay.payment.service.domain.entity.Wallet> cw = walletRepository.findByOwnerId(UUID.fromString(CUSTOMER_ID));
+        if (cw.isEmpty()) {
+            walletRepository.save(new CustomerWallet(new WalletId(UUID.randomUUID()), UUID.fromString(CUSTOMER_ID), new Money(new BigDecimal("10000"))));
+        } else {
+            CustomerWallet existing = (CustomerWallet) cw.get();
+            existing.addBalance(new Money(new BigDecimal("10000")));
+            walletRepository.save(existing);
+        }
+        Optional<com.berkay.payment.service.domain.entity.Wallet> rw = walletRepository.findByOwnerId(UUID.fromString(RESTAURANT_ID));
+        if (rw.isEmpty()) {
+            walletRepository.save(new com.berkay.payment.service.domain.entity.RestaurantWallet(new WalletId(UUID.randomUUID()), UUID.fromString(RESTAURANT_ID), new Money(new BigDecimal("10000"))));
+        } else {
+            com.berkay.payment.service.domain.entity.RestaurantWallet existing = (com.berkay.payment.service.domain.entity.RestaurantWallet) rw.get();
+            existing.addBalance(new Money(new BigDecimal("10000")));
+            walletRepository.save(existing);
         }
     }
 
@@ -61,7 +75,13 @@ public class PaymentRequestMessageListenerTest {
         } catch (Exception e) {
             log.error("Exception occurred: {}", e.getMessage());
         }
+        
+        Optional<CustomerWallet> w = walletRepository.findByOwnerId(UUID.fromString(CUSTOMER_ID)).map(ww -> (CustomerWallet)ww);
+        if (w.isPresent()) {
+            System.out.println("TEST DEBUG: Balance is " + w.get().getBalance().getAmount());
+        }
         assertOrderOutbox(sagaId);
+
     }
 
     @Test
@@ -91,7 +111,13 @@ public class PaymentRequestMessageListenerTest {
 
             executor.invokeAll(tasks);
 
-            assertOrderOutbox(sagaId);
+            
+        Optional<CustomerWallet> w = walletRepository.findByOwnerId(UUID.fromString(CUSTOMER_ID)).map(ww -> (CustomerWallet)ww);
+        if (w.isPresent()) {
+            System.out.println("TEST DEBUG: Balance is " + w.get().getBalance().getAmount());
+        }
+        assertOrderOutbox(sagaId);
+
         } catch (InterruptedException e) {
             log.error("Error calling complete payment!", e);
         } finally {
@@ -118,6 +144,7 @@ public class PaymentRequestMessageListenerTest {
                 .orderId(UUID.randomUUID().toString())
                 .paymentOrderStatus(com.berkay.domain.valueobject.PaymentOrderStatus.PENDING)
                 .customerId(CUSTOMER_ID)
+                .restaurantId(RESTAURANT_ID)
                 .price(PRICE)
                 .createdAt(Instant.now())
                 .build();

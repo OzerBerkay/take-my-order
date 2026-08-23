@@ -16,6 +16,7 @@ public class Payment extends AggregateRoot<PaymentId> {
 
     private final OrderId orderId;
     private final CustomerId customerId;
+    private final com.berkay.domain.valueobject.RestaurantId restaurantId;
     private final Money price;
 
     private PaymentStatus paymentStatus;
@@ -48,6 +49,7 @@ public class Payment extends AggregateRoot<PaymentId> {
         setId(builder.paymentId);
         orderId = builder.orderId;
         customerId = builder.customerId;
+        restaurantId = builder.restaurantId;
         price = builder.price;
         paymentStatus = builder.paymentStatus;
         createdAt = builder.createdAt;
@@ -66,6 +68,10 @@ public class Payment extends AggregateRoot<PaymentId> {
         return customerId;
     }
 
+    public com.berkay.domain.valueobject.RestaurantId getRestaurantId() {
+        return restaurantId;
+    }
+
     public Money getPrice() {
         return price;
     }
@@ -82,6 +88,7 @@ public class Payment extends AggregateRoot<PaymentId> {
         private PaymentId paymentId;
         private OrderId orderId;
         private CustomerId customerId;
+        private com.berkay.domain.valueobject.RestaurantId restaurantId;
         private Money price;
         private PaymentStatus paymentStatus;
         private ZonedDateTime createdAt;
@@ -101,6 +108,11 @@ public class Payment extends AggregateRoot<PaymentId> {
 
         public Builder customerId(CustomerId val) {
             customerId = val;
+            return this;
+        }
+
+        public Builder restaurantId(com.berkay.domain.valueobject.RestaurantId val) {
+            restaurantId = val;
             return this;
         }
 

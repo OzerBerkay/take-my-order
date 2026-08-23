@@ -9,4 +9,6 @@ public interface RoleRepository {
     void save(RoleEventPayload payload);
     void updatePermission(PermissionEventPayload payload);
     void delete(UUID roleId);
+    long count();
+    void deleteAll();
 }

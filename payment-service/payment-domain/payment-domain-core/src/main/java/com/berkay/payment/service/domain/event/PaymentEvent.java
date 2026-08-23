@@ -13,15 +13,19 @@ public abstract class PaymentEvent implements DomainEvent<Payment> {
     private final Payment payment;
     private final ZonedDateTime createdAt;
     private final List<String> failureMessages;
-    private final WalletTransaction walletTransaction;
-    private final Wallet wallet;
+    private final WalletTransaction customerWalletTransaction;
+    private final Wallet customerWallet;
+    private final WalletTransaction restaurantWalletTransaction;
+    private final Wallet restaurantWallet;
 
-    public PaymentEvent(Payment payment, ZonedDateTime createdAt, List<String> failureMessages, WalletTransaction walletTransaction, Wallet wallet) {
+    public PaymentEvent(Payment payment, ZonedDateTime createdAt, List<String> failureMessages, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet) {
         this.payment = payment;
         this.createdAt = createdAt;
         this.failureMessages = failureMessages;
-        this.walletTransaction = walletTransaction;
-        this.wallet = wallet;
+        this.customerWalletTransaction = customerWalletTransaction;
+        this.customerWallet = customerWallet;
+        this.restaurantWalletTransaction = restaurantWalletTransaction;
+        this.restaurantWallet = restaurantWallet;
     }
 
     public Payment getPayment() {
@@ -36,11 +40,19 @@ public abstract class PaymentEvent implements DomainEvent<Payment> {
         return failureMessages;
     }
 
-    public WalletTransaction getWalletTransaction() {
-        return walletTransaction;
+    public WalletTransaction getCustomerWalletTransaction() {
+        return customerWalletTransaction;
     }
 
-    public Wallet getWallet() {
-        return wallet;
+    public Wallet getCustomerWallet() {
+        return customerWallet;
+    }
+
+    public WalletTransaction getRestaurantWalletTransaction() {
+        return restaurantWalletTransaction;
+    }
+
+    public Wallet getRestaurantWallet() {
+        return restaurantWallet;
     }
 }

@@ -11,7 +11,7 @@ public class PaymentFailedEvent extends PaymentEvent {
     public PaymentFailedEvent(Payment payment,
                               ZonedDateTime createdAt,
                               List<String> failureMessages,
-                              Wallet wallet) {
-        super(payment, createdAt, failureMessages, null, wallet);
+                              Wallet customerWallet) {
+        super(payment, createdAt, failureMessages, null, customerWallet, null, null);
     }
 }
