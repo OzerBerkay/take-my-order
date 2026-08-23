@@ -22,22 +22,54 @@ public class OrderController {
         this.orderApplicationService = orderApplicationService;
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.hasPermission(authentication, 'CREATE_ORDER')")
+    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.isCustomer(authentication)")
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderCommand createOrderCommand) {
-        log.info("Creating order for customer: {} at restaurant: {}", createOrderCommand.getCustomerId(),
-                createOrderCommand.getRestaurantId());
-        CreateOrderResponse createOrderResponse = orderApplicationService.createOrder(createOrderCommand);
+    public ResponseEntity<CreateOrderResponse> createOrder(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal UUID customerId,
+            @RequestBody @jakarta.validation.Valid CreateOrderCommand createOrderCommand) {
+        
+        CreateOrderCommand commandWithCustomerId = CreateOrderCommand.builder()
+                .customerId(customerId)
+                .restaurantId(createOrderCommand.getRestaurantId())
+                .price(createOrderCommand.getPrice())
+                .deliveryFee(createOrderCommand.getDeliveryFee())
+                .items(createOrderCommand.getItems())
+                .address(createOrderCommand.getAddress())
+                .build();
+                
+        log.info("Creating order for customer: {} at restaurant: {}", customerId,
+                commandWithCustomerId.getRestaurantId());
+        CreateOrderResponse createOrderResponse = orderApplicationService.createOrder(commandWithCustomerId);
         log.info("Order created with tracking id: {}", createOrderResponse.getOrderTrackingId());
         return ResponseEntity.ok(createOrderResponse);
     }
 
-    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.hasPermission(authentication, 'READ_ORDER')")
+    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.isCustomer(authentication)")
+    @org.springframework.security.access.prepost.PostAuthorize("@orderAuthService.isOwner(authentication, returnObject.body.customerId)")
     @GetMapping("/{trackingId}")
     public ResponseEntity<TrackOrderResponse> getOrderByTrackingId(@PathVariable UUID trackingId) {
         TrackOrderResponse trackOrderResponse =
                 orderApplicationService.trackOrder(TrackOrderQuery.builder().orderTrackingId(trackingId).build());
         log.info("Returning order status with tracking id: {}", trackOrderResponse.getOrderTrackingId());
         return  ResponseEntity.ok(trackOrderResponse);
+    }
+
+    @org.springframework.security.access.prepost.PreAuthorize("@orderAuthService.isCustomer(authentication)")
+    @GetMapping
+    public ResponseEntity<com.berkay.order.service.domain.dto.read.GetOrdersResponse> getOrders(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal UUID customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+            
+        log.info("Getting orders for customer: {}", customerId);
+        
+        com.berkay.order.service.domain.dto.read.GetOrdersResponse response = orderApplicationService.getOrders(
+                com.berkay.order.service.domain.dto.read.GetOrdersQuery.builder()
+                        .customerId(customerId)
+                        .page(page)
+                        .size(size)
+                        .build()
+        );
+        return ResponseEntity.ok(response);
     }
 }

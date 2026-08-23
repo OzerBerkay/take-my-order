@@ -12,8 +12,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order}
-          jwk-set-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order}/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}
+          jwk-set-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}/protocol/openid-connect/certs
   cloud:
     gateway:
       routes:

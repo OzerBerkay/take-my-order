@@ -20,11 +20,17 @@ payment-service:
 security:
   rbac:
     domain-policies:
-      CUSTOMER: ORDER, RESTAURANT
-      MERCHANT: ORDER, RESTAURANT
+      CUSTOMER: ORDER, RESTAURANT, PAYMENT
+      MERCHANT: ORDER, RESTAURANT, PAYMENT
       INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
 
 spring:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}
   application:
     name: payment-service
   jpa:
@@ -74,8 +80,8 @@ kafka-consumer-config:
   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
   payment-consumer-group-id: payment-topic-consumer
-  customer-group-id: customer-topic-consumer
-  restaurant-information-consumer-group-id: restaurant-information-topic-consumer
+  customer-group-id: payment-customer-topic-consumer
+  restaurant-information-consumer-group-id: payment-restaurant-information-topic-consumer
   role-consumer-group-id: payment-role-topic-consumer
   permission-consumer-group-id: payment-permission-topic-consumer
   auto-offset-reset: earliest

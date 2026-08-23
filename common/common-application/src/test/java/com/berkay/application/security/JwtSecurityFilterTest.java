@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Base64;
@@ -49,12 +50,130 @@ public class JwtSecurityFilterTest {
     @Mock
     private HandlerExceptionResolver handlerExceptionResolver;
 
+    @Mock
+    private org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder;
+
+    @InjectMocks
     private JwtSecurityFilter jwtSecurityFilter;
 
     @BeforeEach
     void setUp() {
-        jwtSecurityFilter = new JwtSecurityFilter(objectMapper, redisTemplate, handlerExceptionResolver);
+        jwtSecurityFilter = new JwtSecurityFilter(objectMapper, redisTemplate, handlerExceptionResolver, jwtDecoder);
         ReflectionTestUtils.setField(jwtSecurityFilter, "applicationName", "test-service");
+        org.mockito.Mockito.lenient().when(jwtDecoder.decode(anyString())).thenReturn(org.mockito.Mockito.mock(Jwt.class));
+    }
+    
+    @Test
+    void shouldAssignM2mUserTypeWhenTokenHasNoInternalIdButHasValidClientId() throws Exception {
+        // Arrange
+        long validTime = (System.currentTimeMillis() / 1000) + 3600; 
+
+        String payloadJson = "{" +
+                "\"sub\":\"take-my-order-client\"," +
+                "\"exp\":" + validTime + "," +
+                "\"clientId\":\"take-my-order-client\"" +
+                "}";
+
+        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
+        String payload = Base64.getUrlEncoder().encodeToString(payloadJson.getBytes());
+        String token = header + "." + payload + ".signature";
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        
+        JsonNode mockNode = new ObjectMapper().readTree(payloadJson);
+        when(objectMapper.readTree(anyString())).thenReturn(mockNode);
+
+        // Act
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        verify(filterChain).doFilter(request, response);
+        
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        org.junit.jupiter.api.Assertions.assertNotNull(auth);
+        org.junit.jupiter.api.Assertions.assertTrue(auth instanceof JwtAuthenticationToken);
+        
+        JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
+        org.junit.jupiter.api.Assertions.assertEquals("M2M", jwtAuth.getUserType());
+        org.junit.jupiter.api.Assertions.assertNotNull(jwtAuth.getInternalId()); // A random UUID should have been assigned
+        
+        // Clean up Context
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void shouldNotAssignM2mUserTypeForOtherClients() throws Exception {
+        // Arrange
+        long validTime = (System.currentTimeMillis() / 1000) + 3600; 
+
+        String payloadJson = "{" +
+                "\"sub\":\"another-client\"," +
+                "\"exp\":" + validTime + "," +
+                "\"clientId\":\"another-client\"" +
+                "}";
+
+        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
+        String payload = Base64.getUrlEncoder().encodeToString(payloadJson.getBytes());
+        String token = header + "." + payload + ".signature";
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        
+        JsonNode mockNode = new ObjectMapper().readTree(payloadJson);
+        org.mockito.Mockito.lenient().when(objectMapper.readTree(anyString())).thenReturn(mockNode);
+
+        // Act
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        verify(filterChain).doFilter(request, response);
+        
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        // Since there is no internal_id and it's not the whitelisted client, authentication should be null
+        org.junit.jupiter.api.Assertions.assertNull(auth);
+        
+        // Clean up Context
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void shouldPrioritizeInternalIdOverClientId() throws Exception {
+        // Arrange
+        long validTime = (System.currentTimeMillis() / 1000) + 3600; 
+        String internalId = java.util.UUID.randomUUID().toString();
+
+        // Even if take-my-order-client is present, if internal_id exists, it's a real user.
+        String payloadJson = "{" +
+                "\"sub\":\"1234\"," +
+                "\"exp\":" + validTime + "," +
+                "\"internal_id\":\"" + internalId + "\"," +
+                "\"clientId\":\"take-my-order-client\"," +
+                "\"user_type\":\"CUSTOMER\"" +
+                "}";
+
+        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
+        String payload = Base64.getUrlEncoder().encodeToString(payloadJson.getBytes());
+        String token = header + "." + payload + ".signature";
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        
+        JsonNode mockNode = new ObjectMapper().readTree(payloadJson);
+        when(objectMapper.readTree(anyString())).thenReturn(mockNode);
+
+        // Act
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        verify(filterChain).doFilter(request, response);
+        
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        org.junit.jupiter.api.Assertions.assertNotNull(auth);
+        
+        JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
+        org.junit.jupiter.api.Assertions.assertEquals("CUSTOMER", jwtAuth.getUserType()); // Not M2M!
+        org.junit.jupiter.api.Assertions.assertEquals(java.util.UUID.fromString(internalId), jwtAuth.getInternalId());
+        
+        // Clean up Context
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -77,62 +196,6 @@ public class JwtSecurityFilterTest {
         verify(handlerExceptionResolver).resolveException(eq(request), eq(response), eq(null), any(com.berkay.application.exception.TokenExpiredException.class));
         verify(filterChain, never()).doFilter(any(), any());
     }
-
-    @Test
-    void shouldExtractOrganizationalUnitIdsEvenIfStringifiedArray() throws Exception {
-        // Arrange
-        long validTime = (System.currentTimeMillis() / 1000) + 3600; 
-        String internalId = java.util.UUID.randomUUID().toString();
-        String orgId1 = java.util.UUID.randomUUID().toString();
-        String orgId2 = java.util.UUID.randomUUID().toString();
-
-        String roleId1 = java.util.UUID.randomUUID().toString();
-        String roleId2 = java.util.UUID.randomUUID().toString();
-
-        // Simulate a token payload where organizational_unit_ids is a single String containing a JSON-like array
-        String payloadJson = "{" +
-                "\"sub\":\"1234\"," +
-                "\"exp\":" + validTime + "," +
-                "\"internal_id\":\"" + internalId + "\"," +
-                "\"sid\":\"session-123\"," +
-                "\"user_type\":\"MERCHANT\"," +
-                "\"role_ids\": [\"" + roleId1 + "\", \"" + roleId2 + "\"]," +
-                "\"organizational_unit_ids\":\"[" + orgId1 + ", " + orgId2 + "]\"" +
-                "}";
-
-        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
-        String payload = Base64.getUrlEncoder().encodeToString(payloadJson.getBytes());
-        String token = header + "." + payload + ".signature";
-
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        
-        JsonNode mockNode = new ObjectMapper().readTree(payloadJson);
-        when(objectMapper.readTree(anyString())).thenReturn(mockNode);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        when(valueOperations.multiGet(any())).thenReturn(java.util.Arrays.asList(null, null));
-
-        // Act
-        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
-
-        // Assert
-        verify(filterChain).doFilter(request, response);
-        
-        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        org.junit.jupiter.api.Assertions.assertNotNull(auth);
-        org.junit.jupiter.api.Assertions.assertTrue(auth instanceof JwtAuthenticationToken);
-        
-        JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
-        
-        org.junit.jupiter.api.Assertions.assertNotNull(jwtAuth.getOrganizationalUnitIds());
-        org.junit.jupiter.api.Assertions.assertEquals(2, jwtAuth.getOrganizationalUnitIds().size());
-        org.junit.jupiter.api.Assertions.assertTrue(jwtAuth.getOrganizationalUnitIds().contains(java.util.UUID.fromString(orgId1)));
-        org.junit.jupiter.api.Assertions.assertTrue(jwtAuth.getOrganizationalUnitIds().contains(java.util.UUID.fromString(orgId2)));
-        org.junit.jupiter.api.Assertions.assertEquals("session-123", jwtAuth.getSid());
-        
-        // Clean up Context
-        org.springframework.security.core.context.SecurityContextHolder.clearContext();
-    }
-
 
     @Test
     void shouldHandleTokenRevokedExceptionViaResolver() throws Exception {

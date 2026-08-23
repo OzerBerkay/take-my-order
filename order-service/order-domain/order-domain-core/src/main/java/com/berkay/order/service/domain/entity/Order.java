@@ -20,12 +20,14 @@ public class Order extends AggregateRoot<OrderId> {
     private final RestaurantId restaurantId;
     private final StreetAddress deliveryAddress;
     private final Money price;
+    private final Money deliveryFee;
     private final List<OrderItem> items;
 
     // Will be described in aggregate root
     private TrackingId trackingId;
     // With the order status, saga states can be tracked
     private OrderStatus orderStatus;
+    private java.time.ZonedDateTime createdAt;
     // Will be described later if needed
     private List<String> failureMessages;
 
@@ -35,13 +37,14 @@ public class Order extends AggregateRoot<OrderId> {
         setId(new OrderId(UUID.randomUUID()));
         trackingId = new TrackingId(UUID.randomUUID());
         orderStatus = OrderStatus.PENDING;
+        createdAt = java.time.ZonedDateTime.now(java.time.ZoneId.of("UTC"));
         initializeOrderItems();
     }
 
-    public void validateOrder() {
+    public void validateOrder(Money deliveryFee) {
         validateInitialOrder();
         validateTotalPrice();
-        validateItemsPrice();
+        validateItemsPrice(deliveryFee);
     }
 
     public void pay() {
@@ -91,15 +94,19 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
 
-    private void validateItemsPrice() {
+    public void validateItemsPrice(Money deliveryFee) {
         Money orderItemsTotal = items.stream().map(orderItem -> {
             orderItem.validatePrice();
             return orderItem.getSubTotal(); // gets all order item's subtotal in map
         }).reduce(Money.ZERO, Money::add); // add all order items' subtotal to get order items total so it reduces map to one value
 
-        if (!price.equals(orderItemsTotal)) {
+        Money expectedTotal = orderItemsTotal.add(deliveryFee != null ? deliveryFee : Money.ZERO);
+
+        if (!price.equals(expectedTotal)) {
             throw new OrderDomainException("Total price (" + price.getAmount()
-                    + ") is not equal to order items total (" + orderItemsTotal.getAmount() + ")!");
+                    + ") not equal to total item price (" + orderItemsTotal.getAmount()
+                    + ") + delivery fee (" + (deliveryFee != null ? deliveryFee.getAmount() : "0")
+                    + ") = " + expectedTotal.getAmount());
         }
     }
 
@@ -131,10 +138,16 @@ public class Order extends AggregateRoot<OrderId> {
         restaurantId = builder.restaurantId;
         deliveryAddress = builder.deliveryAddress;
         price = builder.price;
+        deliveryFee = builder.deliveryFee;
         items = builder.items;
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
+        createdAt = builder.createdAt;
         failureMessages = builder.failureMessages;
+    }
+
+    public java.time.ZonedDateTime getCreatedAt() {
+        return createdAt;
     }
 
 
@@ -152,6 +165,10 @@ public class Order extends AggregateRoot<OrderId> {
 
     public Money getPrice() {
         return price;
+    }
+
+    public Money getDeliveryFee() {
+        return deliveryFee;
     }
 
     public List<OrderItem> getItems() {
@@ -180,9 +197,11 @@ public class Order extends AggregateRoot<OrderId> {
         private RestaurantId restaurantId;
         private StreetAddress deliveryAddress;
         private Money price;
+        private Money deliveryFee;
         private List<OrderItem> items;
         private TrackingId trackingId;
         private OrderStatus orderStatus;
+        private java.time.ZonedDateTime createdAt;
         private List<String> failureMessages;
 
         private Builder() {
@@ -213,6 +232,11 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
+        public Builder deliveryFee(Money val) {
+            deliveryFee = val;
+            return this;
+        }
+
         public Builder items(List<OrderItem> val) {
             items = val;
             return this;
@@ -225,6 +249,11 @@ public class Order extends AggregateRoot<OrderId> {
 
         public Builder orderStatus(OrderStatus val) {
             orderStatus = val;
+            return this;
+        }
+
+        public Builder createdAt(java.time.ZonedDateTime val) {
+            createdAt = val;
             return this;
         }
 

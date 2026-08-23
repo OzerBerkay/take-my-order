@@ -3,6 +3,7 @@ package com.berkay.order.service.domain;
 import com.berkay.order.service.domain.entity.Order;
 import com.berkay.order.service.domain.entity.Product;
 import com.berkay.order.service.domain.entity.Restaurant;
+import com.berkay.domain.valueobject.Money;
 import com.berkay.order.service.domain.event.OrderCancelledEvent;
 import com.berkay.order.service.domain.event.OrderCreatedEvent;
 import com.berkay.order.service.domain.event.OrderPaidEvent;
@@ -27,7 +28,31 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     public OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant) {
         validateRestaurant(restaurant);
         validateAndSetOrderProductInformation(order, restaurant);
-        order.validateOrder();
+                Money itemsTotal = order.getItems().stream().map(orderItem -> {
+            
+            return orderItem.getSubTotal();
+        }).reduce(com.berkay.domain.valueobject.Money.ZERO, com.berkay.domain.valueobject.Money::add);
+        
+        if (restaurant.getMinimumOrderAmount() != null && restaurant.getMinimumOrderAmount().isGreaterThan(itemsTotal)) {
+            throw new OrderDomainException("Order amount is less than minimum order amount!");
+        }
+        
+        boolean deliveryFeeMatches;
+        if (restaurant.getDeliveryFee() == null) {
+            // If restaurant replica has no delivery fee, we assume 0
+            deliveryFeeMatches = order.getDeliveryFee() == null || order.getDeliveryFee().getAmount().compareTo(java.math.BigDecimal.ZERO) == 0;
+        } else {
+            deliveryFeeMatches = order.getDeliveryFee() != null && order.getDeliveryFee().equals(restaurant.getDeliveryFee());
+        }
+
+        if (!deliveryFeeMatches) {
+            String customerFee = order.getDeliveryFee() != null ? order.getDeliveryFee().getAmount().toString() : "null";
+            String restaurantFee = restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount().toString() : "0";
+            throw new OrderDomainException("Delivery fee mismatch! Customer provided: " + customerFee
+                + ", but restaurant requires: " + restaurantFee);
+        }
+
+        order.validateOrder(restaurant.getDeliveryFee());
         order.initializeOrder();
         log.info("Order with id: {} is initiated", order.getId().getValue());
         return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
@@ -64,6 +89,10 @@ public class OrderDomainServiceImpl implements OrderDomainService {
             throw new OrderDomainException("Restaurant with id " + restaurant.getId().getValue()
                     + " is currently not active");
         }
+        if (!restaurant.isAvailable()) {
+            throw new OrderDomainException("Restaurant with id " + restaurant.getId().getValue()
+                    + " is currently not available");
+        }
     }
 
     // Ensuring order product information from client is same with Restaurant's product
@@ -83,12 +112,18 @@ public class OrderDomainServiceImpl implements OrderDomainService {
                     throw new OrderDomainException("Product " + restaurantProduct.getId().getValue() + " is not available.");
                 }
 
+                // Ürün gizli mi?
+                if (restaurantProduct.isHidden()) {
+                    throw new OrderDomainException("Product " + restaurantProduct.getId().getValue() + " is hidden and cannot be ordered.");
+                }
+
                 // Product güncellenir çünkü tüm product'ı dto'da almadık sadece id aldık
                 // DB'den product'ı alarak entity içinde validasyonları sağlayacağız
                 orderItem.getProduct().updateWithConfirmedNamePriceAndAvailability(
                         restaurantProduct.getName(),
                         restaurantProduct.getPrice(),
-                        restaurantProduct.isAvailable());
+                        restaurantProduct.isAvailable(),
+                        restaurantProduct.isHidden());
             } else {
                 throw new OrderDomainException("Product with id: " + orderItem.getProduct().getId().getValue() + " not found in restaurant");
             }

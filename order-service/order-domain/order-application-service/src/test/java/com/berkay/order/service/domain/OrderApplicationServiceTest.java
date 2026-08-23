@@ -67,6 +67,7 @@ public class OrderApplicationServiceTest {
     private CreateOrderCommand createOrderCommand;
     private CreateOrderCommand createOrderCommandWrongPrice;
     private CreateOrderCommand createOrderCommandWrongProductPrice;
+    private CreateOrderCommand createOrderCommandNegativeQuantity;
     private final UUID CUSTOMER_ID = UUID.fromString("d215b5f8-0249-4dc5-89a3-51fd148cfb41");
     private final UUID RESTAURANT_ID = UUID.fromString("d215b5f8-0249-4dc5-89a3-51fd148cfb45");
     private final UUID PRODUCT_ID = UUID.fromString("d215b5f8-0249-4dc5-89a3-51fd148cfb48");
@@ -86,6 +87,7 @@ public class OrderApplicationServiceTest {
                         .city("Paris")
                         .build())
                 .price(PRICE)
+                .deliveryFee(BigDecimal.ZERO)
                 .items(List.of(OrderItem.builder()
                                 .productId(PRODUCT_ID)
                                 .quantity(1)
@@ -109,6 +111,7 @@ public class OrderApplicationServiceTest {
                         .city("Paris")
                         .build())
                 .price(new BigDecimal("250.00"))
+                .deliveryFee(BigDecimal.ZERO)
                 .items(List.of(OrderItem.builder()
                                 .productId(PRODUCT_ID)
                                 .quantity(1)
@@ -132,6 +135,7 @@ public class OrderApplicationServiceTest {
                         .city("Paris")
                         .build())
                 .price(new BigDecimal("210.00"))
+                .deliveryFee(BigDecimal.ZERO)
                 .items(List.of(OrderItem.builder()
                                 .productId(PRODUCT_ID)
                                 .quantity(1)
@@ -146,14 +150,39 @@ public class OrderApplicationServiceTest {
                                 .build()))
                 .build();
 
+        createOrderCommandNegativeQuantity = CreateOrderCommand.builder()
+                .customerId(CUSTOMER_ID)
+                .restaurantId(RESTAURANT_ID)
+                .address(OrderAddress.builder()
+                        .street("street_1")
+                        .postalCode("1000AB")
+                        .city("Paris")
+                        .build())
+                .price(new BigDecimal("200.00"))
+                .deliveryFee(BigDecimal.ZERO)
+                .items(List.of(OrderItem.builder()
+                                .productId(PRODUCT_ID)
+                                .quantity(0)
+                                .price(new BigDecimal("50.00"))
+                                .subTotal(new BigDecimal("0.00"))
+                                .build(),
+                        OrderItem.builder()
+                                .productId(PRODUCT_ID_2)
+                                .quantity(3)
+                                .price(new BigDecimal("50.00"))
+                                .subTotal(new BigDecimal("150.00"))
+                                .build()))
+                .build();
+
         Customer customer = new Customer(new CustomerId(CUSTOMER_ID));
 
         Restaurant restaurantResponse = Restaurant.builder()
                 .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
                 .products(List.of(
-                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true),
-                        new Product(new ProductId(PRODUCT_ID_2), "product-2", new Money(new BigDecimal("50.00")), true)))
+                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true, false),
+                        new Product(new ProductId(PRODUCT_ID_2), "product-2", new Money(new BigDecimal("50.00")), true, false)))
                 .active(true)
+                .available(true)
                 .build();
 
         Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
@@ -178,7 +207,7 @@ public class OrderApplicationServiceTest {
     public void testCreateOrderWithWrongTotalPrice() {
         OrderDomainException orderDomainException = assertThrows(OrderDomainException.class,
                 () -> orderApplicationService.createOrder(createOrderCommandWrongPrice));
-        assertEquals("Total price (250.00) is not equal to order items total (200.00)!", orderDomainException.getMessage());
+        assertEquals("Total price (250.00) not equal to total item price (200.00) + delivery fee (0) = 200.00", orderDomainException.getMessage());
     }
 
     @Test
@@ -190,13 +219,21 @@ public class OrderApplicationServiceTest {
     }
 
     @Test
+    public void testCreateOrderWithNegativeQuantity() {
+        jakarta.validation.ConstraintViolationException exception = assertThrows(jakarta.validation.ConstraintViolationException.class,
+                () -> orderApplicationService.createOrder(createOrderCommandNegativeQuantity));
+        assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
+    }
+
+    @Test
     public void testCreateOrderWithPassiveRestaurant() {
         Restaurant restaurantResponse = Restaurant.builder()
                 .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
                 .products(List.of(
-                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true),
-                        new Product(new ProductId(PRODUCT_ID_2), "product-2", new Money(new BigDecimal("50.00")), true)))
+                        new Product(new ProductId(PRODUCT_ID), "product-1", new Money(new BigDecimal("50.00")), true, false),
+                        new Product(new ProductId(PRODUCT_ID_2), "product-2", new Money(new BigDecimal("50.00")), true, false)))
                 .active(false)
+                .available(true)
                 .build();
         when(restaurantRepository.findRestaurantWithProducts(any(UUID.class), any(List.class)))
                 .thenReturn(Optional.of(restaurantResponse));
