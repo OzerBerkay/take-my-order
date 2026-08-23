@@ -65,19 +65,23 @@ public class RestaurantApprovalRequestHelper {
         Restaurant restaurant = findRestaurant(restaurantApprovalRequest);
 
         // Validasyon Yap (Domain Core)
-        OrderApprovalEvent orderApprovalEvent =
+        Optional<OrderApprovalEvent> orderApprovalEventOpt =
                 restaurantDomainService.validateOrder(
                         restaurant,
                         failureMessages);
 
-        // Sonucu Kaydet
+        // Sonucu ve güncel stoku Kaydet
         orderApprovalRepository.save(restaurant.getOrderApproval());
+        restaurantRepository.saveRestaurant(restaurant);
 
-        orderOutboxHelper
-                .saveOrderOutboxMessage(restaurantDataMapper.orderApprovalEventToOrderEventPayload(orderApprovalEvent),
-                        orderApprovalEvent.getOrderApproval().getApprovalStatus(),
-                        OutboxStatus.STARTED,
-                        UUID.fromString(restaurantApprovalRequest.getSagaId()));
+        if (orderApprovalEventOpt.isPresent()) {
+            OrderApprovalEvent orderApprovalEvent = orderApprovalEventOpt.get();
+            orderOutboxHelper
+                    .saveOrderOutboxMessage(restaurantDataMapper.orderApprovalEventToOrderEventPayload(orderApprovalEvent),
+                            orderApprovalEvent.getOrderApproval().getApprovalStatus(),
+                            OutboxStatus.STARTED,
+                            UUID.fromString(restaurantApprovalRequest.getSagaId()));
+        }
 
     }
 
@@ -85,7 +89,7 @@ public class RestaurantApprovalRequestHelper {
         // Restoranı Bul
         // TODO: Restorandan sadece siparişe özel ürünler gelmeli tüm menü değil
         UUID restaurantId = UUID.fromString(restaurantApprovalRequest.getRestaurantId());
-        Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantById(restaurantId);
+        Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantByIdWithLock(restaurantId);
 
         // Restoranın varlığını kontrol et
         if (restaurantResult.isEmpty()) {

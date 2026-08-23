@@ -22,9 +22,13 @@ public class RestaurantDataAccessMapper {
                                 new Product(new ProductId(productEntity.getProductId()),
                                         productEntity.getName(),
                                         new Money(productEntity.getPrice()),
-                                        productEntity.isAvailable()))
+                                        productEntity.isAvailable(),
+                                        productEntity.isHidden()))
                         .collect(Collectors.toList()))
                 .active(restaurantEntity.isRestaurantActive())
+                .available(restaurantEntity.isAvailable())
+                .minimumOrderAmount(restaurantEntity.getMinimumOrderAmount() != null ? new Money(restaurantEntity.getMinimumOrderAmount()) : null)
+                .deliveryFee(restaurantEntity.getDeliveryFee() != null ? new Money(restaurantEntity.getDeliveryFee()) : null)
                 .build();
     }
 
@@ -33,12 +37,16 @@ public class RestaurantDataAccessMapper {
                 .restaurantId(restaurant.getId().getValue())
                 .name(restaurant.getName())
                 .restaurantActive(restaurant.isActive())
+                .available(restaurant.isAvailable())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
+                .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
                 .products(restaurant.getProducts().stream()
                         .map(product -> ProductEntity.builder()
                                 .productId(product.getId().getValue())
                                 .name(product.getName())
                                 .price(product.getPrice().getAmount())
                                 .available(product.isAvailable())
+                                .hidden(product.isHidden())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();

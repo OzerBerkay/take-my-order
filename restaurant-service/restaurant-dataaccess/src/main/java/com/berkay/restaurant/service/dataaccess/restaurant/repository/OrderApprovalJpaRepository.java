@@ -8,6 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface OrderApprovalJpaRepository extends JpaRepository<OrderApprovalEntity, UUID> {
-
-
+    java.util.Optional<OrderApprovalEntity> findByRestaurantIdAndOrderId(UUID restaurantId, UUID orderId);
+    java.util.List<OrderApprovalEntity> findByRestaurantIdAndStatus(UUID restaurantId, com.berkay.domain.valueobject.OrderApprovalStatus status);
 }

@@ -6,14 +6,16 @@ import lombok.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "restaurants")
+@Table(name = "restaurant_replica")
 @Entity
+
 public class RestaurantEntity {
 
     @Id
@@ -21,7 +23,11 @@ public class RestaurantEntity {
 
     private String name;
 
+    private BigDecimal minimumOrderAmount;
+    private BigDecimal deliveryFee;
+
     private boolean restaurantActive;
+    private boolean available;
 
     /*
      orphanRemoval = true Ana sistemde ürün silinirse, burada da silinsin (Tam senkronizasyon).

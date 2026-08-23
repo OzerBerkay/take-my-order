@@ -60,10 +60,20 @@
             {
               "name": "available",
               "type": "boolean"
+            },
+            {
+              "name": "hidden",
+              "type": "boolean",
+              "default": false
             }
           ]
         }
       }
+    },
+    {
+      "name": "available",
+      "type": "boolean",
+      "default": true
     },
     {
       "name": "createdAt",
@@ -75,6 +85,32 @@
     {
       "name": "eventType",
       "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "minimumOrderAmount",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 10,
+          "scale": 2
+        }
+      ],
+      "default": null
+    },
+    {
+      "name": "deliveryFee",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 10,
+          "scale": 2
+        }
+      ],
       "default": null
     }
   ]

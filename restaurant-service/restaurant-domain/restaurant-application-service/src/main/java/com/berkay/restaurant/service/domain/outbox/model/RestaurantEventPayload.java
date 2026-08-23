@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
-
-
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -27,6 +25,10 @@ public class RestaurantEventPayload {
     private boolean active;
     @JsonProperty
     private boolean available;
+    @JsonProperty
+    private BigDecimal minimumOrderAmount;
+    @JsonProperty
+    private BigDecimal deliveryFee;
     @JsonProperty
     private List<ProductPayload> products;
     @JsonProperty
@@ -47,5 +49,7 @@ public class RestaurantEventPayload {
         private BigDecimal price;
         @JsonProperty
         private boolean available;
+        @JsonProperty
+        private boolean hidden;
     }
 }

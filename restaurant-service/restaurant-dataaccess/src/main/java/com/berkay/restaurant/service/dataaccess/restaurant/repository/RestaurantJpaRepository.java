@@ -24,4 +24,8 @@ public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity,
            "AND (:available IS NULL OR r.available = :available) " +
            "ORDER BY r.available DESC, r.restaurantName ASC")
     Page<RestaurantEntity> findPublicRestaurants(@Param("name") String name, @Param("cuisineType") CuisineType cuisineType, @Param("available") Boolean available, Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM RestaurantEntity r WHERE r.restaurantId = :id")
+    java.util.Optional<RestaurantEntity> findByIdWithLock(@Param("id") UUID id);
 }

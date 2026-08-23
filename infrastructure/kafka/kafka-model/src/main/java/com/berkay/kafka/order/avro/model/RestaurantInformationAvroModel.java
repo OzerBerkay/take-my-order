@@ -13,10 +13,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class RestaurantInformationAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 3899319355289286767L;
+  private static final long serialVersionUID = 4413770751968024315L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantInformationAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"merchantId\",\"type\":[\"null\",{\"type\":\"string\",\"logicalType\":\"uuid\"}],\"default\":null},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"active\",\"type\":\"boolean\"},{\"name\":\"products\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"}]}}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"eventType\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantInformationAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"merchantId\",\"type\":[\"null\",{\"type\":\"string\",\"logicalType\":\"uuid\"}],\"default\":null},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"active\",\"type\":\"boolean\"},{\"name\":\"products\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"},{\"name\":\"hidden\",\"type\":\"boolean\",\"default\":false}]}}},{\"name\":\"available\",\"type\":\"boolean\",\"default\":true},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"eventType\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"minimumOrderAmount\",\"type\":[\"null\",{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}],\"default\":null},{\"name\":\"deliveryFee\",\"type\":[\"null\",{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}],\"default\":null}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -82,8 +82,11 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
   private java.lang.String name;
   private boolean active;
   private java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products;
+  private boolean available;
   private java.time.Instant createdAt;
   private java.lang.String eventType;
+  private java.math.BigDecimal minimumOrderAmount;
+  private java.math.BigDecimal deliveryFee;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -99,17 +102,23 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
    * @param name The new value for name
    * @param active The new value for active
    * @param products The new value for products
+   * @param available The new value for available
    * @param createdAt The new value for createdAt
    * @param eventType The new value for eventType
+   * @param minimumOrderAmount The new value for minimumOrderAmount
+   * @param deliveryFee The new value for deliveryFee
    */
-  public RestaurantInformationAvroModel(java.util.UUID restaurantId, java.util.UUID merchantId, java.lang.String name, java.lang.Boolean active, java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products, java.time.Instant createdAt, java.lang.String eventType) {
+  public RestaurantInformationAvroModel(java.util.UUID restaurantId, java.util.UUID merchantId, java.lang.String name, java.lang.Boolean active, java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products, java.lang.Boolean available, java.time.Instant createdAt, java.lang.String eventType, java.math.BigDecimal minimumOrderAmount, java.math.BigDecimal deliveryFee) {
     this.restaurantId = restaurantId;
     this.merchantId = merchantId;
     this.name = name;
     this.active = active;
     this.products = products;
+    this.available = available;
     this.createdAt = createdAt.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
     this.eventType = eventType;
+    this.minimumOrderAmount = minimumOrderAmount;
+    this.deliveryFee = deliveryFee;
   }
 
   @Override
@@ -127,8 +136,11 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
     case 2: return name;
     case 3: return active;
     case 4: return products;
-    case 5: return createdAt;
-    case 6: return eventType;
+    case 5: return available;
+    case 6: return createdAt;
+    case 7: return eventType;
+    case 8: return minimumOrderAmount;
+    case 9: return deliveryFee;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -140,7 +152,10 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       null,
       null,
       null,
+      null,
       new org.apache.avro.data.TimeConversions.TimestampMillisConversion(),
+      null,
+      null,
       null,
       null
   };
@@ -160,8 +175,11 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
     case 2: name = value$ != null ? value$.toString() : null; break;
     case 3: active = (java.lang.Boolean)value$; break;
     case 4: products = (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>)value$; break;
-    case 5: createdAt = (java.time.Instant)value$; break;
-    case 6: eventType = value$ != null ? value$.toString() : null; break;
+    case 5: available = (java.lang.Boolean)value$; break;
+    case 6: createdAt = (java.time.Instant)value$; break;
+    case 7: eventType = value$ != null ? value$.toString() : null; break;
+    case 8: minimumOrderAmount = (java.math.BigDecimal)value$; break;
+    case 9: deliveryFee = (java.math.BigDecimal)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -252,6 +270,23 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
   }
 
   /**
+   * Gets the value of the 'available' field.
+   * @return The value of the 'available' field.
+   */
+  public boolean getAvailable() {
+    return available;
+  }
+
+
+  /**
+   * Sets the value of the 'available' field.
+   * @param value the value to set.
+   */
+  public void setAvailable(boolean value) {
+    this.available = value;
+  }
+
+  /**
    * Gets the value of the 'createdAt' field.
    * @return The value of the 'createdAt' field.
    */
@@ -283,6 +318,40 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
    */
   public void setEventType(java.lang.String value) {
     this.eventType = value;
+  }
+
+  /**
+   * Gets the value of the 'minimumOrderAmount' field.
+   * @return The value of the 'minimumOrderAmount' field.
+   */
+  public java.math.BigDecimal getMinimumOrderAmount() {
+    return minimumOrderAmount;
+  }
+
+
+  /**
+   * Sets the value of the 'minimumOrderAmount' field.
+   * @param value the value to set.
+   */
+  public void setMinimumOrderAmount(java.math.BigDecimal value) {
+    this.minimumOrderAmount = value;
+  }
+
+  /**
+   * Gets the value of the 'deliveryFee' field.
+   * @return The value of the 'deliveryFee' field.
+   */
+  public java.math.BigDecimal getDeliveryFee() {
+    return deliveryFee;
+  }
+
+
+  /**
+   * Sets the value of the 'deliveryFee' field.
+   * @param value the value to set.
+   */
+  public void setDeliveryFee(java.math.BigDecimal value) {
+    this.deliveryFee = value;
   }
 
   /**
@@ -331,8 +400,11 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
     private java.lang.String name;
     private boolean active;
     private java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct> products;
+    private boolean available;
     private java.time.Instant createdAt;
     private java.lang.String eventType;
+    private java.math.BigDecimal minimumOrderAmount;
+    private java.math.BigDecimal deliveryFee;
 
     /** Creates a new Builder */
     private Builder() {
@@ -365,13 +437,25 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
         this.products = data().deepCopy(fields()[4].schema(), other.products);
         fieldSetFlags()[4] = other.fieldSetFlags()[4];
       }
-      if (isValidValue(fields()[5], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[5].schema(), other.createdAt);
+      if (isValidValue(fields()[5], other.available)) {
+        this.available = data().deepCopy(fields()[5].schema(), other.available);
         fieldSetFlags()[5] = other.fieldSetFlags()[5];
       }
-      if (isValidValue(fields()[6], other.eventType)) {
-        this.eventType = data().deepCopy(fields()[6].schema(), other.eventType);
+      if (isValidValue(fields()[6], other.createdAt)) {
+        this.createdAt = data().deepCopy(fields()[6].schema(), other.createdAt);
         fieldSetFlags()[6] = other.fieldSetFlags()[6];
+      }
+      if (isValidValue(fields()[7], other.eventType)) {
+        this.eventType = data().deepCopy(fields()[7].schema(), other.eventType);
+        fieldSetFlags()[7] = other.fieldSetFlags()[7];
+      }
+      if (isValidValue(fields()[8], other.minimumOrderAmount)) {
+        this.minimumOrderAmount = data().deepCopy(fields()[8].schema(), other.minimumOrderAmount);
+        fieldSetFlags()[8] = other.fieldSetFlags()[8];
+      }
+      if (isValidValue(fields()[9], other.deliveryFee)) {
+        this.deliveryFee = data().deepCopy(fields()[9].schema(), other.deliveryFee);
+        fieldSetFlags()[9] = other.fieldSetFlags()[9];
       }
     }
 
@@ -401,13 +485,25 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
         this.products = data().deepCopy(fields()[4].schema(), other.products);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.createdAt)) {
-        this.createdAt = data().deepCopy(fields()[5].schema(), other.createdAt);
+      if (isValidValue(fields()[5], other.available)) {
+        this.available = data().deepCopy(fields()[5].schema(), other.available);
         fieldSetFlags()[5] = true;
       }
-      if (isValidValue(fields()[6], other.eventType)) {
-        this.eventType = data().deepCopy(fields()[6].schema(), other.eventType);
+      if (isValidValue(fields()[6], other.createdAt)) {
+        this.createdAt = data().deepCopy(fields()[6].schema(), other.createdAt);
         fieldSetFlags()[6] = true;
+      }
+      if (isValidValue(fields()[7], other.eventType)) {
+        this.eventType = data().deepCopy(fields()[7].schema(), other.eventType);
+        fieldSetFlags()[7] = true;
+      }
+      if (isValidValue(fields()[8], other.minimumOrderAmount)) {
+        this.minimumOrderAmount = data().deepCopy(fields()[8].schema(), other.minimumOrderAmount);
+        fieldSetFlags()[8] = true;
+      }
+      if (isValidValue(fields()[9], other.deliveryFee)) {
+        this.deliveryFee = data().deepCopy(fields()[9].schema(), other.deliveryFee);
+        fieldSetFlags()[9] = true;
       }
     }
 
@@ -611,6 +707,45 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
     }
 
     /**
+      * Gets the value of the 'available' field.
+      * @return The value.
+      */
+    public boolean getAvailable() {
+      return available;
+    }
+
+
+    /**
+      * Sets the value of the 'available' field.
+      * @param value The value of 'available'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setAvailable(boolean value) {
+      validate(fields()[5], value);
+      this.available = value;
+      fieldSetFlags()[5] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'available' field has been set.
+      * @return True if the 'available' field has been set, false otherwise.
+      */
+    public boolean hasAvailable() {
+      return fieldSetFlags()[5];
+    }
+
+
+    /**
+      * Clears the value of the 'available' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearAvailable() {
+      fieldSetFlags()[5] = false;
+      return this;
+    }
+
+    /**
       * Gets the value of the 'createdAt' field.
       * @return The value.
       */
@@ -625,9 +760,9 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       * @return This builder.
       */
     public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setCreatedAt(java.time.Instant value) {
-      validate(fields()[5], value);
+      validate(fields()[6], value);
       this.createdAt = value.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
-      fieldSetFlags()[5] = true;
+      fieldSetFlags()[6] = true;
       return this;
     }
 
@@ -636,7 +771,7 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       * @return True if the 'createdAt' field has been set, false otherwise.
       */
     public boolean hasCreatedAt() {
-      return fieldSetFlags()[5];
+      return fieldSetFlags()[6];
     }
 
 
@@ -645,7 +780,7 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       * @return This builder.
       */
     public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearCreatedAt() {
-      fieldSetFlags()[5] = false;
+      fieldSetFlags()[6] = false;
       return this;
     }
 
@@ -664,9 +799,9 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       * @return This builder.
       */
     public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setEventType(java.lang.String value) {
-      validate(fields()[6], value);
+      validate(fields()[7], value);
       this.eventType = value;
-      fieldSetFlags()[6] = true;
+      fieldSetFlags()[7] = true;
       return this;
     }
 
@@ -675,7 +810,7 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       * @return True if the 'eventType' field has been set, false otherwise.
       */
     public boolean hasEventType() {
-      return fieldSetFlags()[6];
+      return fieldSetFlags()[7];
     }
 
 
@@ -685,7 +820,87 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
       */
     public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearEventType() {
       eventType = null;
-      fieldSetFlags()[6] = false;
+      fieldSetFlags()[7] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'minimumOrderAmount' field.
+      * @return The value.
+      */
+    public java.math.BigDecimal getMinimumOrderAmount() {
+      return minimumOrderAmount;
+    }
+
+
+    /**
+      * Sets the value of the 'minimumOrderAmount' field.
+      * @param value The value of 'minimumOrderAmount'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setMinimumOrderAmount(java.math.BigDecimal value) {
+      validate(fields()[8], value);
+      this.minimumOrderAmount = value;
+      fieldSetFlags()[8] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'minimumOrderAmount' field has been set.
+      * @return True if the 'minimumOrderAmount' field has been set, false otherwise.
+      */
+    public boolean hasMinimumOrderAmount() {
+      return fieldSetFlags()[8];
+    }
+
+
+    /**
+      * Clears the value of the 'minimumOrderAmount' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearMinimumOrderAmount() {
+      minimumOrderAmount = null;
+      fieldSetFlags()[8] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'deliveryFee' field.
+      * @return The value.
+      */
+    public java.math.BigDecimal getDeliveryFee() {
+      return deliveryFee;
+    }
+
+
+    /**
+      * Sets the value of the 'deliveryFee' field.
+      * @param value The value of 'deliveryFee'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder setDeliveryFee(java.math.BigDecimal value) {
+      validate(fields()[9], value);
+      this.deliveryFee = value;
+      fieldSetFlags()[9] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'deliveryFee' field has been set.
+      * @return True if the 'deliveryFee' field has been set, false otherwise.
+      */
+    public boolean hasDeliveryFee() {
+      return fieldSetFlags()[9];
+    }
+
+
+    /**
+      * Clears the value of the 'deliveryFee' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantInformationAvroModel.Builder clearDeliveryFee() {
+      deliveryFee = null;
+      fieldSetFlags()[9] = false;
       return this;
     }
 
@@ -699,8 +914,11 @@ public class RestaurantInformationAvroModel extends org.apache.avro.specific.Spe
         record.name = fieldSetFlags()[2] ? this.name : (java.lang.String) defaultValue(fields()[2]);
         record.active = fieldSetFlags()[3] ? this.active : (java.lang.Boolean) defaultValue(fields()[3]);
         record.products = fieldSetFlags()[4] ? this.products : (java.util.List<com.berkay.kafka.order.avro.model.RestaurantProduct>) defaultValue(fields()[4]);
-        record.createdAt = fieldSetFlags()[5] ? this.createdAt : (java.time.Instant) defaultValue(fields()[5]);
-        record.eventType = fieldSetFlags()[6] ? this.eventType : (java.lang.String) defaultValue(fields()[6]);
+        record.available = fieldSetFlags()[5] ? this.available : (java.lang.Boolean) defaultValue(fields()[5]);
+        record.createdAt = fieldSetFlags()[6] ? this.createdAt : (java.time.Instant) defaultValue(fields()[6]);
+        record.eventType = fieldSetFlags()[7] ? this.eventType : (java.lang.String) defaultValue(fields()[7]);
+        record.minimumOrderAmount = fieldSetFlags()[8] ? this.minimumOrderAmount : (java.math.BigDecimal) defaultValue(fields()[8]);
+        record.deliveryFee = fieldSetFlags()[9] ? this.deliveryFee : (java.math.BigDecimal) defaultValue(fields()[9]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
