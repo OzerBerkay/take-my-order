@@ -43,7 +43,7 @@ public class OrderCreateCommandHandler {
                 orderCreatedEvent.getOrder().getOrderStatus(),
                 orderSagaHelper.orderStatusToSagaStatus(orderCreatedEvent.getOrder().getOrderStatus()),
                 OutboxStatus.STARTED,
-                UUID.randomUUID());
+                orderCreatedEvent.getOrder().getId().getValue());
 
         log.info("Returning CreateOrderResponse with order id: {}", orderCreatedEvent.getOrder().getId());
 
