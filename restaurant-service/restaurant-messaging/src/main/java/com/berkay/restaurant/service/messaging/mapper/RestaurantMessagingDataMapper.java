@@ -57,14 +57,18 @@ public class RestaurantMessagingDataMapper {
                 .setName(restaurantEventPayload.getName())
                 .setActive(restaurantEventPayload.isActive())
                 .setCreatedAt(restaurantEventPayload.getCreatedAt().toInstant())
+                .setMinimumOrderAmount(restaurantEventPayload.getMinimumOrderAmount())
+                .setDeliveryFee(restaurantEventPayload.getDeliveryFee())
                 .setProducts(restaurantEventPayload.getProducts().stream().map(productPayload ->
                         com.berkay.kafka.order.avro.model.RestaurantProduct.newBuilder()
                                 .setProductId(java.util.UUID.fromString(productPayload.getProductId()))
                                 .setName(productPayload.getName())
                                 .setPrice(productPayload.getPrice())
                                 .setAvailable(productPayload.isAvailable())
+                                .setHidden(productPayload.isHidden())
                                 .build()).collect(java.util.stream.Collectors.toList()))
                 .setEventType(restaurantEventPayload.getEventType())
+                .setAvailable(restaurantEventPayload.isAvailable())
                 .build();
     }
 
