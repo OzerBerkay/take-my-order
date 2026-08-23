@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products")
+@Table(name = "product_replica")
 @Entity
 public class ProductEntity {
 
@@ -22,6 +22,7 @@ public class ProductEntity {
     private String name;
     private BigDecimal price;
     private boolean available;
+    private boolean hidden;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "restaurant_id")

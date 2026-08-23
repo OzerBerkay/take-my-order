@@ -87,20 +87,32 @@ public class RestaurantDataAccessMapper {
     }
 
     public OrderApprovalEntity orderApprovalToOrderApprovalEntity(OrderApproval orderApproval) {
+        java.util.Map<java.util.UUID, Integer> productQuantities = null;
+        if (orderApproval.getProductQuantities() != null) {
+            productQuantities = orderApproval.getProductQuantities().entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey().getValue(), java.util.Map.Entry::getValue));
+        }
         return OrderApprovalEntity.builder()
                 .id(orderApproval.getId().getValue())
                 .restaurantId(orderApproval.getRestaurantId().getValue())
                 .orderId(orderApproval.getOrderId().getValue())
                 .status(orderApproval.getApprovalStatus())
+                .productQuantities(productQuantities)
                 .build();
     }
 
     public OrderApproval orderApprovalEntityToOrderApproval(OrderApprovalEntity orderApprovalEntity) {
+        java.util.Map<ProductId, Integer> productQuantities = null;
+        if (orderApprovalEntity.getProductQuantities() != null) {
+            productQuantities = orderApprovalEntity.getProductQuantities().entrySet().stream()
+                    .collect(Collectors.toMap(e -> new ProductId(e.getKey()), java.util.Map.Entry::getValue));
+        }
         return OrderApproval.builder()
                 .orderApprovalId(new OrderApprovalId(orderApprovalEntity.getId()))
                 .restaurantId(new RestaurantId(orderApprovalEntity.getRestaurantId()))
                 .orderId(new OrderId(orderApprovalEntity.getOrderId()))
                 .approvalStatus(orderApprovalEntity.getStatus())
+                .productQuantities(productQuantities)
                 .build();
     }
 

@@ -13,10 +13,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 2694481607914209193L;
+  private static final long serialVersionUID = 5025723610004309892L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantProduct\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"productId\",\"type\":{\"type\":\"string\",\"logicalType\":\"uuid\"}},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":10,\"scale\":2}},{\"name\":\"available\",\"type\":\"boolean\"},{\"name\":\"hidden\",\"type\":\"boolean\",\"default\":false}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -80,6 +80,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
   private java.lang.String name;
   private java.math.BigDecimal price;
   private boolean available;
+  private boolean hidden;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -94,12 +95,14 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
    * @param name The new value for name
    * @param price The new value for price
    * @param available The new value for available
+   * @param hidden The new value for hidden
    */
-  public RestaurantProduct(java.util.UUID productId, java.lang.String name, java.math.BigDecimal price, java.lang.Boolean available) {
+  public RestaurantProduct(java.util.UUID productId, java.lang.String name, java.math.BigDecimal price, java.lang.Boolean available, java.lang.Boolean hidden) {
     this.productId = productId;
     this.name = name;
     this.price = price;
     this.available = available;
+    this.hidden = hidden;
   }
 
   @Override
@@ -116,6 +119,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
     case 1: return name;
     case 2: return price;
     case 3: return available;
+    case 4: return hidden;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -125,6 +129,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
       new org.apache.avro.Conversions.UUIDConversion(),
       null,
       new org.apache.avro.Conversions.DecimalConversion(),
+      null,
       null,
       null
   };
@@ -143,6 +148,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
     case 1: name = value$ != null ? value$.toString() : null; break;
     case 2: price = (java.math.BigDecimal)value$; break;
     case 3: available = (java.lang.Boolean)value$; break;
+    case 4: hidden = (java.lang.Boolean)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -216,6 +222,23 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
   }
 
   /**
+   * Gets the value of the 'hidden' field.
+   * @return The value of the 'hidden' field.
+   */
+  public boolean getHidden() {
+    return hidden;
+  }
+
+
+  /**
+   * Sets the value of the 'hidden' field.
+   * @param value the value to set.
+   */
+  public void setHidden(boolean value) {
+    this.hidden = value;
+  }
+
+  /**
    * Creates a new RestaurantProduct RecordBuilder.
    * @return A new RestaurantProduct RecordBuilder
    */
@@ -260,6 +283,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
     private java.lang.String name;
     private java.math.BigDecimal price;
     private boolean available;
+    private boolean hidden;
 
     /** Creates a new Builder */
     private Builder() {
@@ -288,6 +312,10 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
         this.available = data().deepCopy(fields()[3].schema(), other.available);
         fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
+      if (isValidValue(fields()[4], other.hidden)) {
+        this.hidden = data().deepCopy(fields()[4].schema(), other.hidden);
+        fieldSetFlags()[4] = other.fieldSetFlags()[4];
+      }
     }
 
     /**
@@ -311,6 +339,10 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
       if (isValidValue(fields()[3], other.available)) {
         this.available = data().deepCopy(fields()[3].schema(), other.available);
         fieldSetFlags()[3] = true;
+      }
+      if (isValidValue(fields()[4], other.hidden)) {
+        this.hidden = data().deepCopy(fields()[4].schema(), other.hidden);
+        fieldSetFlags()[4] = true;
       }
     }
 
@@ -473,6 +505,45 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
       return this;
     }
 
+    /**
+      * Gets the value of the 'hidden' field.
+      * @return The value.
+      */
+    public boolean getHidden() {
+      return hidden;
+    }
+
+
+    /**
+      * Sets the value of the 'hidden' field.
+      * @param value The value of 'hidden'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantProduct.Builder setHidden(boolean value) {
+      validate(fields()[4], value);
+      this.hidden = value;
+      fieldSetFlags()[4] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'hidden' field has been set.
+      * @return True if the 'hidden' field has been set, false otherwise.
+      */
+    public boolean hasHidden() {
+      return fieldSetFlags()[4];
+    }
+
+
+    /**
+      * Clears the value of the 'hidden' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantProduct.Builder clearHidden() {
+      fieldSetFlags()[4] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public RestaurantProduct build() {
@@ -482,6 +553,7 @@ public class RestaurantProduct extends org.apache.avro.specific.SpecificRecordBa
         record.name = fieldSetFlags()[1] ? this.name : (java.lang.String) defaultValue(fields()[1]);
         record.price = fieldSetFlags()[2] ? this.price : (java.math.BigDecimal) defaultValue(fields()[2]);
         record.available = fieldSetFlags()[3] ? this.available : (java.lang.Boolean) defaultValue(fields()[3]);
+        record.hidden = fieldSetFlags()[4] ? this.hidden : (java.lang.Boolean) defaultValue(fields()[4]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;

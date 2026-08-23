@@ -21,4 +21,8 @@ public class OrderApprovalEntity {
     private UUID orderId;
     @Enumerated(EnumType.STRING)
     private  OrderApprovalStatus status;
+
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private java.util.Map<UUID, Integer> productQuantities;
 }

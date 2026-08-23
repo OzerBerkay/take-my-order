@@ -11,6 +11,7 @@ public interface RestaurantRepository {
 
 
     Optional<Restaurant> findRestaurantById(UUID restaurantId);
+    Optional<Restaurant> findRestaurantByIdWithLock(UUID restaurantId);
 
     Restaurant saveRestaurant(Restaurant restaurant);
     

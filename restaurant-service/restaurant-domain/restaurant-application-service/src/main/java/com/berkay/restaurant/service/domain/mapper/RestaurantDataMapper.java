@@ -107,6 +107,8 @@ public class RestaurantDataMapper {
                 .name(restaurantInformationEvent.getRestaurant().getRestaurantName() != null ? restaurantInformationEvent.getRestaurant().getRestaurantName().getRestaurantName() : null)
                 .active(restaurantInformationEvent.getRestaurant().isActive())
                 .available(restaurantInformationEvent.getRestaurant().isAvailable())
+                .minimumOrderAmount(restaurantInformationEvent.getRestaurant().getMinimumOrderAmount() != null ? restaurantInformationEvent.getRestaurant().getMinimumOrderAmount().getAmount() : null)
+                .deliveryFee(restaurantInformationEvent.getRestaurant().getDeliveryFee() != null ? restaurantInformationEvent.getRestaurant().getDeliveryFee().getAmount() : null)
                 .createdAt(restaurantInformationEvent.getCreatedAt())
                 .products(restaurantInformationEvent.getRestaurant().getMenu().stream().map(product ->
                         RestaurantEventPayload.ProductPayload.builder()
@@ -114,6 +116,7 @@ public class RestaurantDataMapper {
                                 .name(product.getName())
                                 .price(product.getPrice().getAmount())
                                 .available(product.isAvailable())
+                                .hidden(product.isHidden())
                                 .build()).toList())
                 .build();
     }
@@ -174,6 +177,8 @@ public class RestaurantDataMapper {
                 .address(restaurant.getAddress())
                 .active(restaurant.isActive())
                 .available(restaurant.isAvailable())
+                .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
+                .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
                 .build();
     }
 }

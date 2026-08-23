@@ -35,7 +35,8 @@ public class RestaurantInformationMessageListenerImpl implements RestaurantInfor
                         new ProductId(productModel.getProductId()),
                         productModel.getName(),
                         new Money(productModel.getPrice()),
-                        productModel.isAvailable()))
+                        productModel.isAvailable(),
+                        productModel.isHidden()))
                 .collect(Collectors.toList());
 
         Optional<Restaurant> restaurantResult = restaurantRepository
@@ -44,7 +45,9 @@ public class RestaurantInformationMessageListenerImpl implements RestaurantInfor
         if (restaurantResult.isPresent()) {
             // UPDATE
             Restaurant restaurant = restaurantResult.get();
-            restaurant.update(restaurantModel.getName(), restaurantModel.isActive(), products);
+            restaurant.update(restaurantModel.getName(), restaurantModel.isActive(), restaurantModel.isAvailable(), products,
+                    restaurantModel.getMinimumOrderAmount() != null ? new Money(restaurantModel.getMinimumOrderAmount()) : null,
+                    restaurantModel.getDeliveryFee() != null ? new Money(restaurantModel.getDeliveryFee()) : null);
 
             restaurantRepository.save(restaurant);
             log.info("Restaurant is updated in Order Service with id: {}", restaurant.getId().getValue());
@@ -55,7 +58,10 @@ public class RestaurantInformationMessageListenerImpl implements RestaurantInfor
                     .restaurantId(new RestaurantId(restaurantModel.getRestaurantId()))
                     .name(restaurantModel.getName())
                     .active(restaurantModel.isActive())
+                    .available(restaurantModel.isAvailable())
                     .products(products)
+                    .minimumOrderAmount(restaurantModel.getMinimumOrderAmount() != null ? new Money(restaurantModel.getMinimumOrderAmount()) : null)
+                    .deliveryFee(restaurantModel.getDeliveryFee() != null ? new Money(restaurantModel.getDeliveryFee()) : null)
                     .build();
 
             // Veritabanına Kayıt (Replica Table)

@@ -43,6 +43,26 @@ public class UpdateRestaurantCommandHandler {
         restaurant.updateName(command.getRestaurantName());
         restaurant.updateActiveStatus(command.getActive());
         restaurant.updateAvailability(command.getAvailable());
+        restaurant.updateMinimumOrderAmount(command.getMinimumOrderAmount() != null ? new com.berkay.domain.valueobject.Money(command.getMinimumOrderAmount()) : null);
+        restaurant.updateDeliveryFee(command.getDeliveryFee() != null ? new com.berkay.domain.valueobject.Money(command.getDeliveryFee()) : null);
+        
+        if (command.getStreet() != null || command.getCity() != null || command.getPostalCode() != null) {
+            String currentStreet = restaurant.getAddress() != null ? restaurant.getAddress().getStreet() : null;
+            String currentCity = restaurant.getAddress() != null ? restaurant.getAddress().getCity() : null;
+            String currentPostal = restaurant.getAddress() != null ? restaurant.getAddress().getPostalCode() : null;
+            
+            restaurant.updateAddress(new com.berkay.restaurant.service.domain.valueobject.Address(
+                command.getStreet() != null ? command.getStreet() : currentStreet,
+                command.getCity() != null ? command.getCity() : currentCity,
+                command.getPostalCode() != null ? command.getPostalCode() : currentPostal
+            ));
+        }
+        
+        restaurant.updatePhoneNumber(command.getPhoneNumber());
+        restaurant.updateAverageDeliveryTime(command.getAverageDeliveryTimeInMinutes());
+        restaurant.updateCuisineType(command.getCuisineType());
+        restaurant.updateDescription(command.getDescription());
+        restaurant.updateLogoUrl(command.getLogoUrl());
 
         // Kaydet
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);

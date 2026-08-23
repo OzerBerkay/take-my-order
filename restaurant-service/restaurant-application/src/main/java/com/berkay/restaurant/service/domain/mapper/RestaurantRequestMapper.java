@@ -14,6 +14,17 @@ public class RestaurantRequestMapper {
                 .restaurantId(restaurantId)
                 .restaurantName(request.getRestaurantName())
                 .active(request.getActive())
+                .available(request.getAvailable())
+                .minimumOrderAmount(request.getMinimumOrderAmount())
+                .deliveryFee(request.getDeliveryFee())
+                .street(request.getStreet())
+                .city(request.getCity())
+                .postalCode(request.getPostalCode())
+                .phoneNumber(request.getPhoneNumber())
+                .averageDeliveryTimeInMinutes(request.getAverageDeliveryTimeInMinutes())
+                .cuisineType(request.getCuisineType())
+                .description(request.getDescription())
+                .logoUrl(request.getLogoUrl())
                 .build();
     }
 }

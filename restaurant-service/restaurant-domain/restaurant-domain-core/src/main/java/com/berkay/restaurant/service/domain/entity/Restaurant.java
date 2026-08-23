@@ -15,6 +15,13 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.berkay.restaurant.service.domain.event.OrderApprovedEvent;
+import com.berkay.restaurant.service.domain.event.OrderRejectedEvent;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import static com.berkay.domain.DomainConstants.UTC;
+
+
 public class Restaurant extends AggregateRoot<RestaurantId> {
     private RestaurantName restaurantName;
     private final List<Product> menu;
@@ -44,9 +51,62 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         }
     }
 
+
+    public void updateMinimumOrderAmount(Money minimumOrderAmount) {
+        if (minimumOrderAmount != null && minimumOrderAmount.isGreaterThanZero()) {
+            this.minimumOrderAmount = minimumOrderAmount;
+        } else if (minimumOrderAmount != null && minimumOrderAmount.getAmount().compareTo(java.math.BigDecimal.ZERO) == 0) {
+            this.minimumOrderAmount = minimumOrderAmount;
+        }
+    }
+
+    public void updateDeliveryFee(Money deliveryFee) {
+        if (deliveryFee != null && deliveryFee.isGreaterThanZero()) {
+            this.deliveryFee = deliveryFee;
+        } else if (deliveryFee != null && deliveryFee.getAmount().compareTo(java.math.BigDecimal.ZERO) == 0) {
+            this.deliveryFee = deliveryFee;
+        }
+    }
+
     public void updateAvailability(Boolean available) {
         if (available != null) {
             this.available = available;
+        }
+    }
+
+    public void updateAddress(Address address) {
+        if (address != null) {
+            this.address = address;
+        }
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
+
+    public void updateAverageDeliveryTime(Integer time) {
+        if (time != null && time >= 0) {
+            this.averageDeliveryTimeInMinutes = time;
+        }
+    }
+
+    public void updateCuisineType(CuisineType type) {
+        if (type != null) {
+            this.cuisineType = type;
+        }
+    }
+
+    public void updateDescription(String desc) {
+        if (desc != null) {
+            this.description = desc;
+        }
+    }
+
+    public void updateLogoUrl(String url) {
+        if (url != null) {
+            this.logoUrl = url;
         }
     }
 
@@ -139,11 +199,19 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
                 failureMessages.add("Product with name: " + menuProduct.getName() + " is not available.");
             }
 
+            // Ürün gizli mi?
+            if (menuProduct.isHidden()) {
+                failureMessages.add("Product with name: " + menuProduct.getName() + " is hidden and cannot be ordered.");
+            }
+
             // Stok Yeterli mi?
             if (menuProduct.getStock() < requestedQuantity) {
                 failureMessages.add("Product with name: " + menuProduct.getName()
                         + " has insufficient stock. Requested: " + requestedQuantity
                         + ", Available: " + menuProduct.getStock());
+            } else {
+                // Stok miktarını düş
+                menuProduct.updateWith(menuProduct.getName(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden());
             }
 
             // Fiyat hesaplama
@@ -151,10 +219,49 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
             totalAmount = totalAmount.add(itemTotal);
         }
 
-        // 4. KURAL: Toplam Tutar Tutuyor mu?
-        if (!totalAmount.equals(orderDetail.getTotalAmount())) {
-            failureMessages.add("Price total is not correct for order: " + orderDetail.getId());
+        Money itemsTotal = totalAmount;
+
+        // 4. KURAL: Sepet Tutarı Minimum Sipariş Tutarını Sağlıyor mu?
+        if (this.minimumOrderAmount != null && this.minimumOrderAmount.isGreaterThanZero() && this.minimumOrderAmount.isGreaterThan(itemsTotal)) {
+            failureMessages.add("Order amount is less than minimum order amount!");
         }
+
+        // Delivery fee'yi ekle
+        if (this.deliveryFee != null && this.deliveryFee.isGreaterThanZero()) {
+            totalAmount = totalAmount.add(this.deliveryFee);
+        }
+
+        // 5. KURAL: Toplam Tutar Tutuyor mu?
+        if (!totalAmount.equals(orderDetail.getTotalAmount())) {
+            failureMessages.add("Total price (" + orderDetail.getTotalAmount().getAmount() 
+                + ") not equal to total item price (" + itemsTotal.getAmount() 
+                + ") + delivery fee (" + (this.deliveryFee != null ? this.deliveryFee.getAmount() : "0") 
+                + ") = " + totalAmount.getAmount());
+        }
+    }
+
+    
+
+    public OrderApprovedEvent approveOrder() {
+        if (this.orderApproval == null || this.orderApproval.getApprovalStatus() != OrderApprovalStatus.PENDING) {
+            throw new RestaurantDomainException("Order is not in PENDING state for approval!");
+        }
+        this.orderApproval.setApprovalStatus(OrderApprovalStatus.APPROVED);
+        return new OrderApprovedEvent(this.orderApproval,
+                this.getId(),
+                new ArrayList<>(),
+                ZonedDateTime.now(ZoneId.of(UTC)));
+    }
+
+    public OrderRejectedEvent rejectOrder(List<String> failureMessages) {
+        if (this.orderApproval == null || this.orderApproval.getApprovalStatus() != OrderApprovalStatus.PENDING) {
+            throw new RestaurantDomainException("Order is not in PENDING state for rejection!");
+        }
+        this.orderApproval.setApprovalStatus(OrderApprovalStatus.REJECTED);
+        return new OrderRejectedEvent(this.orderApproval,
+                this.getId(),
+                failureMessages,
+                ZonedDateTime.now(ZoneId.of(UTC)));
     }
 
     public void constructOrderApproval(OrderApprovalStatus orderApprovalStatus) {
@@ -163,6 +270,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
                 .restaurantId(this.getId())
                 .orderId(this.getOrderDetail().getId())
                 .approvalStatus(orderApprovalStatus)
+                .productQuantities(this.getOrderDetail().getProductQuantities())
                 .build();
     }
 
@@ -194,6 +302,11 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
     public List<Product> getMenu() {
         return menu;
+    }
+
+    
+    public void setOrderApproval(OrderApproval orderApproval) {
+        this.orderApproval = orderApproval;
     }
 
     public OrderApproval getOrderApproval() {

@@ -15,5 +15,6 @@ public class RoleEventPayload {
     private String userType;
     private UUID organizationalUnitId;
     private String eventType;
+    private Long version;
     private java.util.List<PermissionPayload> permissions;
 }

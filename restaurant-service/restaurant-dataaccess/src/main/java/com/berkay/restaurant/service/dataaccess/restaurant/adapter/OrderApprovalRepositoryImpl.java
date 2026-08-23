@@ -25,4 +25,17 @@ public class OrderApprovalRepositoryImpl implements OrderApprovalRepository {
                         .save(restaurantDataAccessMapper.orderApprovalToOrderApprovalEntity(orderApproval)));
     }
 
+    @Override
+    public java.util.Optional<OrderApproval> findByRestaurantIdAndOrderId(java.util.UUID restaurantId, java.util.UUID orderId) {
+        return orderApprovalJpaRepository.findByRestaurantIdAndOrderId(restaurantId, orderId)
+                .map(restaurantDataAccessMapper::orderApprovalEntityToOrderApproval);
+    }
+
+    @Override
+    public java.util.List<OrderApproval> findByRestaurantIdAndStatus(java.util.UUID restaurantId, com.berkay.domain.valueobject.OrderApprovalStatus status) {
+        return orderApprovalJpaRepository.findByRestaurantIdAndStatus(restaurantId, status)
+                .stream()
+                .map(restaurantDataAccessMapper::orderApprovalEntityToOrderApproval)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
