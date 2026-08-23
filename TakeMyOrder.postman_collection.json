@@ -5,23 +5,8 @@
     },
     "variable": [
         {
-            "key": "baseUrl",
-            "value": "http://localhost:8184",
-            "type": "string"
-        },
-        {
-            "key": "identity_service_url",
-            "value": "http://localhost:8184",
-            "type": "string"
-        },
-        {
-            "key": "restaurant_service_url",
-            "value": "http://localhost:8183",
-            "type": "string"
-        },
-        {
-            "key": "order_service_url",
-            "value": "http://localhost:8181",
+            "key": "gateway_url",
+            "value": "http://localhost:8080",
             "type": "string"
         }
     ],
@@ -97,9 +82,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/register/customer",
+                                    "raw": "{{gateway_url}}/auth/register/customer",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -125,9 +110,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/register/merchant",
+                                    "raw": "{{gateway_url}}/auth/register/merchant",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -153,9 +138,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "raw": "{{gateway_url}}/auth/login",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -195,9 +180,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "raw": "{{gateway_url}}/auth/login",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -237,9 +222,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/refresh",
+                                    "raw": "{{gateway_url}}/auth/refresh",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -279,9 +264,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/password",
+                                    "raw": "{{gateway_url}}/auth/password",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -316,9 +301,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/auth/login",
+                                    "raw": "{{gateway_url}}/auth/login",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "auth",
@@ -353,9 +338,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/logout",
+                                    "raw": "{{gateway_url}}/users/logout",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -382,9 +367,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/logout-all",
+                                    "raw": "{{gateway_url}}/users/logout-all",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -421,9 +406,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/profile",
+                                    "raw": "{{gateway_url}}/users/me/profile",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -454,9 +439,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me",
+                                    "raw": "{{gateway_url}}/users/me",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -482,9 +467,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/organizational-units",
+                                    "raw": "{{gateway_url}}/users/me/organizational-units",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -521,9 +506,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/addresses",
+                                    "raw": "{{gateway_url}}/users/me/addresses",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -559,9 +544,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "raw": "{{gateway_url}}/users/me/addresses/{{addressId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -599,9 +584,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/addresses",
+                                    "raw": "{{gateway_url}}/users/me/addresses",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -624,9 +609,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "raw": "{{gateway_url}}/users/me/addresses/{{addressId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -650,9 +635,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/users/me/addresses/{{addressId}}",
+                                    "raw": "{{gateway_url}}/users/me/addresses/{{addressId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "users",
@@ -680,9 +665,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users",
+                                    "raw": "{{gateway_url}}/admin/users",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -717,9 +702,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
+                                    "raw": "{{gateway_url}}/admin/users/{{userId}}/status",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -756,9 +741,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/password",
+                                    "raw": "{{gateway_url}}/admin/users/{{userId}}/password",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -790,9 +775,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-access",
+                                    "raw": "{{gateway_url}}/admin/users/{{merchant_user_id}}/revoke-access",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -821,9 +806,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{merchant_user_id}}/revoke-all",
+                                    "raw": "{{gateway_url}}/admin/users/{{merchant_user_id}}/revoke-all",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -852,9 +837,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
+                                    "raw": "{{gateway_url}}/admin/users/{{userId}}/roles/{{roleId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -882,9 +867,9 @@
                                 "method": "DELETE",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/roles/{{roleId}}",
+                                    "raw": "{{gateway_url}}/admin/users/{{userId}}/roles/{{roleId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -912,9 +897,9 @@
                                 "method": "PATCH",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/admin/users/{{userId}}/status",
+                                    "raw": "{{gateway_url}}/admin/users/{{userId}}/status",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "admin",
@@ -956,9 +941,9 @@
                                 "method": "POST",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
+                                    "raw": "{{gateway_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "merchant",
@@ -986,9 +971,9 @@
                                 "method": "DELETE",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
+                                    "raw": "{{gateway_url}}/merchant/users/{{userId}}/roles/{{roleId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "merchant",
@@ -1026,9 +1011,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/permissions/{{permissionId}}",
+                                    "raw": "{{gateway_url}}/permissions/{{permissionId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "permissions",
@@ -1068,9 +1053,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/roles?organizationalUnitId={{organizationalUnitId}}",
+                                    "raw": "{{gateway_url}}/roles?organizationalUnitId={{organizationalUnitId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "roles"
@@ -1110,9 +1095,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "raw": "{{gateway_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "roles",
@@ -1148,9 +1133,9 @@
                                 "method": "DELETE",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "raw": "{{gateway_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "roles",
@@ -1187,9 +1172,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{identity_service_url}}/internal/sync/roles?cursor=2024-01-01T00:00:00Z&limit=100",
+                                    "raw": "{{gateway_url}}/internal/sync/roles?cursor=2024-01-01T00:00:00Z&limit=100",
                                     "host": [
-                                        "{{identity_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "internal",
@@ -1234,9 +1219,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users?page=0&size=10",
+                                            "raw": "{{gateway_url}}/admin/users?page=0&size=10",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1281,9 +1266,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users?page=0&size=10&email=customer@takemyorder.com&firstName=Ahmet&lastName=Yilmaz&status=ACTIVE&userType=CUSTOMER",
+                                            "raw": "{{gateway_url}}/admin/users?page=0&size=10&email=customer@takemyorder.com&firstName=Ahmet&lastName=Yilmaz&status=ACTIVE&userType=CUSTOMER",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1348,9 +1333,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users/{{userId}}",
+                                            "raw": "{{gateway_url}}/admin/users/{{userId}}",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1376,9 +1361,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users",
+                                            "raw": "{{gateway_url}}/admin/users",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1408,9 +1393,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users",
+                                            "raw": "{{gateway_url}}/admin/users",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1447,9 +1432,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/admin/users/00000000-0000-0000-0000-000000000000",
+                                            "raw": "{{gateway_url}}/admin/users/00000000-0000-0000-0000-000000000000",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "admin",
@@ -1480,9 +1465,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}",
+                                            "raw": "{{gateway_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "merchant",
@@ -1542,9 +1527,9 @@
                                             }
                                         ],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}&email=merchant@takemyorder.com",
+                                            "raw": "{{gateway_url}}/merchant/users?page=0&size=10&orgUnitId={{organizationalUnitId}}&email=merchant@takemyorder.com",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "merchant",
@@ -1593,9 +1578,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/merchant/users/{{userId}}?orgUnitId={{organizationalUnitId}}",
+                                            "raw": "{{gateway_url}}/merchant/users/{{userId}}?orgUnitId={{organizationalUnitId}}",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "merchant",
@@ -1627,9 +1612,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/merchant/users",
+                                            "raw": "{{gateway_url}}/merchant/users",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "merchant",
@@ -1671,9 +1656,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/merchant/users?orgUnitId=00000000-0000-0000-0000-000000000000",
+                                            "raw": "{{gateway_url}}/merchant/users?orgUnitId=00000000-0000-0000-0000-000000000000",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "merchant",
@@ -1724,9 +1709,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/roles?page=0&size=10&orgUnitId={{organizationalUnitId}}&userType=INTERNAL",
+                                            "raw": "{{gateway_url}}/roles?page=0&size=10&orgUnitId={{organizationalUnitId}}&userType=INTERNAL",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "roles"
@@ -1775,9 +1760,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/roles/{{roleId}}",
+                                            "raw": "{{gateway_url}}/roles/{{roleId}}",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "roles",
@@ -1803,9 +1788,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/permissions?page=0&size=20",
+                                            "raw": "{{gateway_url}}/permissions?page=0&size=20",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "permissions"
@@ -1839,9 +1824,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/permissions/grouped",
+                                            "raw": "{{gateway_url}}/permissions/grouped",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "permissions",
@@ -1866,9 +1851,9 @@
                                         "method": "GET",
                                         "header": [],
                                         "url": {
-                                            "raw": "{{identity_service_url}}/roles",
+                                            "raw": "{{gateway_url}}/roles",
                                             "host": [
-                                                "{{identity_service_url}}"
+                                                "{{gateway_url}}"
                                             ],
                                             "path": [
                                                 "roles"
@@ -1896,9 +1881,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{identity_service_url}}/internal/sync/roles?limit=1000",
+                            "raw": "{{gateway_url}}/internal/sync/roles?limit=1000",
                             "host": [
-                                "{{identity_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "internal",
@@ -1935,9 +1920,9 @@
                             "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true\n        }\n    ]\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "raw": "{{gateway_url}}/restaurants",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants"
@@ -1970,9 +1955,9 @@
                             "raw": "{\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": -10.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": []\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "raw": "{{gateway_url}}/restaurants",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants"
@@ -2005,9 +1990,9 @@
                             "raw": "{\n  \"name\": \"Pepperoni Pizza\",\n  \"price\": 14.0,\n  \"stock\": 50,\n  \"available\": true,\n  \"hidden\": false\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2042,9 +2027,9 @@
                             "raw": "{\n    \"restaurantName\": \"Updated Restaurant Name\",\n    \"active\": true,\n    \"available\": true,\n    \"street\": \"123 New Street\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34000\",\n    \"phoneNumber\": \"+905554443322\",\n    \"minimumOrderAmount\": 100.0,\n    \"deliveryFee\": 15.0,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"TURKISH\",\n    \"description\": \"The best place to eat.\",\n    \"logoUrl\": \"https://example.com/logo.png\"\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2078,9 +2063,9 @@
                             "raw": "{\n  \"name\": \"Updated Pizza\",\n  \"price\": 15.0,\n  \"stock\": 120,\n  \"available\": true,\n  \"hidden\": false\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2107,9 +2092,9 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2136,9 +2121,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2163,9 +2148,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2201,9 +2186,9 @@
                             "raw": "{\n    \"email\": \"staff@example.com\"\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/personnel",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2238,9 +2223,9 @@
                             "raw": "{\n    \"email\": \"\"\n}"
                         },
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/personnel",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/personnel",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2298,9 +2283,9 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/products",
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants",
@@ -2319,9 +2304,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}/products",
+                                    "raw": "{{gateway_url}}/public/restaurants/{{restaurant_id}}/products",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "public",
@@ -2338,9 +2323,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                                    "raw": "{{gateway_url}}/public/restaurants/{{restaurant_id}}/products/{{product_id}}",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "public",
@@ -2358,9 +2343,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/public/restaurants?page=0&size=10",
+                                    "raw": "{{gateway_url}}/public/restaurants?page=0&size=10",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "public",
@@ -2401,9 +2386,9 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/public/restaurants/{{restaurant_id}}",
+                                    "raw": "{{gateway_url}}/public/restaurants/{{restaurant_id}}",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "public",
@@ -2422,9 +2407,9 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/restaurants",
+                            "raw": "{{gateway_url}}/restaurants",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "restaurants"
@@ -2459,9 +2444,9 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{restaurant_service_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/management/sync-roles",
                             "host": [
-                                "{{restaurant_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "management",
@@ -2486,9 +2471,9 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/approve",
+                                    "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/approve",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "restaurants",
@@ -2527,9 +2512,9 @@
                                     }
                                 },
                                 "url": {
-                                    "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/reject",
+                                    "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/reject",
                                     "host": [
-                                        "{{restaurant_service_url}}"
+                                        "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "restaurants",
@@ -2721,9 +2706,9 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{payment_service_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/management/sync-roles",
                             "host": [
-                                "{{payment_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "management",
@@ -2750,9 +2735,9 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{order_service_url}}/orders?customerId={{customer_id}}&page=0&size=10",
+                            "raw": "{{gateway_url}}/orders?customerId={{customer_id}}&page=0&size=10",
                             "host": [
-                                "{{order_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "orders"
@@ -2792,9 +2777,9 @@
                             "raw": "{\n    \"restaurantId\": \"d055e51f-55fa-44e6-b30c-af992012f29b\",\n    \"price\": 67.5,\n    \"items\": [\n        {\n            \"productId\": \"b464134f-0a91-434d-979f-f55afc5a2b1b\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"3adc24ad-faaf-4dc5-88f0-18a811115f96\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"10eda44b-2124-4ee1-a34e-fca92574e049\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"b3e2b289-900a-4087-a5ec-a283808e0619\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"fab4e12e-57d8-4b5b-99df-b28afc50b94d\",\n            \"quantity\": 1,\n            \"price\": 15.0,\n            \"subTotal\": 15.0\n        },\n        {\n            \"productId\": \"972af818-f257-4eab-9c3b-8a2bada07cc7\",\n            \"quantity\": 1,\n            \"price\": 12.5,\n            \"subTotal\": 12.5\n        }\n    ],\n    \"address\": {\n        \"street\": \"123 Main St\",\n        \"postalCode\": \"12345\",\n        \"city\": \"Istanbul\"\n    }\n}"
                         },
                         "url": {
-                            "raw": "{{order_service_url}}/orders",
+                            "raw": "{{gateway_url}}/orders",
                             "host": [
-                                "{{order_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "orders"
@@ -2815,9 +2800,9 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{order_service_url}}/orders/{{tracking_id}}",
+                            "raw": "{{gateway_url}}/orders/{{tracking_id}}",
                             "host": [
-                                "{{order_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "orders",
@@ -2843,9 +2828,9 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{order_service_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/management/sync-roles",
                             "host": [
-                                "{{order_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "management",
@@ -2867,9 +2852,9 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{order_service_url}}/orders/restaurants/{{restaurant_id}}/paid",
+                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/paid",
                             "host": [
-                                "{{order_service_url}}"
+                                "{{gateway_url}}"
                             ],
                             "path": [
                                 "orders",
