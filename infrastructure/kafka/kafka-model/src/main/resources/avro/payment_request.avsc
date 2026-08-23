@@ -22,6 +22,12 @@
             }
         },
         {
+            "name": "restaurantId",
+            "type": {
+                "type": "string"
+            }
+        },
+        {
             "name": "orderId",
             "type": {
                 "type": "string"

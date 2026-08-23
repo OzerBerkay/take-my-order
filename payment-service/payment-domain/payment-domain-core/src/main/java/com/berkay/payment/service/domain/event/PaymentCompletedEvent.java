@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class PaymentCompletedEvent extends PaymentEvent {
     
-    public PaymentCompletedEvent(Payment payment, ZonedDateTime createdAt, WalletTransaction walletTransaction, Wallet wallet) {
-        super(payment, createdAt, Collections.emptyList(), walletTransaction, wallet);
+    public PaymentCompletedEvent(Payment payment, ZonedDateTime createdAt, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet) {
+        super(payment, createdAt, Collections.emptyList(), customerWalletTransaction, customerWallet, restaurantWalletTransaction, restaurantWallet);
     }
 }

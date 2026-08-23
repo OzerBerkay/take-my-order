@@ -35,6 +35,18 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
 
     @Override
+    public long count() {
+        return roleReplicaRepository.count();
+    }
+
+    @Override
+    @Transactional
+    public void deleteAll() {
+        rolePermissionReplicaRepository.deleteAllInBatch();
+        permissionReplicaRepository.deleteAllInBatch();
+        roleReplicaRepository.deleteAllInBatch();
+    }
+    @Override
     @Transactional
     @CacheEvict(value = {"roles", "roleOrgUnits"}, key = "#payload.roleId")
     public void save(RoleEventPayload payload) {
@@ -48,53 +60,52 @@ public class RoleRepositoryImpl implements RoleRepository {
         roleReplicaRepository.save(entity);
 
         // 2. Yetkileri (Permissions) filtrele ve Bulk Insert yap (Sıfır N+1 Kuralı)
-        if (payload.getPermissions() != null && !payload.getPermissions().isEmpty()) {
-            List<com.berkay.restaurant.service.domain.dto.message.PermissionPayload> domainPermissions = payload.getPermissions().stream()
-                    .filter(p -> "RESTAURANT".equals(p.getDomain()))
+        if (payload.getPermissions() != null) {
+            List<com.berkay.restaurant.service.domain.dto.message.PermissionPayload> filteredPermissions = payload.getPermissions().stream()
+                    .filter(p -> "RESTAURANT".equalsIgnoreCase(p.getDomain()))
                     .toList();
 
-            rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
-
-            if (domainPermissions.isEmpty()) {
-                return;
-            }
-
-            Set<UUID> incomingPermissionIds = domainPermissions.stream()
+            Set<UUID> incomingPermissionIds = filteredPermissions.stream()
                     .map(p -> p.getId())
                     .collect(Collectors.toSet());
 
-            // DB'de var olan yetkilerin ID'lerini bulk fetch et
-            List<PermissionReplicaEntity> existingPermissions = permissionReplicaRepository.findAllById(incomingPermissionIds);
-            Set<UUID> existingPermissionIds = existingPermissions.stream()
-                    .map(PermissionReplicaEntity::getId)
-                    .collect(Collectors.toSet());
+            if (!filteredPermissions.isEmpty()) {
+                // DB'de var olan yetkilerin ID'lerini bulk fetch et
+                List<PermissionReplicaEntity> existingPermissions = permissionReplicaRepository.findAllById(incomingPermissionIds);
+                Set<UUID> existingPermissionIds = existingPermissions.stream()
+                        .map(PermissionReplicaEntity::getId)
+                        .collect(Collectors.toSet());
 
-            // RAM üzerinde Set Difference işlemi ile "yepyeni" yetkileri bul
-            List<PermissionReplicaEntity> newPermissionsToInsert = domainPermissions.stream()
-                    .filter(p -> !existingPermissionIds.contains(p.getId()))
-                    .map(p -> PermissionReplicaEntity.builder()
-                            .id(p.getId())
-                            .code(p.getCode())
-                            .domain(p.getDomain())
-                            .isActive(p.getIsActive() != null ? p.getIsActive() : true)
-                            .isRestricted(p.getIsRestricted() != null ? p.getIsRestricted() : false)
-                            .createdAt(p.getCreatedAt() != null ? java.time.ZonedDateTime.parse(p.getCreatedAt()) : java.time.ZonedDateTime.now())
-                            .updatedAt(p.getUpdatedAt() != null ? java.time.ZonedDateTime.parse(p.getUpdatedAt()) : java.time.ZonedDateTime.now())
-                            .build())
-                    .toList();
+                // RAM üzerinde Set Difference işlemi ile "yepyeni" yetkileri bul
+                List<PermissionReplicaEntity> newPermissionsToInsert = filteredPermissions.stream()
+                        .filter(p -> !existingPermissionIds.contains(p.getId()))
+                        .map(p -> PermissionReplicaEntity.builder()
+                                .id(p.getId())
+                                .code(p.getCode())
+                                .domain(p.getDomain())
+                                .isActive(p.getIsActive() != null ? p.getIsActive() : true)
+                                .isRestricted(p.getIsRestricted() != null ? p.getIsRestricted() : false)
+                                .createdAt(p.getCreatedAt() != null ? java.time.ZonedDateTime.parse(p.getCreatedAt()) : java.time.ZonedDateTime.now())
+                                .updatedAt(p.getUpdatedAt() != null ? java.time.ZonedDateTime.parse(p.getUpdatedAt()) : java.time.ZonedDateTime.now())
+                                .build())
+                        .toList();
 
-            if (!newPermissionsToInsert.isEmpty()) {
-                permissionReplicaRepository.saveAll(newPermissionsToInsert);
+                if (!newPermissionsToInsert.isEmpty()) {
+                    permissionReplicaRepository.saveAll(newPermissionsToInsert);
+                }
             }
 
             // 3. Ara Tabloyu (Junction) Yenile (Replace-All)
-            List<RolePermissionReplicaEntity> newRolePermissions = incomingPermissionIds.stream()
-                    .map(permId -> RolePermissionReplicaEntity.builder()
-                            .roleId(payload.getRoleId())
-                            .permissionId(permId)
-                            .build())
-                    .toList();
-            rolePermissionReplicaRepository.saveAll(newRolePermissions);
+            rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
+            if (!incomingPermissionIds.isEmpty()) {
+                List<RolePermissionReplicaEntity> newRolePermissions = incomingPermissionIds.stream()
+                        .map(permId -> RolePermissionReplicaEntity.builder()
+                                .roleId(payload.getRoleId())
+                                .permissionId(permId)
+                                .build())
+                        .toList();
+                rolePermissionReplicaRepository.saveAll(newRolePermissions);
+            }
         } else {
             rolePermissionReplicaRepository.deleteByRoleId(payload.getRoleId());
         }

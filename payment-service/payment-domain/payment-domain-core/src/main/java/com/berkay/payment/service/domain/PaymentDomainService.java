@@ -9,10 +9,12 @@ import java.util.List;
 public interface PaymentDomainService {
 
     PaymentEvent validateAndInitiatePayment(Payment payment,
-                                            Wallet wallet,
+                                            Wallet customerWallet,
+                                            Wallet restaurantWallet,
                                             List<String> failureMessages);
 
     PaymentEvent validateAndCancelPayment(Payment payment,
-                                          Wallet wallet,
+                                          Wallet customerWallet,
+                                          Wallet restaurantWallet,
                                           List<String> failureMessages);
 }

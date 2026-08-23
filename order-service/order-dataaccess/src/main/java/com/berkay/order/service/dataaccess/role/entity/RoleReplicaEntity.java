@@ -21,4 +21,5 @@ public class RoleReplicaEntity {
     private String name;
     private String userType;
     private UUID organizationalUnitId;
+    private Long version;
 }

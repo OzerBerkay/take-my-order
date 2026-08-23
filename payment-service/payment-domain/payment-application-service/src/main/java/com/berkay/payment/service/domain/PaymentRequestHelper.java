@@ -91,7 +91,18 @@ public class PaymentRequestHelper {
             throw new PaymentNotFoundException("Payment with order id: " +
                     paymentRequest.getOrderId() + " could not be found!");
         }
-        Payment payment = paymentResponse.get();
+        Payment paymentDb = paymentResponse.get();
+
+        // The database does not store restaurantId, so we recreate the Payment with the restaurantId from the cancel request
+        Payment payment = Payment.builder()
+                .paymentId(paymentDb.getId())
+                .customerId(paymentDb.getCustomerId())
+                .orderId(paymentDb.getOrderId())
+                .price(paymentDb.getPrice())
+                .paymentStatus(paymentDb.getPaymentStatus())
+                .createdAt(paymentDb.getCreatedAt())
+                .restaurantId(new com.berkay.domain.valueobject.RestaurantId(UUID.fromString(paymentRequest.getRestaurantId())))
+                .build();
 
         PaymentProcessorStrategy strategy = getStrategy("WALLET");
 
@@ -119,13 +130,13 @@ public class PaymentRequestHelper {
         paymentRepository.save(payment);
 
         if (failureMessages.isEmpty()) {
-            // Since wallet strategy updates the wallet and emits a transaction, we need to save the transaction.
-            // The wallet itself should be saved as well. Let's fetch it from repository via the transaction's walletId.
-            // Wait, Wallet is updated in-memory in the strategy. But it wasn't explicitly saved! 
-            // We must save the Wallet and the WalletTransaction.
-            if (paymentEvent.getWalletTransaction() != null && paymentEvent.getWallet() != null) {
-                walletRepository.save(paymentEvent.getWallet());
-                walletTransactionRepository.save(paymentEvent.getWalletTransaction());
+            if (paymentEvent.getCustomerWalletTransaction() != null && paymentEvent.getCustomerWallet() != null) {
+                walletRepository.save(paymentEvent.getCustomerWallet());
+                walletTransactionRepository.save(paymentEvent.getCustomerWalletTransaction());
+            }
+            if (paymentEvent.getRestaurantWalletTransaction() != null && paymentEvent.getRestaurantWallet() != null) {
+                walletRepository.save(paymentEvent.getRestaurantWallet());
+                walletTransactionRepository.save(paymentEvent.getRestaurantWalletTransaction());
             }
         }
     }
