@@ -57,6 +57,7 @@ public class IdentityRoleKafkaListener implements KafkaConsumer<RoleEventAvroMod
                     .userType(avroModel.getUserType())
                     .organizationalUnitId(avroModel.getOrganizationalUnitId())
                     .eventType(avroModel.getEventType())
+                    .version(avroModel.getVersion())
                     .permissions(permissions)
                     .build();
 

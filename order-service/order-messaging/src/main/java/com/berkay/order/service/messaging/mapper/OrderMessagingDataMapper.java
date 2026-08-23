@@ -68,6 +68,7 @@ public class OrderMessagingDataMapper {
                 .setId(UUID.randomUUID().toString())
                 .setSagaId(sagaId)
                 .setCustomerId(orderPaymentEventPayload.getCustomerId())
+                .setRestaurantId(orderPaymentEventPayload.getRestaurantId())
                 .setOrderId(orderPaymentEventPayload.getOrderId())
                 .setPrice(orderPaymentEventPayload.getPrice())
                 .setCreatedAt(orderPaymentEventPayload.getCreatedAt().toInstant())
@@ -88,7 +89,11 @@ public class OrderMessagingDataMapper {
     public RestaurantModel restaurantInformationAvroModelToRestaurantModel(RestaurantInformationAvroModel restaurantInformationAvroModel) {
         return RestaurantModel.builder()
                 .restaurantId(restaurantInformationAvroModel.getRestaurantId())
+                .name(restaurantInformationAvroModel.getName())
                 .active(restaurantInformationAvroModel.getActive())
+                .available(restaurantInformationAvroModel.getAvailable())
+                .minimumOrderAmount(restaurantInformationAvroModel.getMinimumOrderAmount())
+                .deliveryFee(restaurantInformationAvroModel.getDeliveryFee())
                 .products(restaurantInformationAvroModel.getProducts().stream()
                         .map(avroProduct -> ProductModel.builder()
                                 .productId(avroProduct.getProductId())
@@ -97,6 +102,7 @@ public class OrderMessagingDataMapper {
                                 // Avro'da logicalType: decimal ise otomatik BigDecimal gelir.
                                 .price(avroProduct.getPrice())
                                 .available(avroProduct.getAvailable())
+                                .hidden(avroProduct.getHidden())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
