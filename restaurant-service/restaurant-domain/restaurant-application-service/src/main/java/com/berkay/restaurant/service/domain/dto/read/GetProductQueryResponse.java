@@ -17,4 +17,5 @@ public class GetProductQueryResponse {
     private final Integer stock;
     private final Boolean available;
     private final Boolean hidden;
+    private final String imageUrl;
 }

@@ -15,4 +15,5 @@ public class GetPublicProductQueryResponse {
     private final String name;
     private final BigDecimal price;
     private final Boolean inStock;
+    private final String imageUrl;
 }

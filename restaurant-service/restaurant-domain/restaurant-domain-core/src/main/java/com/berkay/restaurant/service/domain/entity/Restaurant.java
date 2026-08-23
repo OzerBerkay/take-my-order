@@ -211,7 +211,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
                         + ", Available: " + menuProduct.getStock());
             } else {
                 // Stok miktarını düş
-                menuProduct.updateWith(menuProduct.getName(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden());
+                menuProduct.updateWith(menuProduct.getName(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden(), menuProduct.getImageUrl());
             }
 
             // Fiyat hesaplama

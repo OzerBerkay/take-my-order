@@ -60,6 +60,7 @@ public class RestaurantDataMapper {
                         .stock(productCommand.getStock())
                         .available(productCommand.getAvailable())
                         .hidden(productCommand.getHidden())
+                        .imageUrl(productCommand.getImageUrl())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -89,6 +90,7 @@ public class RestaurantDataMapper {
                 .stock(addProductCommand.getStock())
                 .available(addProductCommand.getAvailable())
                 .hidden(addProductCommand.getHidden())
+                .imageUrl(addProductCommand.getImageUrl())
                 .build();
     }
 
@@ -141,6 +143,7 @@ public class RestaurantDataMapper {
                 .stock(product.getStock())
                 .available(product.isAvailable())
                 .hidden(product.isHidden())
+                .imageUrl(product.getImageUrl())
                 .build();
     }
 
@@ -150,6 +153,7 @@ public class RestaurantDataMapper {
                 .name(product.getName())
                 .price(product.getPrice().getAmount())
                 .inStock(product.getStock() > 0)
+                .imageUrl(product.getImageUrl())
                 .build();
     }
 

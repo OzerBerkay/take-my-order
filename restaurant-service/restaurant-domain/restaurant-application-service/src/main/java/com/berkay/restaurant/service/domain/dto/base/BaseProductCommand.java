@@ -33,4 +33,6 @@ public abstract class BaseProductCommand {
 
     @NotNull(message = "Product hidden status cannot be null!")
     private final Boolean hidden;
+    
+    private final String imageUrl;
 }
