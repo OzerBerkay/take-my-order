@@ -6,9 +6,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,14 +28,19 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
     private final org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver;
+    
+    // Inject JwtDecoder. It might be null if issuer-uri is not configured, but we want system-wide validation.
+    private final JwtDecoder jwtDecoder;
 
     public JwtSecurityFilter(ObjectMapper objectMapper, 
                              org.springframework.data.redis.core.StringRedisTemplate redisTemplate,
                              @org.springframework.beans.factory.annotation.Qualifier("handlerExceptionResolver") 
-                             org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver) {
+                             org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver,
+                             @org.springframework.beans.factory.annotation.Autowired(required = false) JwtDecoder jwtDecoder) {
         this.objectMapper = objectMapper;
         this.redisTemplate = redisTemplate;
         this.handlerExceptionResolver = handlerExceptionResolver;
+        this.jwtDecoder = jwtDecoder;
     }
 
     @org.springframework.beans.factory.annotation.Value("${spring.application.name:unknown-service}")
@@ -43,25 +50,19 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     private java.util.Map<String, String> domainPolicies;
 
     private boolean isUserAllowedInDomain(String userType) {
-        if ("CUSTOMER".equalsIgnoreCase(userType)) {
-            // Customers usually have access to order and restaurant, but typically we handle them implicitly.
-            // Let's assume if it's not configured, they might have default access, or they don't have restriction.
-            // To be safe and strict according to document, maybe we check the policy.
-            return true; // Customers are handled by Layer 3 or endpoint specific checks, or we can add CUSTOMER to yml.
+        if ("CUSTOMER".equalsIgnoreCase(userType) || "M2M".equalsIgnoreCase(userType)) {
+            return true;
         }
 
         if (domainPolicies == null || domainPolicies.isEmpty()) {
-            return true; // No policy defined, bypass
+            return true;
         }
 
         String allowedDomainsStr = domainPolicies.get(userType.toUpperCase());
         if (allowedDomainsStr == null || allowedDomainsStr.isBlank()) {
-            // Policy exists but this user type has no domains configured, maybe block?
-            // "Eğer MERCHANT kullanıcısı yetkisi dışındaki bir servisi çağırıyorsa anında 403"
             return false;
         }
 
-        // e.g. applicationName = "order-service" -> domain = "ORDER"
         String currentDomain = applicationName.replace("-service", "").toUpperCase();
         
         String[] allowedDomains = allowedDomainsStr.split(",");
@@ -72,6 +73,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
         }
         return false;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -82,15 +84,27 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
+                // IMPORTANT: Signature Verification
+                if (jwtDecoder != null) {
+                    try {
+                        Jwt jwt = jwtDecoder.decode(token);
+                        log.debug("JWT Signature successfully verified for user: {}", jwt.getSubject());
+                    } catch (JwtException e) {
+                        log.warn("JWT Signature verification failed: {}", e.getMessage());
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Signature");
+                        return;
+                    }
+                } else {
+                    log.warn("JwtDecoder is not configured! Skipping signature verification.");
+                }
+
                 String[] parts = token.split("\\.");
                 if (parts.length == 3) {
                     String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
                     JsonNode jsonNode = objectMapper.readTree(payload);
 
-                    // Read standard claim
                     String externalId = jsonNode.has("sub") ? jsonNode.get("sub").asText() : null;
 
-                    // Token Expiration Validation
                     if (jsonNode.has("exp")) {
                         long exp = jsonNode.get("exp").asLong();
                         long now = System.currentTimeMillis() / 1000;
@@ -102,10 +116,8 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                         }
                     }
 
-                    // Read Keycloak Custom Attributes (they come as arrays e.g. ["ACTIVE"])
                     String accountStatus = extractFirstElementOrNull(jsonNode, "account_status");
                     
-                    // Business Validation: BANNED check (Faz-1 Kuralı)
                     if ("BANNED".equals(accountStatus)) {
                         log.warn("Banned user tried to access: {}", externalId);
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Account is BANNED");
@@ -117,14 +129,22 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                     
                     String userType = extractFirstElementOrNull(jsonNode, "user_type");
 
-                    // Layer 2: Domain-Level Guardrail
+                    String clientId = extractFirstElementOrNull(jsonNode, "clientId");
+                    if (clientId == null) {
+                        clientId = extractFirstElementOrNull(jsonNode, "azp");
+                    }
+
+                    if (internalId == null && "take-my-order-client".equals(clientId)) {
+                        userType = "M2M";
+                        internalId = UUID.nameUUIDFromBytes(clientId.getBytes());
+                    }
+
                     if (userType != null && !isUserAllowedInDomain(userType)) {
                         log.warn("Domain Guardrail Blocked! user_type {} is not allowed in domain {}", userType, applicationName);
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Domain access denied for user type");
                         return;
                     }
 
-                    // JWT Revocation check (Redis)
                     String sid = extractFirstElementOrNull(jsonNode, "sid");
                     long iat = jsonNode.has("iat") ? jsonNode.get("iat").asLong() : 0L;
                     if (internalIdStr != null && sid != null) {
@@ -167,17 +187,14 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                     }
 
                     List<UUID> roleIds = extractUuidList(jsonNode, "role_ids");
-                    List<UUID> organizationalUnitIds = extractUuidList(jsonNode, "organizational_unit_ids");
 
                     if (internalId != null) {
                         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(
-                                internalId, externalId, userType, roleIds, organizationalUnitIds, sid, new ArrayList<>()
+                                internalId, externalId, userType, roleIds, new ArrayList<>(), sid, new ArrayList<>()
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         log.debug("Successfully authenticated user {} with roles {}", internalId, roleIds);
-                        // IDOR shield is intentionally removed in favor of @PreAuthorize checks
-                        // which provide precise, replica-based authorization without token bloat.
                     }
                 }
             } catch (Exception e) {
@@ -187,8 +204,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
-
 
     private String extractFirstElementOrNull(JsonNode rootNode, String fieldName) {
         if (rootNode.has(fieldName)) {
@@ -207,7 +222,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
         if (rootNode.has(fieldName)) {
             JsonNode node = rootNode.get(fieldName);
             
-            // Helper to parse strings that might be like "[uuid1, uuid2]" or just "uuid1"
             java.util.function.Consumer<String> parseAndAdd = (text) -> {
                 text = text.trim();
                 if (text.startsWith("[") && text.endsWith("]")) {
