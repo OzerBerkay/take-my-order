@@ -24,6 +24,7 @@ public class ProductEntity {
     private int stock;
     private boolean available;
     private boolean hidden;
+    private String imageUrl;
 
     @ManyToOne
 

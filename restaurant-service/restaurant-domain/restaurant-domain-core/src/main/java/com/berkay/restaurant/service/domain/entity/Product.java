@@ -13,6 +13,7 @@ public class Product extends BaseEntity<ProductId> {
     private boolean available;
     // Müşteriye menüde hiç gösterilmeyip gizlenmek isteniyorsa
     private boolean hidden;
+    private String imageUrl;
 
     private Product(Builder builder) {
         setId(builder.productId);
@@ -21,14 +22,16 @@ public class Product extends BaseEntity<ProductId> {
         stock = builder.stock;
         available = builder.available;
         hidden = builder.hidden;
+        imageUrl = builder.imageUrl;
     }
 
-    public void updateWith(String name, Money price, boolean available, int stock, boolean hidden) {
+    public void updateWith(String name, Money price, boolean available, int stock, boolean hidden, String imageUrl) {
         this.name = name;
         this.price = price;
         this.available = available;
         this.stock = stock;
         this.hidden = hidden;
+        this.imageUrl = imageUrl;
     }
 
     public void validateProduct() {
@@ -72,6 +75,10 @@ public class Product extends BaseEntity<ProductId> {
         return hidden;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public static final class Builder {
         private ProductId productId;
         private String name;
@@ -79,6 +86,7 @@ public class Product extends BaseEntity<ProductId> {
         private int stock;
         private boolean available;
         private boolean hidden;
+        private String imageUrl;
 
         private Builder() {
         }
@@ -110,6 +118,11 @@ public class Product extends BaseEntity<ProductId> {
 
         public Builder hidden(boolean val) {
             hidden = val;
+            return this;
+        }
+
+        public Builder imageUrl(String val) {
+            imageUrl = val;
             return this;
         }
 

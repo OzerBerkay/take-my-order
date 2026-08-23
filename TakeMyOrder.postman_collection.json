@@ -1917,7 +1917,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true\n        }\n    ]\n}"
+                            "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"ITALIAN\",\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true,\n            \"imageUrl\": \"https://example.com/product-image.jpg\"\n        }\n    ]\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants",
@@ -1987,7 +1987,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Pepperoni Pizza\",\n  \"price\": 14.0,\n  \"stock\": 50,\n  \"available\": true,\n  \"hidden\": false\n}"
+                            "raw": "{\n    \"name\": \"Pepperoni Pizza\",\n    \"price\": 14.0,\n    \"stock\": 50,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\"\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products",
@@ -2060,7 +2060,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Updated Pizza\",\n  \"price\": 15.0,\n  \"stock\": 120,\n  \"available\": true,\n  \"hidden\": false\n}"
+                            "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\"\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",

@@ -40,7 +40,6 @@ public class RestaurantDataAccessMapper {
                 .menu(new ArrayList<>()) // İlişkiyi aşağıda kuracağız
                 .build();
 
-        // Menüdeki her ürünü JPA Entity'sine çevir ve restoranla ilişkilendir
         restaurant.getMenu().forEach(product -> {
             restaurantEntity.getMenu().add(ProductEntity.builder()
                     .productId(product.getId().getValue())
@@ -48,6 +47,8 @@ public class RestaurantDataAccessMapper {
                     .price(product.getPrice().getAmount())
                     .stock(product.getStock())
                     .available(product.isAvailable())
+                    .hidden(product.isHidden())
+                    .imageUrl(product.getImageUrl())
                     .restaurant(restaurantEntity) // İlişkiyi kuruyoruz
                     .build());
         });
@@ -81,6 +82,8 @@ public class RestaurantDataAccessMapper {
                                 .price(new Money(productEntity.getPrice()))
                                 .stock(productEntity.getStock())
                                 .available(productEntity.isAvailable())
+                                .hidden(productEntity.isHidden())
+                                .imageUrl(productEntity.getImageUrl())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
