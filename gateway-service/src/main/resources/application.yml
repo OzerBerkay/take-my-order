@@ -20,7 +20,7 @@ spring:
         - id: identity-service
           uri: ${IDENTITY_SERVICE_URI:http://localhost:8184}
           predicates:
-            - Path=/auth/**,/admin/**,/merchant/**,/users/**,/roles/**,/permissions/**,/addresses/**,/profile/**,/verify/**
+            - Path=/auth/**,/admin/**,/merchant/**,/users/**,/roles/**,/permissions/**
 
         - id: order-service
           # localhost is for if you run gateway-service and order-service on ide
@@ -32,12 +32,12 @@ spring:
         - id: payment-service
           uri: ${PAYMENT_SERVICE_URI:http://localhost:8182}
           predicates:
-            - Path=/payments/**
+            - Path=/payments/**,/wallets/**
 
         - id: restaurant-service
           uri: ${RESTAURANT_SERVICE_URI:http://localhost:8183}
           predicates:
-            - Path=/restaurants/**
+            - Path=/restaurants/**,/public/restaurants/**
 
 management:
   endpoints:

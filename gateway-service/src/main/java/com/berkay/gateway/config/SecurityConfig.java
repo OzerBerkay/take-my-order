@@ -22,7 +22,7 @@ public class SecurityConfig {
                         // Aktüatör gibi sağlık kontrolü endpointlerine izin ver
                         .pathMatchers("/actuator/**").permitAll()
                         // Kullanıcı kayıt ve giriş (Auth) endpointlerine dışarıdan yetkisiz erişime izin ver
-                        .pathMatchers(HttpMethod.POST, "/auth/login", "/auth/register/**", "/auth/refresh-token").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/auth/login", "/auth/register/**", "/auth/refresh").permitAll()
                         // Public API'lere izin ver
                         .pathMatchers(HttpMethod.GET, "/public/**").permitAll()
                         // Diğer TÜM istekler için Token (Authentication) zorunlu kıl
