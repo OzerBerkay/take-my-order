@@ -19,27 +19,42 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class JwtAuthenticationFilterTest {
 
+    @InjectMocks
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
     private ObjectMapper objectMapper;
+    
+    @Mock
     private StringRedisTemplate redisTemplate;
+    
     private ValueOperations<String, String> valueOperations;
-    private org.springframework.web.servlet.HandlerExceptionResolver handlerExceptionResolver;
+    
+    @Mock
+    private HandlerExceptionResolver handlerExceptionResolver;
+
+    @Mock
+    private JwtDecoder jwtDecoder;
 
     @BeforeEach
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
         objectMapper = new ObjectMapper();
-        redisTemplate = mock(StringRedisTemplate.class);
         valueOperations = mock(ValueOperations.class);
-        handlerExceptionResolver = mock(org.springframework.web.servlet.HandlerExceptionResolver.class);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(objectMapper, redisTemplate, handlerExceptionResolver);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(objectMapper, redisTemplate, handlerExceptionResolver, jwtDecoder);
+        org.mockito.Mockito.lenient().when(jwtDecoder.decode(anyString())).thenReturn(org.mockito.Mockito.mock(org.springframework.security.oauth2.jwt.Jwt.class));
         SecurityContextHolder.clearContext();
     }
 
