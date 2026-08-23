@@ -18,9 +18,68 @@
             "key": "restaurant_service_url",
             "value": "http://localhost:8183",
             "type": "string"
+        },
+        {
+            "key": "order_service_url",
+            "value": "http://localhost:8181",
+            "type": "string"
         }
     ],
     "item": [
+        {
+            "name": "Auth & Keycloak",
+            "item": [
+                {
+                    "name": "Get M2M Token (Client Credentials)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-www-form-urlencoded",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "grant_type",
+                                    "value": "client_credentials",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "client_id",
+                                    "value": "take-my-order-client",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "client_secret",
+                                    "value": "local-dummy-secret",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "http://localhost:30080/realms/take-my-order-realm/protocol/openid-connect/token",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "30080",
+                            "path": [
+                                "realms",
+                                "take-my-order-realm",
+                                "protocol",
+                                "openid-connect",
+                                "token"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
         {
             "name": "Identity Service",
             "item": [
@@ -1830,6 +1889,31 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "Internal Sync Roles (No Auth)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{identity_service_url}}/internal/sync/roles?limit=1000",
+                            "host": [
+                                "{{identity_service_url}}"
+                            ],
+                            "path": [
+                                "internal",
+                                "sync",
+                                "roles"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "1000"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
@@ -1946,7 +2030,7 @@
                 {
                     "name": "Update Restaurant (Success)",
                     "request": {
-                        "method": "PUT",
+                        "method": "PATCH",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -1955,7 +2039,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"restaurantName\": \"Berkay's Updated Diner\",\n    \"active\": true,\n    \"available\": true\n}"
+                            "raw": "{\n    \"restaurantName\": \"Updated Restaurant Name\",\n    \"active\": true,\n    \"available\": true,\n    \"street\": \"123 New Street\",\n    \"city\": \"Istanbul\",\n    \"postalCode\": \"34000\",\n    \"phoneNumber\": \"+905554443322\",\n    \"minimumOrderAmount\": 100.0,\n    \"deliveryFee\": 15.0,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"cuisineType\": \"TURKISH\",\n    \"description\": \"The best place to eat.\",\n    \"logoUrl\": \"https://example.com/logo.png\"\n}"
                         },
                         "url": {
                             "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}",
@@ -2358,6 +2442,135 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Force Sync Roles",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{restaurant_service_url}}/management/sync-roles",
+                            "host": [
+                                "{{restaurant_service_url}}"
+                            ],
+                            "path": [
+                                "management",
+                                "sync-roles"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Order Management",
+                    "item": [
+                        {
+                            "name": "Approve Order",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/approve",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "orders",
+                                        "{{order_id}}",
+                                        "approve"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Reject Order",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"failureMessages\": []\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{restaurant_service_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/reject",
+                                    "host": [
+                                        "{{restaurant_service_url}}"
+                                    ],
+                                    "path": [
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "orders",
+                                        "{{order_id}}",
+                                        "reject"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Pending Orders",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{api_gateway_url}}/api/v1/restaurants/{{restaurant_id}}/orders/pending",
+                                    "host": [
+                                        "{{api_gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "orders",
+                                        "pending"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         },
@@ -2449,6 +2662,16 @@
                                 "{{owner_id}}",
                                 "balance"
                             ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 },
@@ -2469,8 +2692,194 @@
                                 "{{owner_id}}",
                                 "history"
                             ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
+                },
+                {
+                    "name": "Force Sync Roles",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{payment_service_url}}/management/sync-roles",
+                            "host": [
+                                "{{payment_service_url}}"
+                            ],
+                            "path": [
+                                "management",
+                                "sync-roles"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Order",
+            "item": [
+                {
+                    "name": "Get Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{order_service_url}}/orders?customerId={{customer_id}}&page=0&size=10",
+                            "host": [
+                                "{{order_service_url}}"
+                            ],
+                            "path": [
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurantId\": \"d055e51f-55fa-44e6-b30c-af992012f29b\",\n    \"price\": 67.5,\n    \"items\": [\n        {\n            \"productId\": \"b464134f-0a91-434d-979f-f55afc5a2b1b\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"3adc24ad-faaf-4dc5-88f0-18a811115f96\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"10eda44b-2124-4ee1-a34e-fca92574e049\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"b3e2b289-900a-4087-a5ec-a283808e0619\",\n            \"quantity\": 1,\n            \"price\": 10.0,\n            \"subTotal\": 10.0\n        },\n        {\n            \"productId\": \"fab4e12e-57d8-4b5b-99df-b28afc50b94d\",\n            \"quantity\": 1,\n            \"price\": 15.0,\n            \"subTotal\": 15.0\n        },\n        {\n            \"productId\": \"972af818-f257-4eab-9c3b-8a2bada07cc7\",\n            \"quantity\": 1,\n            \"price\": 12.5,\n            \"subTotal\": 12.5\n        }\n    ],\n    \"address\": {\n        \"street\": \"123 Main St\",\n        \"postalCode\": \"12345\",\n        \"city\": \"Istanbul\"\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{order_service_url}}/orders",
+                            "host": [
+                                "{{order_service_url}}"
+                            ],
+                            "path": [
+                                "orders"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order By Tracking ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{order_service_url}}/orders/{{tracking_id}}",
+                            "host": [
+                                "{{order_service_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{tracking_id}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Force Sync Roles",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{order_service_url}}/management/sync-roles",
+                            "host": [
+                                "{{order_service_url}}"
+                            ],
+                            "path": [
+                                "management",
+                                "sync-roles"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Paid Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{order_service_url}}/orders/restaurants/{{restaurant_id}}/paid",
+                            "host": [
+                                "{{order_service_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "paid"
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         }

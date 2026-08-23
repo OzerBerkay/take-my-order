@@ -4,6 +4,7 @@ import com.berkay.order.service.dataaccess.role.entity.PermissionReplicaEntity;
 import com.berkay.order.service.dataaccess.role.entity.RolePermissionReplicaEntity;
 import com.berkay.order.service.dataaccess.role.repository.PermissionReplicaRepository;
 import com.berkay.order.service.dataaccess.role.repository.RolePermissionReplicaRepository;
+import com.berkay.order.service.dataaccess.role.repository.RoleReplicaRepository;
 import com.berkay.order.service.domain.ports.output.repository.RolePermissionQueryPort;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -19,11 +20,14 @@ public class RolePermissionQueryAdapter implements RolePermissionQueryPort {
 
     private final RolePermissionReplicaRepository rolePermissionReplicaRepository;
     private final PermissionReplicaRepository permissionReplicaRepository;
+    private final RoleReplicaRepository roleReplicaRepository;
 
     public RolePermissionQueryAdapter(RolePermissionReplicaRepository rolePermissionReplicaRepository,
-                                      PermissionReplicaRepository permissionReplicaRepository) {
+                                      PermissionReplicaRepository permissionReplicaRepository,
+                                      RoleReplicaRepository roleReplicaRepository) {
         this.rolePermissionReplicaRepository = rolePermissionReplicaRepository;
         this.permissionReplicaRepository = permissionReplicaRepository;
+        this.roleReplicaRepository = roleReplicaRepository;
     }
 
     @Override
@@ -45,5 +49,14 @@ public class RolePermissionQueryAdapter implements RolePermissionQueryPort {
                 .filter(PermissionReplicaEntity::isActive)
                 .map(PermissionReplicaEntity::getCode)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "roleOrgUnits", key = "#roleId")
+    public UUID getOrganizationalUnitIdByRoleId(UUID roleId) {
+        return roleReplicaRepository.findById(roleId)
+                .map(com.berkay.order.service.dataaccess.role.entity.RoleReplicaEntity::getOrganizationalUnitId)
+                .orElse(null);
     }
 }

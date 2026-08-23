@@ -27,6 +27,12 @@ security:
       INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
 
 spring:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}
   application:
     name: order-service
   jpa:
@@ -76,9 +82,9 @@ kafka-consumer-config:
   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
   payment-consumer-group-id: payment-topic-consumer
-  restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
-  customer-group-id:  customer-topic-consumer
-  restaurant-information-consumer-group-id: restaurant-information-topic-consumer
+  restaurant-approval-consumer-group-id: restaurant-approval-response-topic-consumer
+  customer-group-id: order-customer-topic-consumer
+  restaurant-information-consumer-group-id: order-restaurant-information-topic-consumer
   role-consumer-group-id: order-role-topic-consumer
   permission-consumer-group-id: order-permission-topic-consumer
   auto-offset-reset: earliest

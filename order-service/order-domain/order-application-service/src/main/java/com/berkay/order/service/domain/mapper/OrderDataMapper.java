@@ -29,6 +29,7 @@ public class OrderDataMapper {
                 .restaurantId(new RestaurantId(createOrderCommand.getRestaurantId()))
                 .deliveryAddress(orderAddressToStreetAddress(createOrderCommand.getAddress()))
                 .price(new Money(createOrderCommand.getPrice()))
+                .deliveryFee(new Money(createOrderCommand.getDeliveryFee()))
                 .items(orderItemsToOrderItemEntities(createOrderCommand.getItems()))
                 .build();
     }
@@ -44,6 +45,7 @@ public class OrderDataMapper {
     public TrackOrderResponse orderToTrackOrderResponse(Order order) {
         return TrackOrderResponse.builder()
                 .orderTrackingId(order.getTrackingId().getValue())
+                .customerId(order.getCustomerId().getValue())
                 .orderStatus(order.getOrderStatus())
                 .failureMessages(order.getFailureMessages())
                 .build();
@@ -52,6 +54,7 @@ public class OrderDataMapper {
     public OrderPaymentEventPayload orderCreatedEventToOrderPaymentEventPayload(OrderCreatedEvent orderCreatedEvent) {
         return OrderPaymentEventPayload.builder()
                 .customerId(orderCreatedEvent.getOrder().getCustomerId().getValue().toString())
+                .restaurantId(orderCreatedEvent.getOrder().getRestaurantId().getValue().toString())
                 .orderId(orderCreatedEvent.getOrder().getId().getValue().toString())
                 .price(orderCreatedEvent.getOrder().getPrice().getAmount())
                 .createdAt(orderCreatedEvent.getCreatedAt())
@@ -63,6 +66,7 @@ public class OrderDataMapper {
                                                                                           orderCancelledEvent) {
         return OrderPaymentEventPayload.builder()
                 .customerId(orderCancelledEvent.getOrder().getCustomerId().getValue().toString())
+                .restaurantId(orderCancelledEvent.getOrder().getRestaurantId().getValue().toString())
                 .orderId(orderCancelledEvent.getOrder().getId().getValue().toString())
                 .price(orderCancelledEvent.getOrder().getPrice().getAmount())
                 .createdAt(orderCancelledEvent.getCreatedAt())

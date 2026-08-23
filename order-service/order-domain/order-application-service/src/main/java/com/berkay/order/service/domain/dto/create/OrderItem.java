@@ -15,6 +15,7 @@ public class OrderItem {
     @NotNull
     private final UUID productId;
     @NotNull
+    @jakarta.validation.constraints.Min(value = 1, message = "Quantity must be greater than 0")
     private final Integer quantity;
     @NotNull
     private final BigDecimal price;

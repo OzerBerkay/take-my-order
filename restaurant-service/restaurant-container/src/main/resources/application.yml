@@ -25,6 +25,12 @@ security:
       INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
 
 spring:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}
   devtools:
     restart:
       enabled: false

@@ -15,4 +15,5 @@ public class ProductModel {
     private String name;
     private BigDecimal price;
     private boolean available;
+    private boolean hidden;
 }

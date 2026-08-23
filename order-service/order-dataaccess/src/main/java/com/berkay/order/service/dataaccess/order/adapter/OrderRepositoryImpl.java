@@ -38,4 +38,32 @@ public class OrderRepositoryImpl implements OrderRepository {
         return orderJpaRepository.findByTrackingId(trackingId.getValue())
                 .map(orderDataAccessMapper::orderEntityToOrder);
     }
+
+    @Override
+    public com.berkay.order.service.domain.dto.read.OrderPageResult findByCustomerId(com.berkay.domain.valueobject.CustomerId customerId, int page, int size) {
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<com.berkay.order.service.dataaccess.order.entity.OrderEntity> pagedResult =
+                orderJpaRepository.findByCustomerId(customerId.getValue(), pageRequest);
+
+        java.util.List<Order> orders = pagedResult.getContent().stream()
+                .map(orderDataAccessMapper::orderEntityToOrder)
+                .collect(java.util.stream.Collectors.toList());
+
+        return new com.berkay.order.service.domain.dto.read.OrderPageResult(
+                orders,
+                pagedResult.getNumber(),
+                pagedResult.getSize(),
+                pagedResult.getTotalElements(),
+                pagedResult.getTotalPages(),
+                pagedResult.isLast()
+        );
+    }
+    
+    @Override
+    public Optional<java.util.List<Order>> findByRestaurantIdAndOrderStatus(com.berkay.domain.valueobject.RestaurantId restaurantId, com.berkay.domain.valueobject.OrderStatus orderStatus) {
+        return orderJpaRepository.findByRestaurantIdAndOrderStatus(restaurantId.getValue(), orderStatus)
+                .map(orderEntities -> orderEntities.stream()
+                        .map(orderDataAccessMapper::orderEntityToOrder)
+                        .collect(java.util.stream.Collectors.toList()));
+    }
 }

@@ -28,6 +28,10 @@ public class OrderItem extends BaseEntity<OrderItemId> {
     }
 
     void validatePrice() {
+        if (quantity <= 0) {
+            throw new OrderDomainException("Order Item quantity must be greater than zero for product " + product.getId().getValue());
+        }
+        
         // 1. Kontrol: Fiyat 0'dan büyük olmalı
         if (!price.isGreaterThanZero()) {
             throw new OrderDomainException("Order Item Price: " + price.getAmount() + " is not valid for product " + product.getId().getValue() + ". Price must be greater than zero!");
