@@ -68,7 +68,7 @@ public class AdminUserController {
 
 
     @GetMapping
-    @org.springframework.security.access.prepost.PreAuthorize("authentication.userType == 'INTERNAL' and @roleAuthService.hasPermission(authentication, 'can_view_users')")
+    @org.springframework.security.access.prepost.PreAuthorize("@roleAuthService.hasPermission(authentication, 'can_view_users')")
     public ResponseEntity<com.berkay.identity.service.dto.query.PageResult<com.berkay.identity.service.dto.query.UserResponse>> getAdminUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,

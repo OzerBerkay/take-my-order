@@ -40,6 +40,8 @@ public class RoleAuthorizationService {
     }
 
     public boolean hasPermission(Authentication authentication, String permissionCode) {
+        System.out.println("====== hasPermission CALLED! permissionCode=" + permissionCode + " ======");
+        log.info("hasPermission CALLED");
         return checkPermission(authentication, null, permissionCode);
     }
 
@@ -52,60 +54,74 @@ public class RoleAuthorizationService {
      * @param targetOrganizationalUnitId İstek yapılan hedefin Context'i (Body'den veya Path'ten gelen Restaurant ID)
      */
     private boolean checkPermission(Authentication authentication, UUID targetOrganizationalUnitId, String action) {
+        log.info("RoleAuthorizationService: checkPermission called for action={}, targetOrg={}", action, targetOrganizationalUnitId);
+        
         if (!(authentication instanceof JwtAuthenticationToken jwtToken)) {
+            log.warn("checkPermission failed: authentication is not JwtAuthenticationToken. class: {}", authentication != null ? authentication.getClass().getName() : "null");
             return false;
         }
 
         UserType userType = jwtToken.getUserType();
+        log.info("checkPermission: userType={}", userType);
+
+        if (UserType.M2M.equals(userType)) {
+            log.info("checkPermission: allowing M2M user");
+            return true;
+        }
 
         // 1. Internal ve Customer Düz Kuralı
         if (UserType.INTERNAL.equals(userType) && targetOrganizationalUnitId != null) {
-            return false; // Internal sadece global(null) işlem yapabilir.
+            log.warn("checkPermission failed: INTERNAL user cannot have targetOrganizationalUnitId");
+            return false; 
         }
         if (UserType.CUSTOMER.equals(userType)) {
-            return false; // Customer rol yönetemez.
+            log.warn("checkPermission failed: CUSTOMER cannot manage roles");
+            return false;
         }
 
         // 2. Fetch User to get authorized organizational unit IDs
         com.berkay.identity.service.domain.entity.User user = userRepository.findById(new com.berkay.identity.service.domain.valueobject.UserId(jwtToken.getInternalId())).orElse(null);
         if (user == null) {
+            log.warn("checkPermission failed: user not found in DB with internalId={}", jwtToken.getInternalId());
             return false;
         }
+
+        log.info("checkPermission: user found, iterating over roleIds: {}", jwtToken.getRoleIds());
 
         // 3. Multi-Tenant Yetki Taraması
         for (UUID roleId : jwtToken.getRoleIds()) {
             Role role = getRoleWithCache(roleId);
-
             if (role != null) {
-                // EĞER KULLANICI MERCHANT İSE: Bu rolün context'i (Restaurant ID) ile isteğin targetOrganizationalUnitId'si eşleşmeli!
+                log.info("checkPermission: evaluating role {}", role.getName());
                 boolean isOrganizationalUnitMatch = true;
                 if (UserType.MERCHANT.equals(userType)) {
                     if (targetOrganizationalUnitId != null) {
                         if (role.isStatic()) {
-                            // Statik roller (Örn: RESTAURANT_OWNER) globaldir. Yetkinin restoranda geçerli olması için veritabanındaki orgUnit listesinde bulunması gerekir.
                             isOrganizationalUnitMatch = user.getOrganizationalUnitIds() != null && user.getOrganizationalUnitIds().contains(targetOrganizationalUnitId);
                         } else {
-                            // Dinamik roller doğrudan belirli bir restorana aittir.
                             isOrganizationalUnitMatch = role.getOrganizationalUnitId() != null && role.getOrganizationalUnitId().equals(targetOrganizationalUnitId);
                         }
                     } else {
-                        // Merchant'lar global (orgUnitId = null) işlem YAPAMAZLAR!
                         isOrganizationalUnitMatch = false;
                     }
                 }
 
-                    if (isOrganizationalUnitMatch) {
-                        // Rolün içindeki yetkilerde (örn: can_create_role) var mı kontrol et
-                        boolean hasPerm = role.getPermissions() != null && role.getPermissions().stream()
-                                .anyMatch(p -> p.getCode().equalsIgnoreCase(action) && p.isActive());
-
-                        if (hasPerm) {
-                            return true; // İlk uygun rolde kapı açılır.
-                        }
+                if (isOrganizationalUnitMatch) {
+                    boolean hasPerm = role.getPermissions() != null && role.getPermissions().stream()
+                            .anyMatch(p -> p.getCode().equalsIgnoreCase(action) && p.isActive());
+                    log.info("checkPermission: role {} hasPerm={} for action={}", role.getName(), hasPerm, action);
+                    if (hasPerm) {
+                        return true;
                     }
+                } else {
+                    log.info("checkPermission: organizational unit mismatch for role {}", role.getName());
+                }
+            } else {
+                log.warn("checkPermission: role {} not found in cache/DB", roleId);
             }
         }
 
-        return false; // Hiçbir rolünde bu yetki yok veya context'leri eşleşmedi.
+        log.warn("checkPermission failed: no suitable role found");
+        return false;
     }
 }
