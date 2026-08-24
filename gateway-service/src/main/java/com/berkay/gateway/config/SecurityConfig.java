@@ -17,6 +17,8 @@ public class SecurityConfig {
         http
                 // API'lerde CSRF korumasına gerek yoktur (Session kullanmıyoruz)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                // CORS konfigürasyonunu Spring Security zincirine entegre et
+                .cors(Customizer.withDefaults())
 
                 .authorizeExchange(exchanges -> exchanges
                         // Aktüatör gibi sağlık kontrolü endpointlerine izin ver

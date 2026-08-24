@@ -16,6 +16,19 @@ spring:
           jwk-set-uri: ${KEYCLOAK_SERVER_URL:http://localhost:30080}/realms/${KEYCLOAK_REALM:take-my-order-realm}/protocol/openid-connect/certs
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ${ALLOWED_ORIGINS:http://localhost:4200}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id: identity-service
           uri: ${IDENTITY_SERVICE_URI:http://localhost:8184}
@@ -37,7 +50,7 @@ spring:
         - id: restaurant-service
           uri: ${RESTAURANT_SERVICE_URI:http://localhost:8183}
           predicates:
-            - Path=/restaurants/**,/public/restaurants/**
+            - Path=/restaurants/**,/public/restaurants/**,/cuisines/**,/public/cuisines/**
 
 management:
   endpoints:
