@@ -9,7 +9,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+import java.util.UUID;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Positive;
 
@@ -46,12 +46,13 @@ public class CreateRestaurantCommand {
     @PositiveOrZero
     private final Integer averageDeliveryTimeInMinutes;
     
-    @NotNull
-    private final CuisineType cuisineType;
+    private final List<UUID> cuisineIds;
     
     private final String description;
     
     private final String logoUrl;
+    
+    private final String bannerUrl;
 
     @Valid // İçindeki objeleri de validate etmesi için
     private final List<CreateProductCommand> products;

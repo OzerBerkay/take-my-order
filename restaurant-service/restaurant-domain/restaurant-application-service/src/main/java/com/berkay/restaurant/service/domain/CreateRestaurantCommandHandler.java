@@ -27,22 +27,36 @@ public class CreateRestaurantCommandHandler {
     private final RestaurantDomainService restaurantDomainService;
     private final RestaurantPersonnelRepository restaurantPersonnelRepository;
 
+    private final com.berkay.restaurant.service.domain.ports.output.repository.cuisine.CuisineRepository cuisineRepository;
+
     public CreateRestaurantCommandHandler(RestaurantRepository restaurantRepository,
                                           RestaurantDataMapper restaurantDataMapper,
                                           RestaurantOutboxHelper restaurantOutboxHelper,
                                           RestaurantDomainService restaurantDomainService,
-                                          RestaurantPersonnelRepository restaurantPersonnelRepository) {
+                                          RestaurantPersonnelRepository restaurantPersonnelRepository,
+                                          com.berkay.restaurant.service.domain.ports.output.repository.cuisine.CuisineRepository cuisineRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantDataMapper = restaurantDataMapper;
         this.restaurantOutboxHelper = restaurantOutboxHelper;
         this.restaurantDomainService = restaurantDomainService;
         this.restaurantPersonnelRepository = restaurantPersonnelRepository;
+        this.cuisineRepository = cuisineRepository;
     }
 
     @Transactional
     public CreateRestaurantResponse createRestaurant(CreateRestaurantCommand createRestaurantCommand) {
         log.info("Creating restaurant with name: {}", createRestaurantCommand.getRestaurantName());
         Restaurant restaurant = restaurantDataMapper.createRestaurantCommandToRestaurant(createRestaurantCommand);
+
+        if (createRestaurantCommand.getCuisineIds() != null && !createRestaurantCommand.getCuisineIds().isEmpty()) {
+            java.util.List<com.berkay.restaurant.service.domain.entity.Cuisine> cuisines = new java.util.ArrayList<>();
+            for (java.util.UUID cuisineId : createRestaurantCommand.getCuisineIds()) {
+                com.berkay.restaurant.service.domain.entity.Cuisine cuisine = cuisineRepository.findById(cuisineId)
+                        .orElseThrow(() -> new RestaurantDomainException("Cuisine not found with id: " + cuisineId));
+                cuisines.add(cuisine);
+            }
+            restaurant.updateCuisines(cuisines);
+        }
 
         // Domain Logic (Validation + Init)
         // Event dönüyor ve entity initialize ediliyor

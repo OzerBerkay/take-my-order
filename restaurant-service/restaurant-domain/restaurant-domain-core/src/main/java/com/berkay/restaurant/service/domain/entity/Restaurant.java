@@ -6,7 +6,7 @@ import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 import com.berkay.restaurant.service.domain.valueobject.OrderApprovalId;
 import com.berkay.restaurant.service.domain.valueobject.RestaurantName;
 import com.berkay.restaurant.service.domain.valueobject.Address;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,10 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private Money minimumOrderAmount;
     private Money deliveryFee;
     private Integer averageDeliveryTimeInMinutes;
-    private CuisineType cuisineType;
+    private List<Cuisine> cuisines;
     private String description;
     private String logoUrl;
+    private String bannerUrl;
 
     public void updateName(String restaurantName) {
         if (restaurantName != null && !restaurantName.isBlank()) {
@@ -92,10 +93,19 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         }
     }
 
-    public void updateCuisineType(CuisineType type) {
-        if (type != null) {
-            this.cuisineType = type;
+    public void updateCuisines(List<Cuisine> newCuisines) {
+        if (newCuisines != null) {
+            newCuisines.forEach(c -> {
+                if (!c.isActive()) {
+                    throw new RestaurantDomainException("Cannot assign inactive cuisine to a restaurant!");
+                }
+            });
+            this.cuisines = newCuisines;
         }
+    }
+    
+    public void clearCuisines() {
+        this.cuisines = new ArrayList<>();
     }
 
     public void updateDescription(String desc) {
@@ -107,6 +117,12 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     public void updateLogoUrl(String url) {
         if (url != null) {
             this.logoUrl = url;
+        }
+    }
+
+    public void updateBannerUrl(String url) {
+        if (url != null) {
+            this.bannerUrl = url;
         }
     }
 
@@ -287,9 +303,10 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         minimumOrderAmount = builder.minimumOrderAmount;
         deliveryFee = builder.deliveryFee;
         averageDeliveryTimeInMinutes = builder.averageDeliveryTimeInMinutes;
-        cuisineType = builder.cuisineType;
+        cuisines = builder.cuisines != null ? builder.cuisines : new ArrayList<>();
         description = builder.description;
         logoUrl = builder.logoUrl;
+        bannerUrl = builder.bannerUrl;
     }
 
     public static Builder builder() {
@@ -345,8 +362,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         return averageDeliveryTimeInMinutes;
     }
 
-    public CuisineType getCuisineType() {
-        return cuisineType;
+    public List<Cuisine> getCuisines() {
+        return cuisines;
     }
 
     public String getDescription() {
@@ -355,6 +372,10 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
     public String getLogoUrl() {
         return logoUrl;
+    }
+
+    public String getBannerUrl() {
+        return bannerUrl;
     }
 
     public static final class Builder {
@@ -370,9 +391,10 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private Money minimumOrderAmount;
         private Money deliveryFee;
         private Integer averageDeliveryTimeInMinutes;
-        private CuisineType cuisineType;
+        private List<Cuisine> cuisines;
         private String description;
         private String logoUrl;
+        private String bannerUrl;
 
         private Builder() {
         }
@@ -437,8 +459,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
             return this;
         }
 
-        public Builder cuisineType(CuisineType val) {
-            cuisineType = val;
+        public Builder cuisines(List<Cuisine> val) {
+            cuisines = val;
             return this;
         }
 
@@ -449,6 +471,11 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder logoUrl(String val) {
             logoUrl = val;
+            return this;
+        }
+
+        public Builder bannerUrl(String val) {
+            bannerUrl = val;
             return this;
         }
 

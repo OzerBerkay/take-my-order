@@ -123,7 +123,7 @@ public class RestaurantQueryHandler {
     @Transactional(readOnly = true)
     public GetPublicRestaurantListQueryResponse getPublicRestaurants(GetPublicRestaurantListQuery query) {
         RestaurantPageResult restaurantPage = restaurantRepository.findPublicRestaurants(
-                query.getSearchName(), query.getCuisineType(), query.getAvailable(), query.getPage(), query.getSize());
+                query.getSearchName(), query.getCuisineCodes(), query.getAvailable(), query.getPage(), query.getSize());
 
         List<com.berkay.restaurant.service.domain.dto.read.RestaurantModel> items = restaurantPage.getRestaurants().stream()
                 .map(restaurantDataMapper::restaurantToRestaurantModel)

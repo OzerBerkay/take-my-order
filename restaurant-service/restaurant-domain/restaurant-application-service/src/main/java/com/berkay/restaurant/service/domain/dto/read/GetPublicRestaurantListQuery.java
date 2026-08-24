@@ -1,6 +1,6 @@
 package com.berkay.restaurant.service.domain.dto.read;
 
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetPublicRestaurantListQuery {
     private final String searchName;
-    private final CuisineType cuisineType;
+    private final List<String> cuisineCodes;
     private final Boolean available;
     private final int page;
     private final int size;

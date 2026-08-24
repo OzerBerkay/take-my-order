@@ -12,7 +12,7 @@ import com.berkay.restaurant.service.domain.exception.RestaurantNotFoundExceptio
 import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantPersonnelRepository;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,10 +91,10 @@ public class RestaurantQueryHandlerTest {
 
     @Test
     public void testGetPublicRestaurants_Success() {
-        GetPublicRestaurantListQuery query = new GetPublicRestaurantListQuery(null, CuisineType.FAST_FOOD, true, 0, 10);
+        GetPublicRestaurantListQuery query = new GetPublicRestaurantListQuery(null, List.of("fast_food"), true, 0, 10);
         RestaurantPageResult pageResult = new RestaurantPageResult(List.of(restaurant), 0, 10, 1, 1, true);
 
-        when(restaurantRepository.findPublicRestaurants(null, CuisineType.FAST_FOOD, true, 0, 10))
+        when(restaurantRepository.findPublicRestaurants(null, List.of("fast_food"), true, 0, 10))
                 .thenReturn(pageResult);
 
         GetPublicRestaurantListQueryResponse response = restaurantQueryHandler.getPublicRestaurants(query);

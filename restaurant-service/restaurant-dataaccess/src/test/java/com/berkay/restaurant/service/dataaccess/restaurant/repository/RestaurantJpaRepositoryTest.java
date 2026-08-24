@@ -1,7 +1,7 @@
 package com.berkay.restaurant.service.dataaccess.restaurant.repository;
 
 import com.berkay.restaurant.service.dataaccess.restaurant.entity.RestaurantEntity;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,7 +20,10 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @DataJpaTest
+@ActiveProfiles("test")
 @ContextConfiguration(classes = RestaurantJpaRepositoryTest.TestConfig.class)
 public class RestaurantJpaRepositoryTest {
 
@@ -41,7 +44,7 @@ public class RestaurantJpaRepositoryTest {
                 .restaurantId(UUID.randomUUID())
                 .restaurantName("Test Restaurant")
                 .isActive(true)
-                .cuisineType(CuisineType.TURKISH)
+                .cuisines(new java.util.HashSet<>())
                 .averageDeliveryTimeInMinutes(30)
                 .deliveryFee(BigDecimal.TEN)
                 .minimumOrderAmount(BigDecimal.valueOf(50))
@@ -65,7 +68,7 @@ public class RestaurantJpaRepositoryTest {
                 .restaurantId(UUID.randomUUID())
                 .restaurantName("Kebab House")
                 .isActive(true)
-                .cuisineType(CuisineType.TURKISH)
+                .cuisines(new java.util.HashSet<>())
                 .build();
                 
         restaurantJpaRepository.save(entity);

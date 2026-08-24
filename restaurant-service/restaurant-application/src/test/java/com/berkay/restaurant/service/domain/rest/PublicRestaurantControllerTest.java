@@ -4,7 +4,7 @@ import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuer
 import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.ports.input.service.RestaurantApplicationService;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,7 +41,7 @@ public class PublicRestaurantControllerTest {
 
         // Act
         ResponseEntity<GetPublicRestaurantListQueryResponse> responseEntity = 
-                publicRestaurantController.getPublicRestaurants("test", CuisineType.TURKISH, true, 0, 20);
+                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, 0, 20);
 
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

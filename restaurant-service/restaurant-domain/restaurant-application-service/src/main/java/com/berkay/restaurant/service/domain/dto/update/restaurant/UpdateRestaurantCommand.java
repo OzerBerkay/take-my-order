@@ -2,12 +2,12 @@ package com.berkay.restaurant.service.domain.dto.update.restaurant;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import java.math.BigDecimal;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,8 +32,10 @@ public class UpdateRestaurantCommand {
     private final String postalCode;
     private final String phoneNumber;
     private final Integer averageDeliveryTimeInMinutes;
-    private final CuisineType cuisineType;
+    private final List<UUID> cuisineIds;
     private final String description;
     private final String logoUrl;
+    
+    private final String bannerUrl;
 
 }

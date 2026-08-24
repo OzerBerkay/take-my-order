@@ -24,13 +24,16 @@ public class UpdateRestaurantCommandHandler {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantOutboxHelper restaurantOutboxHelper;
     private final RestaurantDataMapper restaurantDataMapper;
+    private final com.berkay.restaurant.service.domain.ports.output.repository.cuisine.CuisineRepository cuisineRepository;
 
     public UpdateRestaurantCommandHandler(RestaurantRepository restaurantRepository,
                                           RestaurantOutboxHelper restaurantOutboxHelper,
-                                          RestaurantDataMapper restaurantDataMapper) {
+                                          RestaurantDataMapper restaurantDataMapper,
+                                          com.berkay.restaurant.service.domain.ports.output.repository.cuisine.CuisineRepository cuisineRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantOutboxHelper = restaurantOutboxHelper;
         this.restaurantDataMapper = restaurantDataMapper;
+        this.cuisineRepository = cuisineRepository;
     }
 
     @Transactional
@@ -60,7 +63,19 @@ public class UpdateRestaurantCommandHandler {
         
         restaurant.updatePhoneNumber(command.getPhoneNumber());
         restaurant.updateAverageDeliveryTime(command.getAverageDeliveryTimeInMinutes());
-        restaurant.updateCuisineType(command.getCuisineType());
+        if (command.getCuisineIds() != null) {
+            if (command.getCuisineIds().isEmpty()) {
+                restaurant.clearCuisines();
+            } else {
+                java.util.List<com.berkay.restaurant.service.domain.entity.Cuisine> cuisines = new java.util.ArrayList<>();
+                for (java.util.UUID cuisineId : command.getCuisineIds()) {
+                    com.berkay.restaurant.service.domain.entity.Cuisine cuisine = cuisineRepository.findById(cuisineId)
+                            .orElseThrow(() -> new com.berkay.restaurant.service.domain.exception.RestaurantDomainException("Cuisine not found with id: " + cuisineId));
+                    cuisines.add(cuisine);
+                }
+                restaurant.updateCuisines(cuisines);
+            }
+        }
         restaurant.updateDescription(command.getDescription());
         restaurant.updateLogoUrl(command.getLogoUrl());
 

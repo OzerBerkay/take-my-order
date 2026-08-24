@@ -2,7 +2,7 @@ package com.berkay.restaurant.service.domain.dto.update;
 
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Min;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,8 +29,9 @@ public class UpdateRestaurantRequest {
     private String postalCode;
     private String phoneNumber;
     private Integer averageDeliveryTimeInMinutes;
-    private CuisineType cuisineType;
+    private java.util.List<java.util.UUID> cuisineIds;
     private String description;
     private String logoUrl;
+    private String bannerUrl;
 
 }

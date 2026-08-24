@@ -22,9 +22,10 @@ public class RestaurantRequestMapper {
                 .postalCode(request.getPostalCode())
                 .phoneNumber(request.getPhoneNumber())
                 .averageDeliveryTimeInMinutes(request.getAverageDeliveryTimeInMinutes())
-                .cuisineType(request.getCuisineType())
+                .cuisineIds(request.getCuisineIds())
                 .description(request.getDescription())
                 .logoUrl(request.getLogoUrl())
+                .bannerUrl(request.getBannerUrl())
                 .build();
     }
 }
