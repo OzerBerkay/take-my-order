@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -33,11 +33,19 @@ public class RestaurantEntity {
     private BigDecimal deliveryFee;
     private Integer averageDeliveryTimeInMinutes;
     
-    @Enumerated(EnumType.STRING)
-    private CuisineType cuisineType;
+    @ManyToMany
+    @JoinTable(
+        name = "restaurant_cuisines",
+        schema = "restaurant",
+        joinColumns = @JoinColumn(name = "restaurant_id"),
+        inverseJoinColumns = @JoinColumn(name = "cuisine_id")
+    )
+    private Set<CuisineEntity> cuisines;
     
     private String description;
     private String logoUrl;
+    
+    private String bannerUrl;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductEntity> menu;

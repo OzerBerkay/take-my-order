@@ -46,9 +46,9 @@ public class RestaurantDataMapper {
                 .minimumOrderAmount(createRestaurantCommand.getMinimumOrderAmount() != null ? new Money(createRestaurantCommand.getMinimumOrderAmount()) : null)
                 .deliveryFee(createRestaurantCommand.getDeliveryFee() != null ? new Money(createRestaurantCommand.getDeliveryFee()) : null)
                 .averageDeliveryTimeInMinutes(createRestaurantCommand.getAverageDeliveryTimeInMinutes())
-                .cuisineType(createRestaurantCommand.getCuisineType())
                 .description(createRestaurantCommand.getDescription())
                 .logoUrl(createRestaurantCommand.getLogoUrl())
+                .bannerUrl(createRestaurantCommand.getBannerUrl())
                 .build();
     }
 
@@ -174,7 +174,15 @@ public class RestaurantDataMapper {
                 .name(restaurant.getRestaurantName().getRestaurantName())
                 .description(restaurant.getDescription())
                 .logoUrl(restaurant.getLogoUrl())
-                .cuisineType(restaurant.getCuisineType())
+                .bannerUrl(restaurant.getBannerUrl())
+                .cuisines(restaurant.getCuisines() != null ? restaurant.getCuisines().stream().map(c -> com.berkay.restaurant.service.domain.dto.read.CuisineModel.builder()
+                        .id(c.getId().getValue())
+                        .name(c.getName())
+                        .code(c.getCode())
+                        .description(c.getDescription())
+                        .iconUrl(c.getIconUrl())
+                        .isActive(c.isActive())
+                        .build()).collect(Collectors.toList()) : null)
                 .averageDeliveryTimeInMinutes(restaurant.getAverageDeliveryTimeInMinutes())
                 .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)

@@ -26,14 +26,14 @@ public class PublicRestaurantController {
     @GetMapping
     public ResponseEntity<com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse> getPublicRestaurants(
             @org.springframework.web.bind.annotation.RequestParam(required = false) String searchName,
-            @org.springframework.web.bind.annotation.RequestParam(required = false) com.berkay.restaurant.service.domain.valueobject.CuisineType cuisineType,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) java.util.List<String> cuisineCodes,
             @org.springframework.web.bind.annotation.RequestParam(required = false) Boolean available,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size) {
         
-        log.info("Getting public restaurants with searchName: {}, cuisineType: {}, available: {}, page: {}, size: {}", searchName, cuisineType, available, page, size);
+        log.info("Getting public restaurants with searchName: {}, cuisineCodes: {}, available: {}, page: {}, size: {}", searchName, cuisineCodes, available, page, size);
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery query = 
-                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(searchName, cuisineType, available, page, size);
+                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(searchName, cuisineCodes, available, page, size);
         
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse response = 
                 restaurantApplicationService.getPublicRestaurants(query);

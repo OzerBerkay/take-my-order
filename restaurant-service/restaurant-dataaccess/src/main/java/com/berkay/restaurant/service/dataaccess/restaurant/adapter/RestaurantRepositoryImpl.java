@@ -49,9 +49,9 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
-    public com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, com.berkay.restaurant.service.domain.valueobject.CuisineType cuisineType, Boolean available, int page, int size) {
+    public com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, java.util.List<String> cuisineCodes, Boolean available, int page, int size) {
         org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
-        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(name, cuisineType, available, pageRequest);
+        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(name, cuisineCodes, available, pageRequest);
         
         java.util.List<Restaurant> restaurants = pagedResult.getContent().stream()
                 .map(restaurantDataAccessMapper::restaurantEntityToRestaurant)

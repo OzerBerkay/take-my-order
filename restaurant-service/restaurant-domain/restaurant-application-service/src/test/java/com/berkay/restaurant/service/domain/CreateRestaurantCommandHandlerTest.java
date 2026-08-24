@@ -9,7 +9,7 @@ import com.berkay.restaurant.service.domain.mapper.RestaurantDataMapper;
 import com.berkay.restaurant.service.domain.outbox.scheduler.RestaurantOutboxHelper;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantRepository;
 import com.berkay.restaurant.service.domain.ports.output.repository.RestaurantPersonnelRepository;
-import com.berkay.restaurant.service.domain.valueobject.CuisineType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +42,9 @@ public class CreateRestaurantCommandHandlerTest {
     @Mock
     private RestaurantPersonnelRepository restaurantPersonnelRepository;
 
+    @Mock
+    private com.berkay.restaurant.service.domain.ports.output.repository.cuisine.CuisineRepository cuisineRepository;
+
     private RestaurantDataMapper restaurantDataMapper = new RestaurantDataMapper();
 
     private RestaurantDomainService restaurantDomainService = new RestaurantDomainServiceImpl();
@@ -55,7 +58,8 @@ public class CreateRestaurantCommandHandlerTest {
                 restaurantDataMapper,
                 restaurantOutboxHelper,
                 restaurantDomainService,
-                restaurantPersonnelRepository
+                restaurantPersonnelRepository,
+                cuisineRepository
         );
     }
 
@@ -72,7 +76,7 @@ public class CreateRestaurantCommandHandlerTest {
                 .minimumOrderAmount(new BigDecimal("10.00"))
                 .deliveryFee(new BigDecimal("2.50"))
                 .averageDeliveryTimeInMinutes(30)
-                .cuisineType(CuisineType.FAST_FOOD)
+                .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
                 .products(List.of())
@@ -102,7 +106,7 @@ public class CreateRestaurantCommandHandlerTest {
                 .minimumOrderAmount(new BigDecimal("-5.00"))
                 .deliveryFee(new BigDecimal("2.50"))
                 .averageDeliveryTimeInMinutes(30)
-                .cuisineType(CuisineType.FAST_FOOD)
+                .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
                 .products(List.of())
@@ -128,7 +132,7 @@ public class CreateRestaurantCommandHandlerTest {
                 .minimumOrderAmount(new BigDecimal("10.00"))
                 .deliveryFee(new BigDecimal("-2.50"))
                 .averageDeliveryTimeInMinutes(30)
-                .cuisineType(CuisineType.FAST_FOOD)
+                .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
                 .products(List.of())
@@ -154,7 +158,7 @@ public class CreateRestaurantCommandHandlerTest {
                 .minimumOrderAmount(new BigDecimal("10.00"))
                 .deliveryFee(new BigDecimal("2.50"))
                 .averageDeliveryTimeInMinutes(-5)
-                .cuisineType(CuisineType.FAST_FOOD)
+                .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
                 .products(List.of())
