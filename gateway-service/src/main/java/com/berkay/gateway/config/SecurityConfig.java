@@ -21,6 +21,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
 
                 .authorizeExchange(exchanges -> exchanges
+                        // CORS preflight (OPTIONS) isteklerine global olarak izin ver
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Aktüatör gibi sağlık kontrolü endpointlerine izin ver
                         .pathMatchers("/actuator/**").permitAll()
                         // Kullanıcı kayıt ve giriş (Auth) endpointlerine dışarıdan yetkisiz erişime izin ver
