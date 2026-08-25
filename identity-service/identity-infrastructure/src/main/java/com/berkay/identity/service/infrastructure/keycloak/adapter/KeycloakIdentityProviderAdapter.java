@@ -115,6 +115,8 @@ public class KeycloakIdentityProviderAdapter implements IdentityProviderPort {
                     + java.net.URLEncoder.encode(refreshToken, java.nio.charset.StandardCharsets.UTF_8);
 
             return executeTokenRequest(url, body);
+        } catch (com.berkay.identity.service.domain.exception.TokenExpiredDomainException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Refresh token failed", e);
             throw new KeycloakIntegrationException("Refresh token failed! " + e.getMessage(), e);
@@ -192,6 +194,9 @@ public class KeycloakIdentityProviderAdapter implements IdentityProviderPort {
                     .build();
         } else {
             log.error("Token request failed with status: {}, body: {}", response.statusCode(), response.body());
+            if (response.statusCode() == 400 && response.body().contains("invalid_grant") && body.contains("grant_type=refresh_token")) {
+                throw new com.berkay.identity.service.domain.exception.TokenExpiredDomainException("REFRESH_TOKEN_EXPIRED", "The provided refresh token is expired or inactive.");
+            }
             throw new KeycloakIntegrationException("Token request failed with status: " + response.statusCode());
         }
     }
