@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -70,5 +71,55 @@ class UserProfileControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(command)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Başarılı Senaryo: Kullanıcı kendi yetkilerini başarıyla çekebilmelidir.")
+    void shouldReturn200_WhenGetMyPermissionsIsSuccessful() throws Exception {
+        java.util.UUID userId = java.util.UUID.randomUUID();
+        
+        com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth = new com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken(
+                java.util.UUID.randomUUID(), // externalId
+                userId, // internalId
+                com.berkay.identity.service.domain.valueobject.UserType.INTERNAL, // userType
+                com.berkay.identity.service.domain.valueobject.AccountStatus.ACTIVE, // accountStatus
+                "test@test.com", // email
+                java.util.Collections.emptyList(), // roleIds
+                java.util.Collections.emptyList(), // organizationalUnitIds
+                "sid", // sid
+                "token" // token
+        );
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(jwtAuth);
+
+        java.util.UUID perm1Id = java.util.UUID.randomUUID();
+        java.util.UUID perm2Id = java.util.UUID.randomUUID();
+        
+        com.berkay.identity.service.dto.query.PermissionResponse perm1 = com.berkay.identity.service.dto.query.PermissionResponse.builder()
+                .id(perm1Id).name("can_do_x").description("desc").active(true).isRestricted(false).build();
+        com.berkay.identity.service.dto.query.PermissionResponse perm2 = com.berkay.identity.service.dto.query.PermissionResponse.builder()
+                .id(perm2Id).name("can_do_y").description("desc").active(true).isRestricted(false).build();
+        
+        com.berkay.identity.service.dto.query.RoleResponse role1 = com.berkay.identity.service.dto.query.RoleResponse.builder()
+                .id(java.util.UUID.randomUUID()).name("Role 1").permissions(java.util.List.of(perm1)).build();
+        com.berkay.identity.service.dto.query.RoleResponse role2 = com.berkay.identity.service.dto.query.RoleResponse.builder()
+                .id(java.util.UUID.randomUUID()).name("Role 2").permissions(java.util.List.of(perm1, perm2)).build();
+
+        com.berkay.identity.service.dto.query.UserResponse userResponse = com.berkay.identity.service.dto.query.UserResponse.builder()
+                .id(userId)
+                .roles(java.util.List.of(role1, role2))
+                .build();
+
+        when(userApplicationService.getUserProfile(userId)).thenReturn(userResponse);
+
+        mockMvc.perform(get("/users/me/permissions")
+                        .principal(jwtAuth)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[?(@.id == '" + perm1Id + "')]").exists())
+                .andExpect(jsonPath("$[?(@.id == '" + perm2Id + "')]").exists());
+                
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
     }
 }

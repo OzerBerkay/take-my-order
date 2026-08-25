@@ -41,6 +41,33 @@ public class UserProfileController {
         return ResponseEntity.ok(profile.getOrganizationalUnitIds());
     }
 
+    @GetMapping("/permissions")
+    public ResponseEntity<java.util.List<com.berkay.identity.service.dto.query.PermissionResponse>> getMyPermissions() {
+        java.util.UUID userId = getAuthenticatedUserId();
+        log.info("Received GET request for my permissions: {}", userId);
+        com.berkay.identity.service.dto.query.UserResponse profile = userApplicationService.getUserProfile(userId);
+        
+        log.info("Profile roles size: {}", profile.getRoles() != null ? profile.getRoles().size() : "null");
+        if (profile.getRoles() != null) {
+            for (com.berkay.identity.service.dto.query.RoleResponse role : profile.getRoles()) {
+                log.info("Role ID: {}, Name: {}, Permissions size: {}", role.getId(), role.getName(), 
+                        role.getPermissions() != null ? role.getPermissions().size() : "null");
+            }
+        }
+
+        java.util.List<com.berkay.identity.service.dto.query.PermissionResponse> uniquePermissions = profile.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toMap(
+                                com.berkay.identity.service.dto.query.PermissionResponse::getId,
+                                p -> p,
+                                (existing, replacement) -> existing
+                        ),
+                        map -> new java.util.ArrayList<>(map.values())
+                ));
+        return ResponseEntity.ok(uniquePermissions);
+    }
+
     private java.util.UUID getAuthenticatedUserId() {
         Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {

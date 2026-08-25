@@ -489,6 +489,35 @@
                                 }
                             },
                             "response": []
+                        },
+                        {
+                            "name": "Get My Permissions",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{access_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{GATEWAY_URL}}/users/me/permissions",
+                                    "host": [
+                                        "{{GATEWAY_URL}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "me",
+                                        "permissions"
+                                    ]
+                                },
+                                "description": "Fetches the complete and unique list of permissions assigned to the currently authenticated user based on their roles."
+                            }
                         }
                     ]
                 },
