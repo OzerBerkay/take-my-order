@@ -18,7 +18,12 @@
     </properties>
 
     <dependencies>
-        <!-- ASIL OĞLAN: Gateway (Netty Sunucusu ile gelir) -->
+                <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+        </dependency>
+
+<!-- ASIL OĞLAN: Gateway (Netty Sunucusu ile gelir) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
