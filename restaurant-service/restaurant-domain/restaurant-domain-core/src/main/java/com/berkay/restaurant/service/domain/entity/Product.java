@@ -7,6 +7,7 @@ import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 
 public class Product extends BaseEntity<ProductId> {
     private String name;
+    private String description;
     private Money price;
     private int stock;
     // Stoktan bağımsız olup ürünün son kullanıcıya gösterilip gösterilmeyeceği ile alakalıdır
@@ -18,6 +19,7 @@ public class Product extends BaseEntity<ProductId> {
     private Product(Builder builder) {
         setId(builder.productId);
         name = builder.name;
+        description = builder.description;
         price = builder.price;
         stock = builder.stock;
         available = builder.available;
@@ -25,8 +27,9 @@ public class Product extends BaseEntity<ProductId> {
         imageUrl = builder.imageUrl;
     }
 
-    public void updateWith(String name, Money price, boolean available, int stock, boolean hidden, String imageUrl) {
+    public void updateWith(String name, String description, Money price, boolean available, int stock, boolean hidden, String imageUrl) {
         this.name = name;
+        this.description = description;
         this.price = price;
         this.available = available;
         this.stock = stock;
@@ -59,6 +62,10 @@ public class Product extends BaseEntity<ProductId> {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public Money getPrice() {
         return price;
     }
@@ -82,6 +89,7 @@ public class Product extends BaseEntity<ProductId> {
     public static final class Builder {
         private ProductId productId;
         private String name;
+        private String description;
         private Money price;
         private int stock;
         private boolean available;
@@ -98,6 +106,11 @@ public class Product extends BaseEntity<ProductId> {
 
         public Builder name(String val) {
             name = val;
+            return this;
+        }
+
+        public Builder description(String val) {
+            description = val;
             return this;
         }
 

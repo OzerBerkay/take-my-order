@@ -13,6 +13,7 @@ import java.util.UUID;
 public class GetPublicProductQueryResponse {
     private final UUID productId;
     private final String name;
+    private final String description;
     private final BigDecimal price;
     private final Boolean inStock;
     private final String imageUrl;

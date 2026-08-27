@@ -20,6 +20,9 @@ public abstract class BaseProductCommand {
     @Size(min = 2, max = 50, message = "Product name must be between 2 and 50 characters!")
     private final String name;
 
+    @Size(max = 255, message = "Description cannot exceed 255 characters")
+    private final String description;
+
     @NotNull(message = "Price cannot be null!")
     @DecimalMin(value = "0.01", message = "Price must be greater than 0!")
     private final BigDecimal price;
