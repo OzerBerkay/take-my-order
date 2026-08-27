@@ -56,10 +56,10 @@ public class RejectRestaurantOrderCommandHandler {
                 
             for (java.util.Map.Entry<com.berkay.domain.valueobject.ProductId, Integer> entry : orderApproval.getProductQuantities().entrySet()) {
                 com.berkay.domain.valueobject.ProductId productId = entry.getKey();
-                Integer quantity = entry.getValue();
+                Integer requestedQuantity = entry.getValue();
                 com.berkay.restaurant.service.domain.entity.Product menuProduct = restaurantMenu.get(productId);
                 if (menuProduct != null) {
-                    menuProduct.updateWith(menuProduct.getName(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() + quantity, menuProduct.isHidden(), menuProduct.getImageUrl());
+                    menuProduct.updateWith(menuProduct.getName(), menuProduct.getDescription(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() + requestedQuantity, menuProduct.isHidden(), menuProduct.getImageUrl());
                 }
             }
             restaurantRepository.saveRestaurant(restaurant);

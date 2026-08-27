@@ -20,6 +20,7 @@ public class ProductEntity {
     private UUID productId;
 
     private String name;
+    private String description;
     private BigDecimal price;
     private int stock;
     private boolean available;

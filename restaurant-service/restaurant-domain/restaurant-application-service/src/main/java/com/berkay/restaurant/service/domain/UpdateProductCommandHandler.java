@@ -53,10 +53,11 @@ public class UpdateProductCommandHandler {
             throw new ProductNotFoundException("Product not found with id: " + command.getProductId());
         }
 
-        Product product = productOptional.get();
+        Product existingProduct = productOptional.get();
 
-        product.updateWith(
+        existingProduct.updateWith(
                 command.getName(),
+                command.getDescription(),
                 new Money(command.getPrice()),
                 command.getAvailable(),
                 command.getStock(),
@@ -64,7 +65,7 @@ public class UpdateProductCommandHandler {
                 command.getImageUrl()
         );
 
-        log.info("Product updated with id: {}", product.getId().getValue());
+        log.info("Product updated with id: {}", existingProduct.getId().getValue());
 
         // Kaydet ve DÖNEN OBJEYİ AL (@Version tutarlılığı için)
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);
