@@ -25,7 +25,7 @@ public class ApprovalOutboxEntity {
     private ZonedDateTime createdAt;
     private ZonedDateTime processedAt;
     private String type;
-    @Column(length = 4096)
+    @Column(columnDefinition = "TEXT")
     private String payload;
     @Enumerated(EnumType.STRING)
     private SagaStatus sagaStatus;

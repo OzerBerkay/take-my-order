@@ -30,7 +30,7 @@ public class RoleOutboxEntity {
     @Column(nullable = false)
     private String type;
 
-    @Column(columnDefinition = "TEXT", length = 4096, nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String payload;
 
     @Enumerated(EnumType.STRING)
