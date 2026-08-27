@@ -9,3 +9,4 @@ data:
   LOG_LEVEL: "DEBUG"
   SHOW_SQL: "true"
   KEYCLOAK_ISSUER_URI: "http://host.docker.internal:30080"
+  SWAGGER_ENABLED: "true"
