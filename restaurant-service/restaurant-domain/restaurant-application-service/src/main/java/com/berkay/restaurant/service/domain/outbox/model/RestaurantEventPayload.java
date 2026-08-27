@@ -46,6 +46,8 @@ public class RestaurantEventPayload {
         @JsonProperty
         private String name;
         @JsonProperty
+        private String description;
+        @JsonProperty
         private BigDecimal price;
         @JsonProperty
         private boolean available;
