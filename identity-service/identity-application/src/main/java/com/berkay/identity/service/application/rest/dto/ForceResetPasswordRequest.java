@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ForceResetPasswordRequest {
-    @NotBlank(message = "New password is required")
+    @com.berkay.identity.service.dto.validation.ValidPassword
     private String newPassword;
 }

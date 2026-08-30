@@ -21,8 +21,7 @@ public class RegisterInternalUserCommand {
     @Email(message = "Invalid email format")
     private final String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 40)
+    @com.berkay.identity.service.dto.validation.ValidPassword
     private final String password;
 
     @NotBlank(message = "First name is required")
@@ -33,8 +32,7 @@ public class RegisterInternalUserCommand {
     @Size(max = 50)
     private final String lastName;
 
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 10, max = 15)
+    @com.berkay.identity.service.dto.validation.ValidPhoneNumber
     private final String phoneNumber;
 
     @NotNull(message = "Roles are required for internal users")

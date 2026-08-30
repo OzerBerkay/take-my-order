@@ -19,8 +19,7 @@ public class RegisterCustomerCommand {
     @Email(message = "Invalid email format")
     private final String email;
 
-    @NotBlank(message = "Password is required") // domain katmanına inmeyecek sadece keycloak'a göndermek için gerekli
-    @Size(min = 8, max = 40)
+    @com.berkay.identity.service.dto.validation.ValidPassword
     private final String password;
 
     @NotBlank(message = "First name is required")
@@ -31,8 +30,7 @@ public class RegisterCustomerCommand {
     @Size(max = 50)
     private final String lastName;
 
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 10, max = 15) // +90... formatı için
+    @com.berkay.identity.service.dto.validation.ValidPhoneNumber
     private final String phoneNumber;
 
     // Adres listesi opsiyonel olabilir (null gelebilir) ama gelirse içi valid olmalı.
