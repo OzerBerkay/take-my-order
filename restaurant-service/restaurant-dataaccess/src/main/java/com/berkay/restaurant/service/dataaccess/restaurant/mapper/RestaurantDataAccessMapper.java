@@ -37,6 +37,8 @@ public class RestaurantDataAccessMapper {
                 .description(restaurant.getDescription())
                 .logoUrl(restaurant.getLogoUrl())
                 .bannerUrl(restaurant.getBannerUrl())
+                .categoryVersion(restaurant.getCategoryVersion())
+                .categories(new ArrayList<>())
                 .menu(new ArrayList<>()) // İlişkiyi aşağıda kuracağız
                 .cuisines(restaurant.getCuisines() != null ? restaurant.getCuisines().stream()
                         .map(cuisine -> com.berkay.restaurant.service.dataaccess.restaurant.entity.CuisineEntity.builder()
@@ -50,6 +52,15 @@ public class RestaurantDataAccessMapper {
                         .collect(Collectors.toSet()) : new java.util.HashSet<>())
                 .build();
 
+        restaurant.getCategories().forEach(category -> {
+            restaurantEntity.getCategories().add(com.berkay.restaurant.service.dataaccess.restaurant.entity.ProductCategoryEntity.builder()
+                    .id(category.getId().getValue())
+                    .name(category.getName())
+                    .sortOrder(category.getSortOrder())
+                    .restaurant(restaurantEntity)
+                    .build());
+        });
+
         restaurant.getMenu().forEach(product -> {
             restaurantEntity.getMenu().add(ProductEntity.builder()
                     .productId(product.getId().getValue())
@@ -60,6 +71,7 @@ public class RestaurantDataAccessMapper {
                     .available(product.isAvailable())
                     .hidden(product.isHidden())
                     .imageUrl(product.getImageUrl())
+                    .categoryId(product.getCategoryId() != null ? product.getCategoryId().getValue() : null)
                     .restaurant(restaurantEntity) // İlişkiyi kuruyoruz
                     .build());
         });
@@ -96,6 +108,14 @@ public class RestaurantDataAccessMapper {
                                 .active(cuisineEntity.getIsActive())
                                 .build())
                         .collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .categoryVersion(restaurantEntity.getCategoryVersion())
+                .categories(restaurantEntity.getCategories() != null ? restaurantEntity.getCategories().stream()
+                        .map(categoryEntity -> com.berkay.restaurant.service.domain.entity.ProductCategory.builder()
+                                .productCategoryId(new com.berkay.domain.valueobject.ProductCategoryId(categoryEntity.getId()))
+                                .name(categoryEntity.getName())
+                                .sortOrder(categoryEntity.getSortOrder())
+                                .build())
+                        .collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .menu(restaurantEntity.getMenu().stream()
                         .map(productEntity -> Product.builder()
                                 .productId(new ProductId(productEntity.getProductId()))
@@ -106,6 +126,7 @@ public class RestaurantDataAccessMapper {
                                 .available(productEntity.isAvailable())
                                 .hidden(productEntity.isHidden())
                                 .imageUrl(productEntity.getImageUrl())
+                                .categoryId(productEntity.getCategoryId() != null ? new com.berkay.domain.valueobject.ProductCategoryId(productEntity.getCategoryId()) : null)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();

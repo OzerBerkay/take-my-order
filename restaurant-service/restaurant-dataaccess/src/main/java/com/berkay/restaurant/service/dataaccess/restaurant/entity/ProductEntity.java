@@ -26,6 +26,9 @@ public class ProductEntity {
     private boolean available;
     private boolean hidden;
     private String imageUrl;
+    
+    @Column(name = "category_id")
+    private UUID categoryId;
 
     @ManyToOne
 
