@@ -11,6 +11,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class UpdatePasswordCommand {
-    @NotNull
+    @com.berkay.identity.service.dto.validation.ValidPassword
     private final String newPassword;
 }

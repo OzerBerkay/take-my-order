@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePasswordRequest {
-    @NotBlank
+    @com.berkay.identity.service.dto.validation.ValidPassword
     private String newPassword;
 }
