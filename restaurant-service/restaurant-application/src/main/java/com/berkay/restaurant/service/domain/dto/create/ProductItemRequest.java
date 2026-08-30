@@ -10,15 +10,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddProductRequest {
+public class ProductItemRequest {
     @NotNull(message = "Product name cannot be null!")
     @Size(min = 2, max = 255, message = "Product name must be between 2 and 255 characters!")
     private String name;
+
+    @Size(max = 255, message = "Description cannot exceed 255 characters")
+    private String description;
 
     @NotNull(message = "Price cannot be null!")
     @DecimalMin(value = "0.01", message = "Price must be greater than 0!")
@@ -26,11 +30,16 @@ public class AddProductRequest {
 
     @NotNull(message = "Stock cannot be null!")
     @Min(value = 0, message = "Stock cannot be lower than 0!")
-    private Integer stock; // Primitive 'int' yerine 'Integer' kullanıldı ki null gelirse validation yakalayabilsin.
+    private Integer stock;
 
     @NotNull(message = "Availability status cannot be null!")
-    private Boolean available; // Aynı şekilde 'boolean' yerine 'Boolean' wrapper sınıfı daha güvenlidir. Domain entity'de primitive ile dolu olmak zorunda olabilir ancak burada esneklik kazandırır
+    private Boolean available;
 
     @NotNull(message = "Product hidden status cannot be null!")
     private Boolean hidden;
+
+    private String imageUrl;
+
+    @NotNull(message = "Category id cannot be null!")
+    private UUID categoryId;
 }

@@ -36,7 +36,7 @@ public class RestaurantDataMapper {
                 .restaurantName(new RestaurantName(createRestaurantCommand.getRestaurantName()))
                 .active(createRestaurantCommand.isActive())
                 .available(false)
-                .menu(createProductCommandsToProducts(createRestaurantCommand.getProducts()))
+                .menu(new java.util.ArrayList<>())
                 .address(new com.berkay.restaurant.service.domain.valueobject.Address(
                         createRestaurantCommand.getStreet(),
                         createRestaurantCommand.getCity(),
@@ -50,20 +50,6 @@ public class RestaurantDataMapper {
                 .logoUrl(createRestaurantCommand.getLogoUrl())
                 .bannerUrl(createRestaurantCommand.getBannerUrl())
                 .build();
-    }
-
-    private List<Product> createProductCommandsToProducts(List<CreateProductCommand> createProductCommands) {
-        return createProductCommands.stream()
-                .map(productCommand -> Product.builder()
-                        .name(productCommand.getName())
-                        .description(productCommand.getDescription())
-                        .price(new Money(productCommand.getPrice()))
-                        .stock(productCommand.getStock())
-                        .available(productCommand.getAvailable())
-                        .hidden(productCommand.getHidden())
-                        .imageUrl(productCommand.getImageUrl())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public CreateRestaurantResponse restaurantToCreateRestaurantResponse(Restaurant restaurant) {
@@ -93,6 +79,7 @@ public class RestaurantDataMapper {
                 .available(addProductCommand.getAvailable())
                 .hidden(addProductCommand.getHidden())
                 .imageUrl(addProductCommand.getImageUrl())
+                .categoryId(addProductCommand.getCategoryId() != null ? new com.berkay.domain.valueobject.ProductCategoryId(addProductCommand.getCategoryId()) : null)
                 .build();
     }
 
@@ -148,6 +135,7 @@ public class RestaurantDataMapper {
                 .available(product.isAvailable())
                 .hidden(product.isHidden())
                 .imageUrl(product.getImageUrl())
+                .categoryId(product.getCategoryId() != null ? product.getCategoryId().getValue() : null)
                 .build();
     }
 
@@ -159,6 +147,7 @@ public class RestaurantDataMapper {
                 .price(product.getPrice().getAmount())
                 .inStock(product.getStock() > 0)
                 .imageUrl(product.getImageUrl())
+                .categoryId(product.getCategoryId() != null ? product.getCategoryId().getValue() : null)
                 .build();
     }
 
@@ -167,6 +156,12 @@ public class RestaurantDataMapper {
                 .restaurantId(restaurant.getId().getValue())
                 .name(restaurant.getRestaurantName().getRestaurantName())
                 .active(restaurant.isActive())
+                .categoryVersion(restaurant.getCategoryVersion())
+                .categories(restaurant.getCategories() != null ? restaurant.getCategories().stream().map(c -> com.berkay.restaurant.service.domain.dto.read.ProductCategoryModel.builder()
+                        .id(c.getId().getValue())
+                        .name(c.getName())
+                        .sortOrder(c.getSortOrder())
+                        .build()).collect(Collectors.toList()) : null)
                 .menu(restaurant.getMenu().stream()
                         .map(this::productToGetProductQueryResponse)
                         .collect(Collectors.toList()))
@@ -194,8 +189,12 @@ public class RestaurantDataMapper {
                 .address(restaurant.getAddress())
                 .active(restaurant.isActive())
                 .available(restaurant.isAvailable())
-                .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
-                .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
+                .categoryVersion(restaurant.getCategoryVersion())
+                .categories(restaurant.getCategories() != null ? restaurant.getCategories().stream().map(c -> com.berkay.restaurant.service.domain.dto.read.ProductCategoryModel.builder()
+                        .id(c.getId().getValue())
+                        .name(c.getName())
+                        .sortOrder(c.getSortOrder())
+                        .build()).collect(Collectors.toList()) : null)
                 .build();
     }
 }

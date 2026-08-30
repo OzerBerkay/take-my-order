@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class GetRestaurantQueryResponse {
-    private final UUID restaurantId;
-    private final String name;
-    private final Boolean active;
+public class GetRestaurantCategoriesResponse {
     private final Long categoryVersion;
     private final List<ProductCategoryModel> categories;
-    private final List<GetProductQueryResponse> menu;
 }

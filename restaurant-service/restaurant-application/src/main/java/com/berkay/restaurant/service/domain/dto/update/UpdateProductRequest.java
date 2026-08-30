@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public class UpdateProductRequest {
 
     @NotNull(message = "Product name cannot be null!")
-    @Size(min = 2, max = 50, message = "Product name must be between 2 and 50 characters!")
+    @Size(min = 2, max = 255, message = "Product name must be between 2 and 255 characters!")
     private String name;
 
     @NotNull(message = "Price cannot be null!")

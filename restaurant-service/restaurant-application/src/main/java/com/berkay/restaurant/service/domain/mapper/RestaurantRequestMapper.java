@@ -28,4 +28,18 @@ public class RestaurantRequestMapper {
                 .bannerUrl(request.getBannerUrl())
                 .build();
     }
+
+    public com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesCommand updateCategoriesRequestToCommand(UUID restaurantId, com.berkay.restaurant.service.domain.dto.update.UpdateCategoriesRequest request) {
+        return com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesCommand.builder()
+                .restaurantId(restaurantId)
+                .categoryVersion(request.getCategoryVersion())
+                .categories(request.getCategories().stream()
+                        .map(c -> com.berkay.restaurant.service.domain.dto.update.restaurant.CategoryPayload.builder()
+                                .id(c.getId())
+                                .name(c.getName())
+                                .sortOrder(c.getSortOrder())
+                                .build())
+                        .collect(java.util.stream.Collectors.toList()))
+                .build();
+    }
 }

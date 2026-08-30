@@ -51,6 +51,8 @@ public class AddProductCommandHandlerTest {
     @Test
     public void testAddProduct_Success() {
         UUID restaurantId = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+
         AddProductCommand command = AddProductCommand.builder()
                 .restaurantId(restaurantId)
                 .name("New Pizza")
@@ -58,10 +60,16 @@ public class AddProductCommandHandlerTest {
                 .stock(100)
                 .available(true)
                 .hidden(false)
+                .categoryId(categoryId)
                 .build();
 
         Restaurant restaurant = Restaurant.builder()
                 .restaurantId(new RestaurantId(restaurantId))
+                .categories(new ArrayList<>(java.util.List.of(com.berkay.restaurant.service.domain.entity.ProductCategory.builder()
+                        .productCategoryId(new com.berkay.domain.valueobject.ProductCategoryId(categoryId))
+                        .name("Category 1")
+                        .sortOrder(1)
+                        .build())))
                 .menu(new ArrayList<>())
                 .build();
 
