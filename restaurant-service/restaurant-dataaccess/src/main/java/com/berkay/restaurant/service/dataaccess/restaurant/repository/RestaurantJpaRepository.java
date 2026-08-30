@@ -18,12 +18,14 @@ public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity,
     
     List<RestaurantEntity> findAllByRestaurantIdIn(List<UUID> restaurantIds);
 
-    @Query("SELECT DISTINCT r FROM RestaurantEntity r LEFT JOIN r.cuisines c WHERE r.isActive = true " +
-           "AND (CAST(:name AS string) IS NULL OR LOWER(r.restaurantName) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) " +
+    @Query("SELECT DISTINCT r FROM RestaurantEntity r LEFT JOIN r.cuisines c LEFT JOIN r.menu m WHERE r.isActive = true " +
+           "AND (CAST(:name AS string) IS NULL OR LOWER(r.restaurantName) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')) OR LOWER(m.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')) OR LOWER(m.description) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) " +
            "AND (:cuisineCodes IS NULL OR c.code IN :cuisineCodes) " +
            "AND (:available IS NULL OR r.available = :available) " +
+           "AND (CAST(:maxMinimumOrderAmount AS bigdecimal) IS NULL OR r.minimumOrderAmount <= :maxMinimumOrderAmount) " +
+           "AND (CAST(:maxDeliveryTime AS int) IS NULL OR r.averageDeliveryTimeInMinutes <= :maxDeliveryTime) " +
            "ORDER BY r.available DESC, r.restaurantName ASC")
-    Page<RestaurantEntity> findPublicRestaurants(@Param("name") String name, @Param("cuisineCodes") List<String> cuisineCodes, @Param("available") Boolean available, Pageable pageable);
+    Page<RestaurantEntity> findPublicRestaurants(@Param("name") String name, @Param("cuisineCodes") List<String> cuisineCodes, @Param("available") Boolean available, @Param("maxMinimumOrderAmount") java.math.BigDecimal maxMinimumOrderAmount, @Param("maxDeliveryTime") Integer maxDeliveryTime, Pageable pageable);
 
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM RestaurantEntity r WHERE r.restaurantId = :id")

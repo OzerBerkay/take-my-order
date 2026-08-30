@@ -12,6 +12,8 @@ public class GetPublicRestaurantListQuery {
     private final String searchName;
     private final List<String> cuisineCodes;
     private final Boolean available;
+    private final java.math.BigDecimal maxMinimumOrderAmount;
+    private final Integer maxDeliveryTime;
     private final int page;
     private final int size;
 }

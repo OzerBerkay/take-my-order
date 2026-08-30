@@ -53,7 +53,7 @@ public class RestaurantJpaRepositoryTest {
         restaurantJpaRepository.save(entity);
 
         // Act - Testing with null parameters to ensure PostgreSQL type inference (bytea) does not throw exception
-        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants(null, null, null, PageRequest.of(0, 10));
+        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants(null, null, null, null, null, PageRequest.of(0, 10));
 
         // Assert
         assertNotNull(result);
@@ -74,7 +74,7 @@ public class RestaurantJpaRepositoryTest {
         restaurantJpaRepository.save(entity);
 
         // Act
-        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants("kebab", null, null, PageRequest.of(0, 10));
+        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants("kebab", null, null, null, null, PageRequest.of(0, 10));
 
         // Assert
         assertNotNull(result);
@@ -103,7 +103,7 @@ public class RestaurantJpaRepositoryTest {
         restaurantJpaRepository.save(openEntity);
 
         // Act
-        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants(null, null, null, PageRequest.of(0, 10));
+        Page<RestaurantEntity> result = restaurantJpaRepository.findPublicRestaurants(null, null, null, null, null, PageRequest.of(0, 10));
 
         // Assert
         assertNotNull(result);

@@ -56,6 +56,8 @@ public class UpdateCategoriesCommandHandlerTest {
                 .build();
 
         when(restaurant.getId()).thenReturn(new RestaurantId(restaurantId));
+        when(restaurantRepository.saveRestaurant(restaurant)).thenReturn(restaurant);
+        when(restaurant.getCategories()).thenReturn(List.of());
 
         updateCategoriesCommandHandler.updateCategories(command);
 

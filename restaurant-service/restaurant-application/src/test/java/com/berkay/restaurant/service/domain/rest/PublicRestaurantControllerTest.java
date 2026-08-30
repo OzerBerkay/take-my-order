@@ -41,7 +41,7 @@ public class PublicRestaurantControllerTest {
 
         // Act
         ResponseEntity<GetPublicRestaurantListQueryResponse> responseEntity = 
-                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, 0, 20);
+                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, null, null, 0, 20);
 
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
