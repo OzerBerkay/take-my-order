@@ -1946,7 +1946,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"products\": [\n        {\n            \"name\": \"Margherita Pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true,\n            \"imageUrl\": \"https://example.com/product-image.jpg\",\n            \"hidden\": false,\n            \"description\": \"A great product\"\n        }\n    ],\n    \"bannerUrl\": \"http://example.com/banner.png\",\n    \"cuisineIds\": [\n        \"96b27ef3-b24a-4ab7-87b3-76ecd7d8c0d6\"\n    ]\n}"
+                            "raw": "{\n    \"restaurantName\": \"Gourmet Kitchen\",\n    \"active\": true,\n    \"street\": \"123 Main St\",\n    \"city\": \"Metropolis\",\n    \"postalCode\": \"10001\",\n    \"phoneNumber\": \"555-0100\",\n    \"minimumOrderAmount\": 15.0,\n    \"deliveryFee\": 2.5,\n    \"averageDeliveryTimeInMinutes\": 30,\n    \"description\": \"Authentic Italian cuisine.\",\n    \"logoUrl\": \"http://example.com/logo.png\",\n    \"bannerUrl\": \"http://example.com/banner.png\",\n    \"cuisineIds\": [\n        \"96b27ef3-b24a-4ab7-87b3-76ecd7d8c0d6\"\n    ]\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants",
@@ -2005,6 +2005,62 @@
                     }
                 },
                 {
+                    "name": "Update Categories (Success)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"categoryVersion\": 0,\n    \"categories\": [\n        {\n            \"name\": \"Pizzas\",\n            \"sortOrder\": 1\n        },\n        {\n            \"name\": \"Drinks\",\n            \"sortOrder\": 2\n        }\n    ]\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8181/api/restaurant/restaurants/{{restaurant_id}}/categories",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8181",
+                            "path": [
+                                "api",
+                                "restaurant",
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "categories"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
                     "name": "Add Product (Success)",
                     "request": {
                         "method": "POST",
@@ -2016,7 +2072,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"Pepperoni Pizza\",\n    \"price\": 14.0,\n    \"stock\": 50,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\",\n    \"description\": \"A great product\"\n}"
+                            "raw": "{\n    \"products\": [\n        {\n            \"name\": \"Margherita\",\n            \"description\": \"Classic cheese pizza\",\n            \"price\": 12.5,\n            \"stock\": 100,\n            \"available\": true,\n            \"hidden\": false,\n            \"categoryId\": \"{{categoryId}}\",\n            \"imageUrl\": \"https://example.com/pizza.jpg\"\n        }\n    ]\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products",
@@ -2089,7 +2145,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\",\n    \"description\": \"A great product\"\n}"
+                            "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\",\n    \"description\": \"A great product\",\n    \"categoryId\": \"{{categoryId}}\"\n}"
                         },
                         "url": {
                             "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
@@ -2583,6 +2639,46 @@
                                 }
                             },
                             "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Categories (Success)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8181/api/restaurant/public/restaurants/{{restaurant_id}}/categories",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8181",
+                            "path": [
+                                "api",
+                                "restaurant",
+                                "public",
+                                "restaurants",
+                                "{{restaurant_id}}",
+                                "categories"
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "var jsonData = pm.response.json();",
+                                    "if(jsonData.categories && jsonData.categories.length > 0) {",
+                                    "    pm.environment.set(\"categoryId\", jsonData.categories[0].id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
                         }
                     ]
                 }
