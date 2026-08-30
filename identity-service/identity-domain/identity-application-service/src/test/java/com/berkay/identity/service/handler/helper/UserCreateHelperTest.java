@@ -2,6 +2,7 @@ package com.berkay.identity.service.handler.helper;
 
 import com.berkay.identity.service.domain.entity.User;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
+import com.berkay.identity.service.domain.exception.UserAlreadyExistsException;
 import com.berkay.identity.service.ports.output.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,10 @@ class UserCreateHelperTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mock(User.class)));
 
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, 
+        UserAlreadyExistsException exception = assertThrows(UserAlreadyExistsException.class, 
             () -> userCreateHelper.checkUserUniqueness(email, phone));
 
+        assertEquals("EMAIL_ALREADY_EXISTS", exception.getErrorCode());
         assertEquals("User with email " + email + " already exists!", exception.getMessage());
     }
 
@@ -62,9 +64,10 @@ class UserCreateHelperTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         when(userRepository.findByPhoneNumber(phone)).thenReturn(Optional.of(mock(User.class)));
 
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, 
+        UserAlreadyExistsException exception = assertThrows(UserAlreadyExistsException.class, 
             () -> userCreateHelper.checkUserUniqueness(email, phone));
 
+        assertEquals("PHONE_NUMBER_ALREADY_EXISTS", exception.getErrorCode());
         assertEquals("User with phone number " + phone + " already exists!", exception.getMessage());
     }
 }

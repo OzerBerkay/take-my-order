@@ -5,6 +5,7 @@ import com.berkay.application.handler.GlobalExceptionHandler;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
 import com.berkay.identity.service.domain.exception.TokenRevokedDomainException;
 import com.berkay.identity.service.domain.exception.UserNotFoundException;
+import com.berkay.identity.service.domain.exception.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +16,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Slf4j
 @ControllerAdvice
 public class IdentityGlobalExceptionHandler extends GlobalExceptionHandler {
+
+    @ResponseBody
+    @ExceptionHandler(value = {UserAlreadyExistsException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleException(UserAlreadyExistsException exception) {
+        log.warn(exception.getMessage());
+        return ErrorDTO.builder()
+                .code(exception.getErrorCode())
+                .message(exception.getMessage())
+                .build();
+    }
 
     @ResponseBody
     @ExceptionHandler(value = {IdentityDomainException.class})
