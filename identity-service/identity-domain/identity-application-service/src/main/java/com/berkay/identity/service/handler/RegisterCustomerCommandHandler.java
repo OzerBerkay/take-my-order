@@ -39,7 +39,7 @@ public class RegisterCustomerCommandHandler {
 
         // Rolü Name ile Bul ve Ata (Application service'te atanıyor çünkü Rolün önce DB'den çekilmesi gerek)
         Role customerRole = userRepository.findRoleByName(RoleConstants.CUSTOMER_BASE)
-                .orElseThrow(() -> new IdentityDomainException("Role not found: " + RoleConstants.CUSTOMER_BASE));
+                .orElseThrow(() -> new IllegalStateException("Role not found: " + RoleConstants.CUSTOMER_BASE));
 
         // Create Temp User (Without External ID)
         User tempUser = userDataMapper.registerCustomerCommandToUser(command, customerRole);
@@ -78,7 +78,7 @@ public class RegisterCustomerCommandHandler {
         } catch (Exception e) {
             log.error("Failed to save user in DB! Rolling back Keycloak creation for externalId: {}", externalId, e);
             identityProviderPort.deleteUser(externalId);
-            throw new IdentityDomainException("Registration failed due to internal error! " + e.getMessage(), e);
+            throw new IllegalStateException("Registration failed due to internal error! " + e.getMessage(), e);
         }
 
         log.info("Customer registered successfully with id: {}", finalUser.getId().getValue());

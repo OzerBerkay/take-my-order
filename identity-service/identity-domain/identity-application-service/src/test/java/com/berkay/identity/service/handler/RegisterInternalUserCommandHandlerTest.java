@@ -125,7 +125,7 @@ class RegisterInternalUserCommandHandlerTest {
         when(userRepository.findRolesByIds(anyList())).thenReturn(roles);
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerInternalUser(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerInternalUser(command));
         assertEquals("Some roles could not be found!", exception.getMessage());
 
         verify(userDataMapper, never()).registerInternalUserCommandToUser(any(), anyList());
@@ -208,7 +208,7 @@ class RegisterInternalUserCommandHandlerTest {
                 .when(userRepository).save(any(User.class));
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerInternalUser(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerInternalUser(command));
         assertEquals("Registration failed due to internal error! DB Connection Timeout", exception.getMessage());
 
         // Verifying Rollback Method Call is the most critical check!

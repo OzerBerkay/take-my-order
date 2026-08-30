@@ -46,7 +46,7 @@ public class RegisterInternalUserCommandHandler {
         List<Role> roles = userRepository.findRolesByIds(roleIds);
 
         if (roles.size() != command.getRoleIds().size()) {
-            throw new IdentityDomainException("Some roles could not be found!");
+            throw new IllegalStateException("Some roles could not be found!");
         }
 
         // Temp User (No External ID)
@@ -84,7 +84,7 @@ public class RegisterInternalUserCommandHandler {
         } catch (Exception e) {
             log.error("Failed to save user in DB! Rolling back Keycloak creation for externalId: {}", externalId, e);
             identityProviderPort.deleteUser(externalId);
-            throw new IdentityDomainException("Registration failed due to internal error! " + e.getMessage(), e);
+            throw new IllegalStateException("Registration failed due to internal error! " + e.getMessage(), e);
         }
 
         log.info("Internal user created successfully with id: {}", finalUser.getId().getValue());
