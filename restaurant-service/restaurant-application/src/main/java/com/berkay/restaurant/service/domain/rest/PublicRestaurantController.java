@@ -28,12 +28,15 @@ public class PublicRestaurantController {
             @org.springframework.web.bind.annotation.RequestParam(required = false) String searchName,
             @org.springframework.web.bind.annotation.RequestParam(required = false) java.util.List<String> cuisineCodes,
             @org.springframework.web.bind.annotation.RequestParam(required = false) Boolean available,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) java.math.BigDecimal maxMinimumOrderAmount,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Integer maxDeliveryTime,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size) {
         
-        log.info("Getting public restaurants with searchName: {}, cuisineCodes: {}, available: {}, page: {}, size: {}", searchName, cuisineCodes, available, page, size);
+        log.info("Getting public restaurants with searchName: {}, cuisineCodes: {}, available: {}, maxMinimumOrderAmount: {}, maxDeliveryTime: {}, page: {}, size: {}", 
+                searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, page, size);
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery query = 
-                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(searchName, cuisineCodes, available, page, size);
+                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, page, size);
         
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse response = 
                 restaurantApplicationService.getPublicRestaurants(query);

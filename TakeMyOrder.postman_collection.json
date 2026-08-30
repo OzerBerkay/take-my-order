@@ -2443,13 +2443,23 @@
                                             "disabled": true
                                         },
                                         {
-                                            "key": "cuisineType",
-                                            "value": "TURKISH",
+                                            "key": "cuisineCodes",
+                                            "value": "FAST_FOOD",
                                             "disabled": true
                                         },
                                         {
                                             "key": "available",
                                             "value": "true",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "maxMinimumOrderAmount",
+                                            "value": "100.00",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "maxDeliveryTime",
+                                            "value": "45",
                                             "disabled": true
                                         },
                                         {
