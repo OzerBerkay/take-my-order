@@ -21,6 +21,7 @@ public final class PermissionConstants {
 
     // Restaurant Permissions
     public static final String CAN_MANAGE_RESTAURANT = "can_manage_restaurant";
+    public static final String CAN_MANAGE_CATEGORY = "can_manage_category";
     public static final String CAN_CREATE_PRODUCT = "can_create_product";
     public static final String CAN_UPDATE_PRODUCT = "can_update_product";
     public static final String CAN_DELETE_PRODUCT = "can_delete_product";

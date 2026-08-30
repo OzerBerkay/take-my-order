@@ -36,6 +36,7 @@ public class RoleConstants {
             ),
             RESTAURANT_OWNER, List.of(
                     PermissionConstants.CAN_MANAGE_RESTAURANT,
+                    PermissionConstants.CAN_MANAGE_CATEGORY,
                     PermissionConstants.CAN_CREATE_ROLE,
                     PermissionConstants.CAN_UPDATE_ROLE,
                     PermissionConstants.CAN_DELETE_ROLE,
