@@ -2,6 +2,7 @@ package com.berkay.restaurant.service.domain.entity;
 
 import com.berkay.domain.entity.BaseEntity;
 import com.berkay.domain.valueobject.Money;
+import com.berkay.domain.valueobject.ProductCategoryId;
 import com.berkay.domain.valueobject.ProductId;
 import com.berkay.restaurant.service.domain.exception.RestaurantDomainException;
 
@@ -15,6 +16,7 @@ public class Product extends BaseEntity<ProductId> {
     // Müşteriye menüde hiç gösterilmeyip gizlenmek isteniyorsa
     private boolean hidden;
     private String imageUrl;
+    private ProductCategoryId categoryId;
 
     private Product(Builder builder) {
         setId(builder.productId);
@@ -25,9 +27,10 @@ public class Product extends BaseEntity<ProductId> {
         available = builder.available;
         hidden = builder.hidden;
         imageUrl = builder.imageUrl;
+        categoryId = builder.categoryId;
     }
 
-    public void updateWith(String name, String description, Money price, boolean available, int stock, boolean hidden, String imageUrl) {
+    public void updateWith(String name, String description, Money price, boolean available, int stock, boolean hidden, String imageUrl, ProductCategoryId categoryId) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -35,6 +38,7 @@ public class Product extends BaseEntity<ProductId> {
         this.stock = stock;
         this.hidden = hidden;
         this.imageUrl = imageUrl;
+        this.categoryId = categoryId;
     }
 
     public void validateProduct() {
@@ -51,7 +55,9 @@ public class Product extends BaseEntity<ProductId> {
         if (this.stock < 0) {
             throw new RestaurantDomainException("Stock cannot be negative!");
         }
-
+        if (getCategoryId() == null) {
+            throw new RestaurantDomainException("Product must belong to a category!");
+        }
     }
 
     public static Builder builder() {
@@ -86,6 +92,10 @@ public class Product extends BaseEntity<ProductId> {
         return imageUrl;
     }
 
+    public ProductCategoryId getCategoryId() {
+        return categoryId;
+    }
+
     public static final class Builder {
         private ProductId productId;
         private String name;
@@ -95,6 +105,7 @@ public class Product extends BaseEntity<ProductId> {
         private boolean available;
         private boolean hidden;
         private String imageUrl;
+        private ProductCategoryId categoryId;
 
         private Builder() {
         }
@@ -136,6 +147,11 @@ public class Product extends BaseEntity<ProductId> {
 
         public Builder imageUrl(String val) {
             imageUrl = val;
+            return this;
+        }
+
+        public Builder categoryId(ProductCategoryId val) {
+            categoryId = val;
             return this;
         }
 

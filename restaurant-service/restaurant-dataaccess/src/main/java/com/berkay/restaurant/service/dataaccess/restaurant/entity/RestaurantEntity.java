@@ -50,6 +50,12 @@ public class RestaurantEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductEntity> menu;
 
+    @Column(name = "category_version")
+    private Long categoryVersion;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductCategoryEntity> categories;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

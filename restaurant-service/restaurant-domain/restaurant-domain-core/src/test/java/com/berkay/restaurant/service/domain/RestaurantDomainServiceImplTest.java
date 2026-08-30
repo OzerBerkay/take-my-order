@@ -53,7 +53,7 @@ public class RestaurantDomainServiceImplTest {
     @Test
     void validateOrder_ShouldReject_WhenProductIsHidden() {
         Product hiddenProduct = restaurant.getMenu().get(0);
-        hiddenProduct.updateWith(hiddenProduct.getName(), hiddenProduct.getDescription(), hiddenProduct.getPrice(), hiddenProduct.isAvailable(), hiddenProduct.getStock(), true, hiddenProduct.getImageUrl());
+        hiddenProduct.updateWith(hiddenProduct.getName(), hiddenProduct.getDescription(), hiddenProduct.getPrice(), hiddenProduct.isAvailable(), hiddenProduct.getStock(), true, hiddenProduct.getImageUrl(), hiddenProduct.getCategoryId());
 
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderId(new OrderId(UUID.randomUUID()))

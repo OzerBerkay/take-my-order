@@ -25,6 +25,8 @@ import static com.berkay.domain.DomainConstants.UTC;
 public class Restaurant extends AggregateRoot<RestaurantId> {
     private RestaurantName restaurantName;
     private final List<Product> menu;
+    private Long categoryVersion;
+    private final List<ProductCategory> categories;
     private OrderApproval orderApproval;
     private boolean active;
     private boolean available;
@@ -130,6 +132,9 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         if (getId() == null) {
             setId(new RestaurantId(UUID.randomUUID()));
         }
+        if (categoryVersion == null) {
+            categoryVersion = 0L;
+        }
 
         if (getRestaurantName() == null) {
             throw new RestaurantDomainException("Restaurant name cannot be null!");
@@ -170,10 +175,85 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
             throw new RestaurantDomainException("Product price must be greater than zero!");
         }
 
+        if (product.getCategoryId() == null || this.categories.stream().noneMatch(c -> c.getId().equals(product.getCategoryId()))) {
+            throw new RestaurantDomainException("Product category is invalid or does not belong to this restaurant!");
+        }
+
         if (product.getId() == null) {
             product.setId(new ProductId(UUID.randomUUID()));
         }
         this.menu.add(product);
+    }
+
+    public void updateProduct(Product product) {
+        Product existingProduct = this.menu.stream()
+                .filter(p -> p.getId().equals(product.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RestaurantDomainException("Product not found with id: " + product.getId().getValue()));
+
+        if (this.menu.stream().anyMatch(p -> !p.getId().equals(product.getId()) && p.getName().equalsIgnoreCase(product.getName()))) {
+            throw new RestaurantDomainException("Product with name " + product.getName() + " already exists!");
+        }
+
+        if (!product.getPrice().isGreaterThanZero()) {
+            throw new RestaurantDomainException("Product price must be greater than zero!");
+        }
+
+        if (product.getCategoryId() == null || this.categories.stream().noneMatch(c -> c.getId().equals(product.getCategoryId()))) {
+            throw new RestaurantDomainException("Product category is invalid or does not belong to this restaurant!");
+        }
+
+        existingProduct.updateWith(product.getName(), product.getDescription(), product.getPrice(), product.isAvailable(), product.getStock(), product.isHidden(), product.getImageUrl(), product.getCategoryId());
+    }
+
+    public void removeProduct(ProductId productId) {
+        Product existingProduct = this.menu.stream()
+                .filter(p -> p.getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new RestaurantDomainException("Product not found with id: " + productId.getValue()));
+        this.menu.remove(existingProduct);
+    }
+
+    public void updateCategories(List<ProductCategory> payload, Long version) {
+        if (!this.categoryVersion.equals(version)) {
+            throw new RestaurantDomainException("Category version mismatch! Expected: " + this.categoryVersion + ", Actual: " + version);
+        }
+
+        List<com.berkay.domain.valueobject.ProductCategoryId> payloadIds = payload.stream()
+                .filter(c -> c.getId() != null)
+                .map(ProductCategory::getId)
+                .collect(Collectors.toList());
+
+        List<ProductCategory> toDelete = this.categories.stream()
+                .filter(c -> c.getId() != null && !payloadIds.contains(c.getId()))
+                .collect(Collectors.toList());
+
+        for (ProductCategory categoryToDelete : toDelete) {
+            boolean hasProducts = this.menu.stream().anyMatch(p -> p.getCategoryId() != null && p.getCategoryId().equals(categoryToDelete.getId()));
+            if (hasProducts) {
+                throw new RestaurantDomainException("Cannot delete category with id: " + categoryToDelete.getId().getValue() + " because it contains products.");
+            }
+            this.categories.remove(categoryToDelete);
+        }
+
+        for (ProductCategory newCategory : payload) {
+            if (newCategory.getId() == null) {
+                newCategory.setId(new com.berkay.domain.valueobject.ProductCategoryId(UUID.randomUUID()));
+                this.categories.add(newCategory);
+            } else {
+                ProductCategory existing = this.categories.stream()
+                        .filter(c -> c.getId().equals(newCategory.getId()))
+                        .findFirst()
+                        .orElse(null);
+                if (existing != null) {
+                    existing.update(newCategory.getName(), newCategory.getSortOrder());
+                } else {
+                    this.categories.add(newCategory);
+                }
+            }
+        }
+
+        this.categoryVersion++;
     }
 
     public void validateOrder(List<String> failureMessages) {
@@ -227,7 +307,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
                         + ", Available: " + menuProduct.getStock());
             } else {
                 // Stok miktarını düş
-                menuProduct.updateWith(menuProduct.getName(), menuProduct.getDescription(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden(), menuProduct.getImageUrl());
+                menuProduct.updateWith(menuProduct.getName(), menuProduct.getDescription(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden(), menuProduct.getImageUrl(), menuProduct.getCategoryId());
             }
 
             // Fiyat hesaplama
@@ -294,6 +374,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         setId(builder.restaurantId);
         restaurantName = builder.restaurantName;
         menu = builder.menu != null ? builder.menu : new ArrayList<>();
+        categoryVersion = builder.categoryVersion;
+        categories = builder.categories != null ? builder.categories : new ArrayList<>();
         orderApproval = builder.orderApproval;
         active = builder.active;
         available = builder.available;
@@ -321,7 +403,14 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         return menu;
     }
 
-    
+    public Long getCategoryVersion() {
+        return categoryVersion;
+    }
+
+    public List<ProductCategory> getCategories() {
+        return categories;
+    }
+
     public void setOrderApproval(OrderApproval orderApproval) {
         this.orderApproval = orderApproval;
     }
@@ -382,6 +471,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private RestaurantId restaurantId;
         private RestaurantName restaurantName;
         private List<Product> menu;
+        private Long categoryVersion;
+        private List<ProductCategory> categories;
         private OrderApproval orderApproval;
         private boolean active;
         private boolean available;
@@ -411,6 +502,16 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder menu(List<Product> val) {
             menu = val;
+            return this;
+        }
+
+        public Builder categoryVersion(Long val) {
+            categoryVersion = val;
+            return this;
+        }
+
+        public Builder categories(List<ProductCategory> val) {
+            categories = val;
             return this;
         }
 
