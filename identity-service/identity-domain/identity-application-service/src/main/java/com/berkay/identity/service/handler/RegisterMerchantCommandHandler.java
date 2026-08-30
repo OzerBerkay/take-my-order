@@ -37,7 +37,7 @@ public class RegisterMerchantCommandHandler {
 
         // Rolü Name ile Bul ve Ata (Application service'te atanıyor çünkü Rolün önce DB'den çekilmesi gerek)
         Role merchantRole = userRepository.findRoleByName(RoleConstants.MERCHANT_BASE)
-                .orElseThrow(() -> new IdentityDomainException("Role not found: " + RoleConstants.MERCHANT_BASE));
+                .orElseThrow(() -> new IllegalStateException("Role not found: " + RoleConstants.MERCHANT_BASE));
 
         // Temp User (No External ID)
         User tempUser = userDataMapper.registerMerchantCommandToUser(command, merchantRole);
@@ -75,7 +75,7 @@ public class RegisterMerchantCommandHandler {
         } catch (Exception e) {
             log.error("Failed to save user in DB! Rolling back Keycloak creation for externalId: {}", externalId, e);
             identityProviderPort.deleteUser(externalId);
-            throw new IdentityDomainException("Registration failed due to internal error! " + e.getMessage(), e);
+            throw new IllegalStateException("Registration failed due to internal error! " + e.getMessage(), e);
         }
 
         log.info("Merchant registered successfully with id: {}", finalUser.getId().getValue());

@@ -116,7 +116,7 @@ class RegisterMerchantCommandHandlerTest {
         when(userRepository.findRoleByName(RoleConstants.MERCHANT_BASE)).thenReturn(Optional.empty());
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerMerchant(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerMerchant(command));
         assertEquals("Role not found: " + RoleConstants.MERCHANT_BASE, exception.getMessage());
 
         verify(userDataMapper, never()).registerMerchantCommandToUser(any(), any());
@@ -196,7 +196,7 @@ class RegisterMerchantCommandHandlerTest {
                 .when(userRepository).save(any(User.class));
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerMerchant(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerMerchant(command));
         assertEquals("Registration failed due to internal error! DB Connection Timeout", exception.getMessage());
 
         // Verifying Rollback Method Call is the most critical check!

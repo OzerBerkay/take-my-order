@@ -163,7 +163,7 @@ class RegisterCustomerCommandHandlerTest {
         when(userRepository.findRoleByName(RoleConstants.CUSTOMER_BASE)).thenReturn(Optional.empty());
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerCustomer(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerCustomer(command));
         assertEquals("Role not found: " + RoleConstants.CUSTOMER_BASE, exception.getMessage());
 
         verify(userDataMapper, never()).registerCustomerCommandToUser(any(), any());
@@ -243,7 +243,7 @@ class RegisterCustomerCommandHandlerTest {
                 .when(userRepository).save(any(User.class));
 
         // Act & Assert
-        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.registerCustomer(command));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> handler.registerCustomer(command));
         assertEquals("Registration failed due to internal error! DB Connection Timeout", exception.getMessage());
 
         // Verifying Rollback Method Call is the most critical check!
