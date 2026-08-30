@@ -22,6 +22,24 @@ public class ProductRequestMapper {
                 .build();
     }
 
+    public com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchCommand addProductBatchRequestToAddProductBatchCommand(UUID restaurantId, com.berkay.restaurant.service.domain.dto.create.AddProductBatchRequest addProductBatchRequest) {
+        return com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchCommand.builder()
+                .restaurantId(restaurantId)
+                .products(addProductBatchRequest.getProducts().stream()
+                        .map(p -> com.berkay.restaurant.service.domain.dto.create.restaurant.CreateProductCommand.builder()
+                                .name(p.getName())
+                                .description(p.getDescription())
+                                .price(p.getPrice())
+                                .stock(p.getStock())
+                                .available(p.getAvailable())
+                                .hidden(p.getHidden())
+                                .imageUrl(p.getImageUrl())
+                                .categoryId(p.getCategoryId())
+                                .build())
+                        .collect(java.util.stream.Collectors.toList()))
+                .build();
+    }
+
     public UpdateProductCommand updateProductRequestToUpdateProductCommand(UUID restaurantId,
                                                                            UUID productId,
                                                                            UpdateProductRequest updateProductRequest) {

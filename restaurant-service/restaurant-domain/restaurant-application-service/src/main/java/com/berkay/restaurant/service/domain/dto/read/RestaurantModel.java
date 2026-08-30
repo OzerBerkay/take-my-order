@@ -25,4 +25,6 @@ public class RestaurantModel {
     private final Address address;
     private final Boolean active;
     private final Boolean available;
+    private final Long categoryVersion;
+    private final List<ProductCategoryModel> categories;
 }

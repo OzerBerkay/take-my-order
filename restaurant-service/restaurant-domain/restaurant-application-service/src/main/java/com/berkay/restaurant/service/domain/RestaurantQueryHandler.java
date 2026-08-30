@@ -148,6 +148,19 @@ public class RestaurantQueryHandler {
         return new GetPublicRestaurantQueryResponse(restaurantDataMapper.restaurantToRestaurantModel(restaurant));
     }
 
+    @Transactional(readOnly = true)
+    public com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse getRestaurantCategories(UUID restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        List<com.berkay.restaurant.service.domain.dto.read.ProductCategoryModel> categories = restaurant.getCategories() != null 
+                ? restaurant.getCategories().stream().map(c -> com.berkay.restaurant.service.domain.dto.read.ProductCategoryModel.builder()
+                        .id(c.getId().getValue())
+                        .name(c.getName())
+                        .sortOrder(c.getSortOrder())
+                        .build()).collect(Collectors.toList()) 
+                : List.of();
+        return new com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse(restaurant.getCategoryVersion(), categories);
+    }
+
     private Restaurant findRestaurantById(UUID restaurantId) {
         Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantById(restaurantId);
         if (restaurantResult.isEmpty()) {

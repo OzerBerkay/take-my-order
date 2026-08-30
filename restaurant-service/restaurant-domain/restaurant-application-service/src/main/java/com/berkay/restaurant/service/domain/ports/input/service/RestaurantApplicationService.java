@@ -23,7 +23,11 @@ public interface RestaurantApplicationService {
 
     AddProductResponse addProduct(@Valid AddProductCommand addProductCommand);
 
+    com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchResponse addProductBatch(@Valid com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchCommand addProductBatchCommand);
+
     void updateRestaurant(UpdateRestaurantCommand updateRestaurantCommand);
+
+    com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesResponse updateCategories(@Valid com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesCommand updateCategoriesCommand);
 
     void updateProduct(UpdateProductCommand updateProductCommand);
 
@@ -44,4 +48,6 @@ public interface RestaurantApplicationService {
     com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse getPublicRestaurants(com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery getPublicRestaurantListQuery);
     
     com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse getPublicRestaurant(java.util.UUID restaurantId);
+
+    com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse getRestaurantCategories(java.util.UUID restaurantId);
 }

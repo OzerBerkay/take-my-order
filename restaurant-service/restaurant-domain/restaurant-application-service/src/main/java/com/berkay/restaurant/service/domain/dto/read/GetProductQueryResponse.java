@@ -19,4 +19,5 @@ public class GetProductQueryResponse {
     private final Boolean available;
     private final Boolean hidden;
     private final String imageUrl;
+    private final UUID categoryId;
 }

@@ -55,12 +55,12 @@ public class RestaurantController {
 
     @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_create_product', #restaurantId)")
     @PostMapping("/{restaurantId}/products")
-    public ResponseEntity<AddProductResponse> addProduct(@PathVariable UUID restaurantId,
-                                                         @RequestBody @Valid AddProductRequest addProductRequest) {
-        log.info("Adding product to restaurant with id: {}", restaurantId);
+    public ResponseEntity<com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchResponse> addProductBatch(@PathVariable UUID restaurantId,
+                                                                                                                           @RequestBody @Valid com.berkay.restaurant.service.domain.dto.create.AddProductBatchRequest addProductBatchRequest) {
+        log.info("Adding batch of products to restaurant with id: {}", restaurantId);
 
-        AddProductCommand addProductCommand = productRequestMapper.addProductRequestToAddProductCommand(restaurantId, addProductRequest);
-        AddProductResponse response = restaurantApplicationService.addProduct(addProductCommand);
+        com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchCommand addProductBatchCommand = productRequestMapper.addProductBatchRequestToAddProductBatchCommand(restaurantId, addProductBatchRequest);
+        com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchResponse response = restaurantApplicationService.addProductBatch(addProductBatchCommand);
 
         return ResponseEntity.ok(response);
     }
@@ -76,6 +76,19 @@ public class RestaurantController {
 
         restaurantApplicationService.updateRestaurant(updateRestaurantCommand);
         return ResponseEntity.ok("Restaurant updated");
+    }
+
+    @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.hasPermissionForRestaurant(authentication, 'can_manage_category', #restaurantId)")
+    @PutMapping("/{restaurantId}/categories")
+    public ResponseEntity<com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesResponse> updateCategories(@PathVariable UUID restaurantId,
+                                                   @RequestBody @Valid com.berkay.restaurant.service.domain.dto.update.UpdateCategoriesRequest updateCategoriesRequest) {
+        log.info("Updating categories for restaurant with id: {}", restaurantId);
+
+        com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesCommand command = restaurantRequestMapper
+                .updateCategoriesRequestToCommand(restaurantId, updateCategoriesRequest);
+
+        com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesResponse response = restaurantApplicationService.updateCategories(command);
+        return ResponseEntity.ok(response);
     }
 
     /* Ürün Güncelleme (Fiyat/Stok/Durum)

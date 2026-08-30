@@ -79,7 +79,6 @@ public class CreateRestaurantCommandHandlerTest {
                 .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
-                .products(List.of())
                 .build();
 
         when(restaurantRepository.saveRestaurant(any(Restaurant.class))).thenAnswer(invocation -> {
@@ -109,7 +108,6 @@ public class CreateRestaurantCommandHandlerTest {
                 .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
-                .products(List.of())
                 .build();
 
         RestaurantDomainException exception = assertThrows(RestaurantDomainException.class, () -> {
@@ -135,7 +133,6 @@ public class CreateRestaurantCommandHandlerTest {
                 .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
-                .products(List.of())
                 .build();
 
         RestaurantDomainException exception = assertThrows(RestaurantDomainException.class, () -> {
@@ -161,7 +158,6 @@ public class CreateRestaurantCommandHandlerTest {
                 .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
-                .products(List.of())
                 .build();
 
         RestaurantDomainException exception = assertThrows(RestaurantDomainException.class, () -> {

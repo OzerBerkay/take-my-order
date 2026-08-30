@@ -66,4 +66,13 @@ public class PublicRestaurantController {
         GetPublicProductQueryResponse response = restaurantApplicationService.getPublicProduct(restaurantId, productId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{restaurantId}/categories")
+    public ResponseEntity<com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse> getPublicCategories(@PathVariable UUID restaurantId) {
+        log.info("Getting public categories for restaurant id: {}", restaurantId);
+
+        com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse response = 
+                restaurantApplicationService.getRestaurantCategories(restaurantId);
+        return ResponseEntity.ok(response);
+    }
 }

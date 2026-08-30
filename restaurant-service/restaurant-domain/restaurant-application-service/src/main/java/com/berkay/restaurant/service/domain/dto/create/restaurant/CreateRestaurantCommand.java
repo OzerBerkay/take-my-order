@@ -54,9 +54,6 @@ public class CreateRestaurantCommand {
     
     private final String bannerUrl;
 
-    @Valid // İçindeki objeleri de validate etmesi için
-    private final List<CreateProductCommand> products;
-
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
     }

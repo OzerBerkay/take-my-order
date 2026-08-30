@@ -62,7 +62,8 @@ public class UpdateProductCommandHandler {
                 command.getAvailable(),
                 command.getStock(),
                 command.getHidden(),
-                command.getImageUrl()
+                command.getImageUrl(),
+                command.getCategoryId() != null ? new com.berkay.domain.valueobject.ProductCategoryId(command.getCategoryId()) : null
         );
 
         log.info("Product updated with id: {}", existingProduct.getId().getValue());

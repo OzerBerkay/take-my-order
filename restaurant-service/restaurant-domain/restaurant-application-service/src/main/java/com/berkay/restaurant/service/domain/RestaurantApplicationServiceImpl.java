@@ -28,20 +28,26 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
 
     private final CreateRestaurantCommandHandler createRestaurantCommandHandler;
     private final AddProductCommandHandler addProductCommandHandler;
+    private final AddProductBatchCommandHandler addProductBatchCommandHandler;
     private final UpdateRestaurantCommandHandler updateRestaurantCommandHandler;
+    private final UpdateCategoriesCommandHandler updateCategoriesCommandHandler;
     private final UpdateProductCommandHandler updateProductCommandHandler;
     private final DeleteProductCommandHandler deleteProductCommandHandler;
     private final RestaurantQueryHandler restaurantQueryHandler;
 
     public RestaurantApplicationServiceImpl(CreateRestaurantCommandHandler createRestaurantCommandHandler,
                                             AddProductCommandHandler addProductCommandHandler,
+                                            AddProductBatchCommandHandler addProductBatchCommandHandler,
                                             UpdateRestaurantCommandHandler updateRestaurantCommandHandler,
+                                            UpdateCategoriesCommandHandler updateCategoriesCommandHandler,
                                             UpdateProductCommandHandler updateProductCommandHandler,
                                             DeleteProductCommandHandler deleteProductCommandHandler,
                                             RestaurantQueryHandler restaurantQueryHandler) {
         this.createRestaurantCommandHandler = createRestaurantCommandHandler;
         this.addProductCommandHandler = addProductCommandHandler;
+        this.addProductBatchCommandHandler = addProductBatchCommandHandler;
         this.updateRestaurantCommandHandler = updateRestaurantCommandHandler;
+        this.updateCategoriesCommandHandler = updateCategoriesCommandHandler;
         this.updateProductCommandHandler = updateProductCommandHandler;
         this.deleteProductCommandHandler = deleteProductCommandHandler;
         this.restaurantQueryHandler = restaurantQueryHandler;
@@ -58,8 +64,18 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     }
 
     @Override
+    public com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchResponse addProductBatch(com.berkay.restaurant.service.domain.dto.create.product.AddProductBatchCommand addProductBatchCommand) {
+        return addProductBatchCommandHandler.addProductBatch(addProductBatchCommand);
+    }
+
+    @Override
     public void updateRestaurant(UpdateRestaurantCommand updateRestaurantCommand) {
         updateRestaurantCommandHandler.updateRestaurant(updateRestaurantCommand);
+    }
+
+    @Override
+    public com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesResponse updateCategories(com.berkay.restaurant.service.domain.dto.update.restaurant.UpdateCategoriesCommand updateCategoriesCommand) {
+        return updateCategoriesCommandHandler.updateCategories(updateCategoriesCommand);
     }
 
     @Override
@@ -110,5 +126,10 @@ public class RestaurantApplicationServiceImpl implements RestaurantApplicationSe
     @Override
     public com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse getPublicRestaurant(java.util.UUID restaurantId) {
         return restaurantQueryHandler.getPublicRestaurant(restaurantId);
+    }
+
+    @Override
+    public com.berkay.restaurant.service.domain.dto.read.GetRestaurantCategoriesResponse getRestaurantCategories(java.util.UUID restaurantId) {
+        return restaurantQueryHandler.getRestaurantCategories(restaurantId);
     }
 }
