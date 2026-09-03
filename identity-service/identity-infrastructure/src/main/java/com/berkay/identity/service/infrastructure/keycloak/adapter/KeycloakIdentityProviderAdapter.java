@@ -97,6 +97,9 @@ public class KeycloakIdentityProviderAdapter implements IdentityProviderPort {
                     + "&password=" + java.net.URLEncoder.encode(password, java.nio.charset.StandardCharsets.UTF_8);
 
             return executeTokenRequest(url, body);
+        } catch (com.berkay.identity.service.domain.exception.InvalidCredentialsException e) {
+            log.error("Login failed for user due to invalid credentials: {}", username);
+            throw e;
         } catch (Exception e) {
             log.error("Login failed for user: {}", username, e);
             throw new KeycloakIntegrationException("Login failed! " + e.getMessage(), e);
@@ -196,6 +199,9 @@ public class KeycloakIdentityProviderAdapter implements IdentityProviderPort {
             log.error("Token request failed with status: {}, body: {}", response.statusCode(), response.body());
             if (response.statusCode() == 400 && response.body().contains("invalid_grant") && body.contains("grant_type=refresh_token")) {
                 throw new com.berkay.identity.service.domain.exception.TokenExpiredDomainException("REFRESH_TOKEN_EXPIRED", "The provided refresh token is expired or inactive.");
+            }
+            if (response.statusCode() == 401) {
+                throw new com.berkay.identity.service.domain.exception.InvalidCredentialsException("INVALID_CREDENTIALS", "Invalid email or password.");
             }
             throw new KeycloakIntegrationException("Token request failed with status: " + response.statusCode());
         }
