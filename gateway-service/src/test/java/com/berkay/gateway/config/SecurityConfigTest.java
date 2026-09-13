@@ -51,4 +51,46 @@ public class SecurityConfigTest {
                 .exchange()
                 .expectStatus().isUnauthorized(); // Blocked by SecurityConfig
     }
+
+    @Test
+    void shouldAllowCorsForCustomerPort4200() {
+        webTestClient.options().uri("/auth/login")
+                .header("Origin", "http://localhost:4200")
+                .header("Access-Control-Request-Method", "POST")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Access-Control-Allow-Origin", "http://localhost:4200")
+                .expectHeader().valueEquals("Access-Control-Allow-Credentials", "true");
+    }
+
+    @Test
+    void shouldAllowCorsForMerchantPort4201() {
+        webTestClient.options().uri("/auth/login")
+                .header("Origin", "http://localhost:4201")
+                .header("Access-Control-Request-Method", "POST")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Access-Control-Allow-Origin", "http://localhost:4201")
+                .expectHeader().valueEquals("Access-Control-Allow-Credentials", "true");
+    }
+
+    @Test
+    void shouldAllowCorsForInternalPort4202() {
+        webTestClient.options().uri("/auth/login")
+                .header("Origin", "http://localhost:4202")
+                .header("Access-Control-Request-Method", "POST")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Access-Control-Allow-Origin", "http://localhost:4202")
+                .expectHeader().valueEquals("Access-Control-Allow-Credentials", "true");
+    }
+
+    @Test
+    void shouldRejectCorsForUnauthorizedOrigin() {
+        webTestClient.options().uri("/auth/login")
+                .header("Origin", "http://localhost:9999")
+                .header("Access-Control-Request-Method", "POST")
+                .exchange()
+                .expectHeader().doesNotExist("Access-Control-Allow-Origin");
+    }
 }

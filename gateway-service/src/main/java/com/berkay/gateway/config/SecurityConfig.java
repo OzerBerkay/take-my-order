@@ -1,5 +1,6 @@
 package com.berkay.gateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,6 +20,9 @@ import java.util.List;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    @Value("${ALLOWED_ORIGINS:http://localhost:4200,http://localhost:4201,http://localhost:4202}")
+    private List<String> allowedOrigins;
 
     @Bean
     @Order(0)
@@ -63,8 +67,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Angular projenizin adresi
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        // Angular projeleri adresleri (Customer: 4200, Merchant: 4201, Internal: 4202)
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
