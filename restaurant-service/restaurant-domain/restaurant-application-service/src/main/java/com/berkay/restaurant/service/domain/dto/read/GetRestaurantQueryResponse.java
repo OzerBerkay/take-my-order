@@ -1,9 +1,11 @@
 package com.berkay.restaurant.service.domain.dto.read;
 
+import com.berkay.restaurant.service.domain.valueobject.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,8 +15,15 @@ import java.util.UUID;
 public class GetRestaurantQueryResponse {
     private final UUID restaurantId;
     private final String name;
+    private final String description;
+    private final String logoUrl;
+    private final String bannerUrl;
+    private final String phoneNumber;
+    private final BigDecimal minimumOrderAmount;
+    private final BigDecimal deliveryFee;
+    private final Integer averageDeliveryTimeInMinutes;
     private final Boolean active;
-    private final Long categoryVersion;
-    private final List<ProductCategoryModel> categories;
-    private final List<GetProductQueryResponse> menu;
+    private final Boolean available;
+    private final Address address;
+    private final List<CuisineModel> cuisines;
 }

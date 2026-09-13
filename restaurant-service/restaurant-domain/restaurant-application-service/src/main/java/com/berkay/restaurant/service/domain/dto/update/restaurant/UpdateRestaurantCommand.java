@@ -27,9 +27,12 @@ public class UpdateRestaurantCommand {
     private final BigDecimal minimumOrderAmount;
     private final BigDecimal deliveryFee;
 
-    private final String street;
     private final String city;
-    private final String postalCode;
+    private final String district;
+    private final String neighborhood;
+    private final String street;
+    private final String buildingNumber;
+    private final String doorNumber;
     private final String phoneNumber;
     private final Integer averageDeliveryTimeInMinutes;
     private final List<UUID> cuisineIds;
