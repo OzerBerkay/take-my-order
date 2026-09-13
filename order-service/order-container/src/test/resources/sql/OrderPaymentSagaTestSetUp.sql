@@ -9,8 +9,8 @@ values('d215b5f8-0249-4dc5-89a3-51fd148cfb17', 'd215b5f8-0249-4dc5-89a3-51fd148c
 insert into "order".order_items(id, order_id, product_id, price, quantity, sub_total)
 values(1, 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'd215b5f8-0249-4dc5-89a3-51fd148cfb47', 100.00, 1, 100.00);
 
-insert into "order".order_address(id, order_id, street, postal_code, city)
-values('d215b5f8-0249-4dc5-89a3-51fd148cfb15', 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'test street', '1000AA', 'test city');
+insert into "order".order_address(id, order_id, city, district, neighborhood, street, building_number, door_number, contact_first_name, contact_last_name, contact_phone)
+values('d215b5f8-0249-4dc5-89a3-51fd148cfb15', 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'test city', 'test district', 'test neighborhood', 'test street', '1A', '12', 'John', 'Doe', '+1234567890');
 
 insert into "order".payment_outbox(id, saga_id, created_at, type, payload, outbox_status, saga_status, order_status, version)
 values ('8904808e-286f-449b-9b56-b63ba8351cf2', '15a497c1-0f4b-4eff-b9f4-c402c8c07afa', current_timestamp, 'OrderProcessingSaga',

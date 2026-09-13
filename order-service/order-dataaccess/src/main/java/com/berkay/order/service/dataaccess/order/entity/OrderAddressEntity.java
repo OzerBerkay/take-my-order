@@ -21,9 +21,17 @@ public class OrderAddressEntity {
     @JoinColumn(name = "ORDER_ID")
     private OrderEntity order;
 
-    private String street;
-    private String postalCode;
     private String city;
+    private String district;
+    private String neighborhood;
+    private String street;
+    private String buildingNumber;
+    private String doorNumber;
+    private Integer floor;
+    private String addressInstructions;
+    private String contactFirstName;
+    private String contactLastName;
+    private String contactPhone;
 
     @Override
     public boolean equals(Object o) {

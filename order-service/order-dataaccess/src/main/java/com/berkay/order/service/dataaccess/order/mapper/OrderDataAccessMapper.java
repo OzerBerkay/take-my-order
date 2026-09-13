@@ -73,9 +73,17 @@ public class OrderDataAccessMapper {
 
     private StreetAddress addressEntityToDeliveryAddress(OrderAddressEntity address) {
         return new StreetAddress(address.getId(),
+                address.getCity(),
+                address.getDistrict(),
+                address.getNeighborhood(),
                 address.getStreet(),
-                address.getPostalCode(),
-                address.getCity());
+                address.getBuildingNumber(),
+                address.getDoorNumber(),
+                address.getFloor(),
+                address.getAddressInstructions(),
+                address.getContactFirstName(),
+                address.getContactLastName(),
+                address.getContactPhone());
     }
 
     private List<OrderItemEntity> orderItemsToOrderItemEntities(List<OrderItem> items) {
@@ -93,9 +101,17 @@ public class OrderDataAccessMapper {
     private OrderAddressEntity deliveryAddressToAddressEntity(StreetAddress deliveryAddress) {
         return OrderAddressEntity.builder()
                 .id(deliveryAddress.getId())
-                .street(deliveryAddress.getStreet())
-                .postalCode(deliveryAddress.getPostalCode())
                 .city(deliveryAddress.getCity())
+                .district(deliveryAddress.getDistrict())
+                .neighborhood(deliveryAddress.getNeighborhood())
+                .street(deliveryAddress.getStreet())
+                .buildingNumber(deliveryAddress.getBuildingNumber())
+                .doorNumber(deliveryAddress.getDoorNumber())
+                .floor(deliveryAddress.getFloor())
+                .addressInstructions(deliveryAddress.getAddressInstructions())
+                .contactFirstName(deliveryAddress.getContactFirstName())
+                .contactLastName(deliveryAddress.getContactLastName())
+                .contactPhone(deliveryAddress.getContactPhone())
                 .build();
     }
 }
