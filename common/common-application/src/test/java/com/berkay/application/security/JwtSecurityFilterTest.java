@@ -19,7 +19,9 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Base64;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -267,6 +269,55 @@ public class JwtSecurityFilterTest {
 
         // Assert
         verify(response).sendError(HttpServletResponse.SC_FORBIDDEN, "Account is BANNED");
+        verify(filterChain, never()).doFilter(any(), any());
+    }
+
+    @Test
+    void shouldResolveTokenExpiredExceptionWhenJwtDecoderThrowsExpiredException() throws Exception {
+        String token = "header.payload.signature";
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        when(jwtDecoder.decode(token)).thenThrow(new org.springframework.security.oauth2.jwt.BadJwtException(
+                "An error occurred while attempting to decode the Jwt: Jwt expired at 2026-09-13T01:27:23Z"
+        ));
+
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        verify(handlerExceptionResolver).resolveException(
+                eq(request), eq(response), eq(null),
+                argThat(ex -> ex instanceof com.berkay.application.exception.TokenExpiredException
+                        && "ACCESS_TOKEN_EXPIRED".equals(((com.berkay.application.exception.TokenExpiredException) ex).getErrorCode()))
+        );
+        verify(filterChain, never()).doFilter(any(), any());
+    }
+
+    @Test
+    void shouldResolveInvalidTokenExceptionWhenJwtDecoderThrowsBadJwtException() throws Exception {
+        String token = "header.payload.signature";
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        when(jwtDecoder.decode(token)).thenThrow(new org.springframework.security.oauth2.jwt.BadJwtException("Invalid signature"));
+
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        verify(handlerExceptionResolver).resolveException(
+                eq(request), eq(response), eq(null),
+                argThat(ex -> ex instanceof com.berkay.application.exception.InvalidTokenException
+                        && "INVALID_TOKEN".equals(((com.berkay.application.exception.InvalidTokenException) ex).getErrorCode()))
+        );
+        verify(filterChain, never()).doFilter(any(), any());
+    }
+
+    @Test
+    void shouldResolveInvalidTokenExceptionWhenTokenIsMalformed() throws Exception {
+        String token = "malformed-token-without-three-parts";
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        verify(handlerExceptionResolver).resolveException(
+                eq(request), eq(response), eq(null),
+                argThat(ex -> ex instanceof com.berkay.application.exception.InvalidTokenException
+                       && "INVALID_TOKEN".equals(((com.berkay.application.exception.InvalidTokenException) ex).getErrorCode()))
+        );
         verify(filterChain, never()).doFilter(any(), any());
     }
 }

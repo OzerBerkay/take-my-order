@@ -1,5 +1,8 @@
 package com.berkay.application.security;
 
+import com.berkay.application.exception.InvalidTokenException;
+import com.berkay.application.exception.TokenExpiredException;
+import com.berkay.application.exception.TokenRevokedException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -90,16 +93,30 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                         Jwt jwt = jwtDecoder.decode(token);
                         log.debug("JWT Signature successfully verified for user: {}", jwt.getSubject());
                     } catch (JwtException e) {
-                        log.warn("JWT Signature verification failed: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Signature");
-                        return;
+                        String exMessage = e.getMessage();
+                        if (exMessage != null && exMessage.toLowerCase().contains("expired")) {
+                            log.warn("Expired token used: {}", exMessage);
+                            handlerExceptionResolver.resolveException(request, response, null, 
+                                new TokenExpiredException("ACCESS_TOKEN_EXPIRED", "Token is expired. Please log in again or refresh your token."));
+                            return;
+                        } else {
+                            log.warn("Invalid JWT token: {}", exMessage);
+                            handlerExceptionResolver.resolveException(request, response, null, 
+                                new InvalidTokenException("INVALID_TOKEN", "The provided token is invalid."));
+                            return;
+                        }
                     }
                 } else {
                     log.warn("JwtDecoder is not configured! Skipping signature verification.");
                 }
 
                 String[] parts = token.split("\\.");
-                if (parts.length == 3) {
+                if (parts.length != 3) {
+                    log.warn("Malformed JWT token: token does not have 3 parts.");
+                    handlerExceptionResolver.resolveException(request, response, null, 
+                        new InvalidTokenException("INVALID_TOKEN", "The provided token is invalid."));
+                    return;
+                }
                     String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
                     JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -196,9 +213,11 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         log.debug("Successfully authenticated user {} with roles {}", internalId, roleIds);
                     }
-                }
             } catch (Exception e) {
                 log.error("Failed to parse JWT token in microservice: {}", e.getMessage());
+                handlerExceptionResolver.resolveException(request, response, null, 
+                    new InvalidTokenException("INVALID_TOKEN", "The provided token is invalid."));
+                return;
             }
         }
 
