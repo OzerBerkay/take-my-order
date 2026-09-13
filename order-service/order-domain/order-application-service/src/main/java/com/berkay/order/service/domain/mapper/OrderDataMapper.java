@@ -111,9 +111,17 @@ public class OrderDataMapper {
     private StreetAddress orderAddressToStreetAddress(OrderAddress orderAddress) {
         return new StreetAddress(
                 UUID.randomUUID(),
+                orderAddress.getCity(),
+                orderAddress.getDistrict(),
+                orderAddress.getNeighborhood(),
                 orderAddress.getStreet(),
-                orderAddress.getPostalCode(),
-                orderAddress.getCity()
+                orderAddress.getBuildingNumber(),
+                orderAddress.getDoorNumber(),
+                orderAddress.getFloor(),
+                orderAddress.getAddressInstructions(),
+                orderAddress.getContactFirstName(),
+                orderAddress.getContactLastName(),
+                orderAddress.getContactPhone()
         );
     }
 }
