@@ -29,6 +29,12 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
+    public Optional<Restaurant> findRestaurantByIdWithoutMenu(UUID restaurantId) {
+        return restaurantJpaRepository.findById(restaurantId)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurantWithoutMenu);
+    }
+
+    @Override
     public Optional<Restaurant> findRestaurantByIdWithLock(UUID restaurantId) {
         return restaurantJpaRepository.findByIdWithLock(restaurantId)
                 .map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
@@ -44,7 +50,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     @Override
     public java.util.List<Restaurant> findAllByIdIn(java.util.List<UUID> restaurantIds) {
         return restaurantJpaRepository.findAllByRestaurantIdIn(restaurantIds).stream()
-                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurantWithoutMenu)
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -54,7 +60,7 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
         org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(name, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, pageRequest);
         
         java.util.List<Restaurant> restaurants = pagedResult.getContent().stream()
-                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurantWithoutMenu)
                 .collect(java.util.stream.Collectors.toList());
 
         return new com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult(

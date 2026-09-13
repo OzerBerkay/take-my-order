@@ -24,9 +24,12 @@ public class RestaurantEntity {
     private boolean isActive;
     private boolean available;
 
-    private String street;
     private String city;
-    private String postalCode;
+    private String district;
+    private String neighborhood;
+    private String street;
+    private String buildingNumber;
+    private String doorNumber;
     
     private String phoneNumber;
     private BigDecimal minimumOrderAmount;

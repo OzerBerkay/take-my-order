@@ -48,7 +48,7 @@ public class RestaurantQueryHandler {
 
     @Transactional(readOnly = true)
     public GetRestaurantQueryResponse getRestaurant(GetRestaurantQuery query) {
-        Restaurant restaurant = findRestaurantById(query.getRestaurantId());
+        Restaurant restaurant = findRestaurantByIdWithoutMenu(query.getRestaurantId());
         return restaurantDataMapper.restaurantToGetRestaurantQueryResponse(restaurant);
     }
 
@@ -143,7 +143,7 @@ public class RestaurantQueryHandler {
 
     @Transactional(readOnly = true)
     public GetPublicRestaurantQueryResponse getPublicRestaurant(UUID restaurantId) {
-        Restaurant restaurant = findRestaurantById(restaurantId);
+        Restaurant restaurant = findRestaurantByIdWithoutMenu(restaurantId);
         if (!restaurant.isActive()) {
             throw new RestaurantNotFoundException("Active restaurant not found with id: " + restaurantId);
         }
@@ -166,7 +166,16 @@ public class RestaurantQueryHandler {
     private Restaurant findRestaurantById(UUID restaurantId) {
         Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantById(restaurantId);
         if (restaurantResult.isEmpty()) {
-            log.error("Restaurant with id: {} not found!", restaurantId);
+            log.warn("Restaurant with id: {} not found!", restaurantId);
+            throw new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId);
+        }
+        return restaurantResult.get();
+    }
+
+    private Restaurant findRestaurantByIdWithoutMenu(UUID restaurantId) {
+        Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId);
+        if (restaurantResult.isEmpty()) {
+            log.warn("Restaurant with id: {} not found!", restaurantId);
             throw new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId);
         }
         return restaurantResult.get();

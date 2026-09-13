@@ -5,6 +5,7 @@ import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuer
 import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantQueryResponse;
 import com.berkay.restaurant.service.domain.dto.read.GetRestaurantListQueryResponse;
+import com.berkay.restaurant.service.domain.dto.read.GetRestaurantQuery;
 import com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult;
 import com.berkay.restaurant.service.domain.entity.Restaurant;
 import com.berkay.restaurant.service.domain.entity.RestaurantPersonnel;
@@ -106,8 +107,38 @@ public class RestaurantQueryHandlerTest {
     }
 
     @Test
+    public void testGetRestaurant_Success() {
+        when(restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId)).thenReturn(Optional.of(restaurant));
+
+        GetRestaurantQuery query = GetRestaurantQuery.builder()
+                .restaurantId(restaurantId)
+                .build();
+
+        com.berkay.restaurant.service.domain.dto.read.GetRestaurantQueryResponse response = restaurantQueryHandler.getRestaurant(query);
+
+        assertNotNull(response);
+        assertEquals(restaurantId, response.getRestaurantId());
+        assertEquals("Test Restaurant", response.getName());
+        assertTrue(response.getActive());
+    }
+
+    @Test
+    public void testGetRestaurant_NotFound() {
+        when(restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId)).thenReturn(Optional.empty());
+
+        GetRestaurantQuery query = GetRestaurantQuery.builder()
+                .restaurantId(restaurantId)
+                .build();
+
+        RestaurantNotFoundException exception = assertThrows(RestaurantNotFoundException.class, 
+            () -> restaurantQueryHandler.getRestaurant(query));
+
+        assertTrue(exception.getMessage().contains("Restaurant not found"));
+    }
+
+    @Test
     public void testGetPublicRestaurant_Success() {
-        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId)).thenReturn(Optional.of(restaurant));
 
         GetPublicRestaurantQueryResponse response = restaurantQueryHandler.getPublicRestaurant(restaurantId);
 
@@ -124,7 +155,7 @@ public class RestaurantQueryHandlerTest {
                 .active(false)
                 .build();
 
-        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.of(inactiveRestaurant));
+        when(restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId)).thenReturn(Optional.of(inactiveRestaurant));
 
         RestaurantNotFoundException exception = assertThrows(RestaurantNotFoundException.class, 
             () -> restaurantQueryHandler.getPublicRestaurant(restaurantId));
@@ -134,7 +165,7 @@ public class RestaurantQueryHandlerTest {
 
     @Test
     public void testGetPublicRestaurant_NotFound() {
-        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.empty());
+        when(restaurantRepository.findRestaurantByIdWithoutMenu(restaurantId)).thenReturn(Optional.empty());
 
         RestaurantNotFoundException exception = assertThrows(RestaurantNotFoundException.class, 
             () -> restaurantQueryHandler.getPublicRestaurant(restaurantId));

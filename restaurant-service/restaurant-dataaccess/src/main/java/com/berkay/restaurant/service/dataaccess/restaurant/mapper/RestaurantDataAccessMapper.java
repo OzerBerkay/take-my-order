@@ -27,9 +27,12 @@ public class RestaurantDataAccessMapper {
                 .restaurantName(restaurant.getRestaurantName().getRestaurantName()) // VO'dan String'e
                 .isActive(restaurant.isActive())
                 .available(restaurant.isAvailable())
-                .street(restaurant.getAddress() != null ? restaurant.getAddress().getStreet() : null)
                 .city(restaurant.getAddress() != null ? restaurant.getAddress().getCity() : null)
-                .postalCode(restaurant.getAddress() != null ? restaurant.getAddress().getPostalCode() : null)
+                .district(restaurant.getAddress() != null ? restaurant.getAddress().getDistrict() : null)
+                .neighborhood(restaurant.getAddress() != null ? restaurant.getAddress().getNeighborhood() : null)
+                .street(restaurant.getAddress() != null ? restaurant.getAddress().getStreet() : null)
+                .buildingNumber(restaurant.getAddress() != null ? restaurant.getAddress().getBuildingNumber() : null)
+                .doorNumber(restaurant.getAddress() != null ? restaurant.getAddress().getDoorNumber() : null)
                 .phoneNumber(restaurant.getPhoneNumber())
                 .minimumOrderAmount(restaurant.getMinimumOrderAmount() != null ? restaurant.getMinimumOrderAmount().getAmount() : null)
                 .deliveryFee(restaurant.getDeliveryFee() != null ? restaurant.getDeliveryFee().getAmount() : null)
@@ -87,9 +90,12 @@ public class RestaurantDataAccessMapper {
                 .active(restaurantEntity.isActive())
                 .available(restaurantEntity.isAvailable())
                 .address(new com.berkay.restaurant.service.domain.valueobject.Address(
-                        restaurantEntity.getStreet(),
                         restaurantEntity.getCity(),
-                        restaurantEntity.getPostalCode()
+                        restaurantEntity.getDistrict(),
+                        restaurantEntity.getNeighborhood(),
+                        restaurantEntity.getStreet(),
+                        restaurantEntity.getBuildingNumber(),
+                        restaurantEntity.getDoorNumber()
                 ))
                 .phoneNumber(restaurantEntity.getPhoneNumber())
                 .minimumOrderAmount(restaurantEntity.getMinimumOrderAmount() != null ? new Money(restaurantEntity.getMinimumOrderAmount()) : null)
@@ -129,6 +135,46 @@ public class RestaurantDataAccessMapper {
                                 .categoryId(productEntity.getCategoryId() != null ? new com.berkay.domain.valueobject.ProductCategoryId(productEntity.getCategoryId()) : null)
                                 .build())
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    public Restaurant restaurantEntityToRestaurantWithoutMenu(RestaurantEntity restaurantEntity) {
+        if (restaurantEntity == null) {
+            return null;
+        }
+        return Restaurant.builder()
+                .restaurantId(new RestaurantId(restaurantEntity.getRestaurantId()))
+                .restaurantName(new RestaurantName(restaurantEntity.getRestaurantName()))
+                .active(restaurantEntity.isActive())
+                .available(restaurantEntity.isAvailable())
+                .address(new com.berkay.restaurant.service.domain.valueobject.Address(
+                        restaurantEntity.getCity(),
+                        restaurantEntity.getDistrict(),
+                        restaurantEntity.getNeighborhood(),
+                        restaurantEntity.getStreet(),
+                        restaurantEntity.getBuildingNumber(),
+                        restaurantEntity.getDoorNumber()
+                ))
+                .phoneNumber(restaurantEntity.getPhoneNumber())
+                .minimumOrderAmount(restaurantEntity.getMinimumOrderAmount() != null ? new Money(restaurantEntity.getMinimumOrderAmount()) : null)
+                .deliveryFee(restaurantEntity.getDeliveryFee() != null ? new Money(restaurantEntity.getDeliveryFee()) : null)
+                .averageDeliveryTimeInMinutes(restaurantEntity.getAverageDeliveryTimeInMinutes())
+                .description(restaurantEntity.getDescription())
+                .logoUrl(restaurantEntity.getLogoUrl())
+                .bannerUrl(restaurantEntity.getBannerUrl())
+                .cuisines(restaurantEntity.getCuisines() != null ? restaurantEntity.getCuisines().stream()
+                        .map(cuisineEntity -> com.berkay.restaurant.service.domain.entity.Cuisine.builder()
+                                .cuisineId(new com.berkay.restaurant.service.domain.valueobject.CuisineId(cuisineEntity.getId()))
+                                .name(cuisineEntity.getName())
+                                .code(cuisineEntity.getCode())
+                                .description(cuisineEntity.getDescription())
+                                .iconUrl(cuisineEntity.getIconUrl())
+                                .active(cuisineEntity.getIsActive())
+                                .build())
+                        .collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .categoryVersion(restaurantEntity.getCategoryVersion())
+                .categories(new java.util.ArrayList<>())
+                .menu(new java.util.ArrayList<>())
                 .build();
     }
 
