@@ -64,6 +64,18 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(value = {com.berkay.application.exception.InvalidTokenException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public java.util.Map<String, Object> handleInvalidTokenException(com.berkay.application.exception.InvalidTokenException exception) {
+        log.warn("Invalid token exception: {}", exception.getMessage());
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("status", 401);
+        response.put("error_code", exception.getErrorCode());
+        response.put("message", exception.getMessage());
+        return response;
+    }
+
+    @ResponseBody
     @ExceptionHandler(value = {org.springframework.security.access.AccessDeniedException.class, org.springframework.security.authorization.AuthorizationDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDTO handleAccessDeniedException(Exception exception) {
