@@ -1,7 +1,6 @@
 package com.berkay.identity.service.application.rest;
 
 import com.berkay.identity.service.ports.input.service.UserApplicationService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
