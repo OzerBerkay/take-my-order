@@ -17,13 +17,6 @@ restaurant-service:
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
-security:
-  rbac:
-    domain-policies:
-      CUSTOMER: ORDER, RESTAURANT
-      MERCHANT: ORDER, RESTAURANT
-      INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
-
 spring:
 
   security:

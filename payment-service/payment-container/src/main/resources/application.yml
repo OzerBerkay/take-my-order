@@ -17,13 +17,6 @@ payment-service:
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
-security:
-  rbac:
-    domain-policies:
-      CUSTOMER: ORDER, RESTAURANT, PAYMENT
-      MERCHANT: ORDER, RESTAURANT, PAYMENT
-      INTERNAL: IDENTITY, ORDER, PAYMENT, RESTAURANT
-
 spring:
 
   security:
