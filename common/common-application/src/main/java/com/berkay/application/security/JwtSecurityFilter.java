@@ -46,36 +46,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
         this.jwtDecoder = jwtDecoder;
     }
 
-    @org.springframework.beans.factory.annotation.Value("${spring.application.name:unknown-service}")
-    private String applicationName;
 
-    @org.springframework.beans.factory.annotation.Value("#{${security.rbac.domain-policies:{}}}")
-    private java.util.Map<String, String> domainPolicies;
-
-    private boolean isUserAllowedInDomain(String userType) {
-        if ("CUSTOMER".equalsIgnoreCase(userType) || "M2M".equalsIgnoreCase(userType)) {
-            return true;
-        }
-
-        if (domainPolicies == null || domainPolicies.isEmpty()) {
-            return true;
-        }
-
-        String allowedDomainsStr = domainPolicies.get(userType.toUpperCase());
-        if (allowedDomainsStr == null || allowedDomainsStr.isBlank()) {
-            return false;
-        }
-
-        String currentDomain = applicationName.replace("-service", "").toUpperCase();
-        
-        String[] allowedDomains = allowedDomainsStr.split(",");
-        for (String domain : allowedDomains) {
-            if (domain.trim().equalsIgnoreCase(currentDomain)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -156,11 +127,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                         internalId = UUID.nameUUIDFromBytes(clientId.getBytes());
                     }
 
-                    if (userType != null && !isUserAllowedInDomain(userType)) {
-                        log.warn("Domain Guardrail Blocked! user_type {} is not allowed in domain {}", userType, applicationName);
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Domain access denied for user type");
-                        return;
-                    }
+
 
                     String sid = extractFirstElementOrNull(jsonNode, "sid");
                     long iat = jsonNode.has("iat") ? jsonNode.get("iat").asLong() : 0L;
