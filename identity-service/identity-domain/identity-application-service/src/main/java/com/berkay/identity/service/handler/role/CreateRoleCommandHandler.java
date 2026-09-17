@@ -5,7 +5,7 @@ import com.berkay.identity.service.domain.entity.Permission;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.event.RoleCreatedEvent;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
-import com.berkay.identity.service.domain.valueobject.DomainType;
+
 import com.berkay.identity.service.domain.valueobject.UserId;
 import com.berkay.identity.service.domain.valueobject.UserType;
 import com.berkay.identity.service.dto.command.role.CreateRoleCommand;
@@ -13,7 +13,7 @@ import com.berkay.identity.service.dto.command.role.CreateRoleResponse;
 import com.berkay.identity.service.mapper.RoleDataMapper;
 import com.berkay.identity.service.outbox.helper.RoleOutboxHelper;
 import com.berkay.identity.service.outbox.model.role.RoleEventPayload;
-import com.berkay.identity.service.ports.output.config.RoleSecurityPolicyPort;
+
 import com.berkay.identity.service.ports.output.repository.PermissionRepository;
 import com.berkay.identity.service.ports.output.repository.RoleRepository;
 import com.berkay.identity.service.ports.output.security.SecurityContextPort;
@@ -36,7 +36,7 @@ public class CreateRoleCommandHandler {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final SecurityContextPort securityContextPort;
-    private final RoleSecurityPolicyPort roleSecurityPolicyPort;
+
     private final RoleOutboxHelper roleOutboxHelper;
     private final RoleDataMapper roleDataMapper;
 
@@ -81,8 +81,7 @@ public class CreateRoleCommandHandler {
             throw new IdentityDomainException("Cannot assign restricted permissions to a custom role!");
         }
 
-        // 5. Caller'ın YAML'daki Allowed Domain listesini çek
-        List<DomainType> allowedDomains = roleSecurityPolicyPort.getAllowedDomainsForUserType(callerUserType);
+
 
         // 6. Role Nesnesini Builder ile Oluştur (Id'si, başlangıç version'u ve tarihleri initializeRole'de atanacak)
         Role role = Role.builder()
@@ -98,7 +97,7 @@ public class CreateRoleCommandHandler {
         List<Permission> callerPermissions = permissionRepository.findActivePermissionsByRoleIds(securityContextPort.getCurrentUserRoleIds());
 
         // 8. Domain Service'i çağırırız. (Dönen event nesnesini sadece domain kuralı çalışsın diye kullanıyoruz)
-        RoleCreatedEvent event = identityDomainService.validateAndInitiateRoleCreate(role, callerPermissions, allowedDomains);
+        RoleCreatedEvent event = identityDomainService.validateAndInitiateRoleCreate(role, callerPermissions);
 
         // 8. Önce Veritabanına Kaydet (Versiyon atansın)
         Role savedRole = roleRepository.save(role);
