@@ -61,7 +61,6 @@ public class JwtSecurityFilterTest {
     @BeforeEach
     void setUp() {
         jwtSecurityFilter = new JwtSecurityFilter(objectMapper, redisTemplate, handlerExceptionResolver, jwtDecoder);
-        ReflectionTestUtils.setField(jwtSecurityFilter, "applicationName", "test-service");
         org.mockito.Mockito.lenient().when(jwtDecoder.decode(anyString())).thenReturn(org.mockito.Mockito.mock(Jwt.class));
     }
     
