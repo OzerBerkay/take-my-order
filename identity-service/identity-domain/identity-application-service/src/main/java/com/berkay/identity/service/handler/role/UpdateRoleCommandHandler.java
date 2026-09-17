@@ -5,7 +5,7 @@ import com.berkay.identity.service.domain.entity.Permission;
 import com.berkay.identity.service.domain.entity.Role;
 import com.berkay.identity.service.domain.event.RoleUpdatedEvent;
 import com.berkay.identity.service.domain.exception.IdentityDomainException;
-import com.berkay.identity.service.domain.valueobject.DomainType;
+
 import com.berkay.identity.service.domain.valueobject.RoleId;
 import com.berkay.identity.service.domain.valueobject.UserType;
 import com.berkay.identity.service.dto.command.role.UpdateRoleCommand;
@@ -13,7 +13,7 @@ import com.berkay.identity.service.dto.command.role.UpdateRoleResponse;
 import com.berkay.identity.service.mapper.RoleDataMapper;
 import com.berkay.identity.service.outbox.helper.RoleOutboxHelper;
 import com.berkay.identity.service.outbox.model.role.RoleEventPayload;
-import com.berkay.identity.service.ports.output.config.RoleSecurityPolicyPort;
+
 import com.berkay.identity.service.ports.output.repository.PermissionRepository;
 import com.berkay.identity.service.ports.output.repository.RoleRepository;
 import com.berkay.identity.service.ports.output.security.SecurityContextPort;
@@ -35,7 +35,7 @@ public class UpdateRoleCommandHandler {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final SecurityContextPort securityContextPort;
-    private final RoleSecurityPolicyPort roleSecurityPolicyPort;
+
     private final RoleDataMapper roleDataMapper;
     private final RoleOutboxHelper roleOutboxHelper;
 
@@ -73,15 +73,14 @@ public class UpdateRoleCommandHandler {
             throw new IdentityDomainException("Some permissions are invalid, inactive, or not found!");
         }
 
-        // 6. Caller'ın YAML'daki Allowed Domain listesini çek
-        List<DomainType> allowedDomains = roleSecurityPolicyPort.getAllowedDomainsForUserType(callerUserType);
+
 
         // 7. Caller'ın kendi yetkilerini çek (Alt küme kuralı için)
         List<Permission> callerPermissions = permissionRepository.findActivePermissionsByRoleIds(securityContextPort.getCurrentUserRoleIds());
 
-        // 8. Domain Service çağrısı (Static check, immutability check ve domain check burada gerçekleşir)
+        // 8. Domain Service çağrısı (Static check, immutability check burada gerçekleşir)
         RoleUpdatedEvent event = identityDomainService
-                .validateAndInitiateRoleUpdate(role, command.getName(), newPermissions, callerPermissions, allowedDomains);
+                .validateAndInitiateRoleUpdate(role, command.getName(), newPermissions, callerPermissions);
 
         // 8. Önce DB'ye yaz (Versiyon artırılsın)
         Role savedRole = roleRepository.save(role);

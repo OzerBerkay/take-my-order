@@ -105,14 +105,6 @@ identity-service:
       last-name: ${SAMPLE_MERCHANT_LAST_NAME:Merchant}
       phone-number: ${SAMPLE_MERCHANT_PHONE:+905552222222}
 
-# ==========================================
-# GÜVENLİK VE RBAC POLİTİKALARI
-# ==========================================
-security:
-  rbac:
-    domain-policies:
-      MERCHANT: RESTAURANT, ORDER
-      INTERNAL: RESTAURANT, ORDER, PAYMENT, IDENTITY
 
 # ==========================================
 # INFRASTRUCTURE / KAFKA CONFIGS
