@@ -1,7 +1,6 @@
 package com.berkay.identity.service.application.rest;
 
 import com.berkay.identity.service.dto.command.UpdateUserProfileCommand;
-import com.berkay.identity.service.dto.command.UpdateUserProfileResponse;
 import com.berkay.identity.service.ports.input.service.UserApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
