@@ -78,6 +78,7 @@ class AddPersonnelCommandHandlerTest {
 
         assertNotNull(response);
         assertEquals(restaurantId, response.getRestaurantId());
+        assertEquals(newPersonnelId, response.getUserId());
         assertEquals("Personnel added successfully", response.getMessage());
 
         verify(restaurantOutboxHelper, times(1)).savePersonnelOutboxMessage(any());

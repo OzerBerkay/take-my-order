@@ -12,5 +12,6 @@ import java.util.UUID;
 public class AddPersonnelResponse {
     private final UUID personnelId;
     private final UUID restaurantId;
+    private final UUID userId;
     private final String message;
 }

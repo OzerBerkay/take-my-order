@@ -64,6 +64,7 @@ public class AddPersonnelCommandHandler {
         return AddPersonnelResponse.builder()
                 .personnelId(savedPersonnel.getId().getValue())
                 .restaurantId(savedPersonnel.getRestaurantId().getValue())
+                .userId(validationResponse.getUserId())
                 .message("Personnel added successfully")
                 .build();
     }
