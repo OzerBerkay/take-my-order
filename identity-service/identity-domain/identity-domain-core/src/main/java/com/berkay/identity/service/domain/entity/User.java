@@ -297,6 +297,47 @@ public class User extends AggregateRoot<UserId> {
         }
     }
 
+    public void updateRolesForOrganizationalUnit(UUID orgUnitId, List<Role> newRolesForOrg) {
+        if (orgUnitId == null) {
+            throw new IdentityDomainException("OrganizationalUnitId cannot be null!");
+        }
+        if (UserType.CUSTOMER.equals(this.userType)) {
+            throw new IdentityDomainException("Cannot manually update roles for CUSTOMER users!");
+        }
+        if (newRolesForOrg != null) {
+            for (Role r : newRolesForOrg) {
+                if (r == null) {
+                    throw new IdentityDomainException("Role cannot be null!");
+                }
+                if (r.isStatic()) {
+                    throw new IdentityDomainException("Cannot manually assign static base roles!");
+                }
+                if (r.getOrganizationalUnitId() == null || !r.getOrganizationalUnitId().equals(orgUnitId)) {
+                    throw new IdentityDomainException("Role does not belong to the target organizational unit!");
+                }
+            }
+        }
+
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        } else {
+            this.roles = new ArrayList<>(this.roles);
+        }
+
+        // Remove non-static roles for this orgUnitId
+        this.roles.removeIf(r -> !r.isStatic() && orgUnitId.equals(r.getOrganizationalUnitId()));
+
+        // Add new roles
+        if (newRolesForOrg != null) {
+            for (Role r : newRolesForOrg) {
+                if (this.roles.stream().noneMatch(existing -> existing.getId().equals(r.getId()))) {
+                    this.roles.add(r);
+                }
+            }
+        }
+        updateAudit();
+    }
+
     private void updateAudit() {
         this.updatedAt = ZonedDateTime.now(ZoneId.of("UTC"));
     }

@@ -29,6 +29,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
     private final com.berkay.identity.service.handler.user.AssignUserRoleCommandHandler assignUserRoleCommandHandler;
     private final com.berkay.identity.service.handler.user.UnassignUserRoleCommandHandler unassignUserRoleCommandHandler;
+    private final com.berkay.identity.service.handler.user.UpdateMerchantUserRolesCommandHandler updateMerchantUserRolesCommandHandler;
     private final com.berkay.identity.service.handler.user.ValidateUserForPersonnelQueryHandler validateUserForPersonnelQueryHandler;
     
     private final com.berkay.identity.service.ports.output.repository.UserQueryRepository userQueryRepository;
@@ -84,6 +85,11 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public void unassignRoleFromUser(UnassignUserRoleCommand command) {
         unassignUserRoleCommandHandler.unassign(command);
+    }
+
+    @Override
+    public void updateMerchantUserRoles(UpdateMerchantUserRolesCommand command) {
+        updateMerchantUserRolesCommandHandler.update(command);
     }
 
     @Override

@@ -109,5 +109,36 @@ public class MerchantUserController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{userId}/roles")
+    @org.springframework.security.access.prepost.PreAuthorize("@roleAuthService.hasPermissionForOrg(authentication, #orgUnitId, 'can_assign_role')")
+    public ResponseEntity<Void> updateUserRoles(
+            @PathVariable("userId") UUID userId,
+            @RequestParam("orgUnitId") UUID orgUnitId,
+            @RequestBody @jakarta.validation.Valid com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest request) {
 
+        log.info("Received PUT request to update roles for user {} in orgUnit {}", userId, orgUnitId);
+
+        UUID requesterId = null;
+        com.berkay.identity.service.domain.valueobject.UserType requesterUserType = null;
+        java.util.List<UUID> requesterRoleIds = null;
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (principal instanceof com.berkay.identity.service.application.security.jwt.JwtAuthenticationToken jwtAuth) {
+            requesterId = jwtAuth.getInternalId();
+            requesterUserType = jwtAuth.getUserType();
+            requesterRoleIds = jwtAuth.getRoleIds();
+        }
+
+        userApplicationService.updateMerchantUserRoles(
+                new com.berkay.identity.service.dto.command.UpdateMerchantUserRolesCommand(
+                        userId,
+                        orgUnitId,
+                        request.getRoleIds(),
+                        requesterId,
+                        requesterUserType,
+                        requesterRoleIds
+                )
+        );
+        return ResponseEntity.ok().build();
+    }
 }
+

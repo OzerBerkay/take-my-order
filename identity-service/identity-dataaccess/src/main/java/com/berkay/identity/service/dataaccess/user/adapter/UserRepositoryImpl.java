@@ -69,15 +69,17 @@ public class UserRepositoryImpl implements UserRepository {
 
         UserEntity savedUserEntity = userJpaRepository.save(entityToSave);
 
-        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+        if (user.getRoles() != null) {
             userRoleJpaRepository.deleteByUserId(savedUserEntity.getId());
-            List<UserRoleEntity> userRoleEntities = user.getRoles().stream().map(r ->
-                    UserRoleEntity.builder()
-                            .userId(savedUserEntity.getId())
-                            .roleId(r.getId().getValue())
-                            .build()
-            ).collect(Collectors.toList());
-            userRoleJpaRepository.saveAll(userRoleEntities);
+            if (!user.getRoles().isEmpty()) {
+                List<UserRoleEntity> userRoleEntities = user.getRoles().stream().map(r ->
+                        UserRoleEntity.builder()
+                                .userId(savedUserEntity.getId())
+                                .roleId(r.getId().getValue())
+                                .build()
+                ).collect(Collectors.toList());
+                userRoleJpaRepository.saveAll(userRoleEntities);
+            }
         }
 
         return findById(new com.berkay.identity.service.domain.valueobject.UserId(savedUserEntity.getId())).orElseThrow();
