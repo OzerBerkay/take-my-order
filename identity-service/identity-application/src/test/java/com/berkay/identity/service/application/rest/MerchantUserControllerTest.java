@@ -64,4 +64,58 @@ public class MerchantUserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser
+    void updateUserRoles_WithCanAssignRolePermission_ShouldReturnOk() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID orgUnitId = UUID.randomUUID();
+        com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest request =
+                new com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest(java.util.List.of(UUID.randomUUID()));
+
+        Mockito.when(roleAuthService.hasPermissionForOrg(Mockito.any(), Mockito.eq(orgUnitId), Mockito.eq("can_assign_role"))).thenReturn(true);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/merchant/users/{userId}/roles", userId)
+                .with(csrf())
+                .param("orgUnitId", orgUnitId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        Mockito.verify(userApplicationService).updateMerchantUserRoles(Mockito.any());
+    }
+
+    @Test
+    @WithMockUser
+    void updateUserRoles_WithoutCanAssignRolePermission_ShouldReturnForbidden() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID orgUnitId = UUID.randomUUID();
+        com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest request =
+                new com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest(java.util.List.of(UUID.randomUUID()));
+
+        Mockito.when(roleAuthService.hasPermissionForOrg(Mockito.any(), Mockito.eq(orgUnitId), Mockito.eq("can_assign_role"))).thenReturn(false);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/merchant/users/{userId}/roles", userId)
+                .with(csrf())
+                .param("orgUnitId", orgUnitId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+
+        Mockito.verify(userApplicationService, Mockito.never()).updateMerchantUserRoles(Mockito.any());
+    }
+
+    @Test
+    @WithMockUser
+    void updateUserRoles_WithoutOrgUnitId_ShouldReturnBadRequest() throws Exception {
+        UUID userId = UUID.randomUUID();
+        com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest request =
+                new com.berkay.identity.service.application.rest.dto.UpdateMerchantUserRolesRequest(java.util.List.of(UUID.randomUUID()));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/merchant/users/{userId}/roles", userId)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
 }

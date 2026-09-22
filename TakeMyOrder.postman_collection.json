@@ -1121,6 +1121,56 @@
                                     ]
                                 }
                             }
+                        },
+                        {
+                            "name": "Update User Roles (Batch - Merchant)",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"roleIds\": [\n    \"{{roleId}}\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/merchant/users/{{userId}}/roles?orgUnitId={{orgUnitId}}",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "merchant",
+                                        "users",
+                                        "{{userId}}",
+                                        "roles"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "orgUnitId",
+                                            "value": "{{orgUnitId}}"
+                                        }
+                                    ]
+                                },
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{accessToken}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     ]
                 },

@@ -33,6 +33,8 @@ public interface UserApplicationService {
 
     void unassignRoleFromUser(UnassignUserRoleCommand command);
 
+    void updateMerchantUserRoles(UpdateMerchantUserRolesCommand command);
+
     // GET Endpoints
     PageResult<UserResponse> getAdminUsers(GetAdminUsersQuery query);
 
