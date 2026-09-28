@@ -2,13 +2,11 @@ package com.berkay.order.service.application.security;
 
 import com.berkay.order.service.domain.ports.output.repository.RolePermissionQueryPort;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service("orderAuthService")
 public class OrderAuthService {
