@@ -2824,34 +2824,6 @@
                                 }
                             },
                             "response": []
-                        },
-                        {
-                            "name": "Get Pending Orders",
-                            "request": {
-                                "method": "GET",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{access_token}}",
-                                        "type": "text"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{api_gateway_url}}/api/v1/restaurants/{{restaurant_id}}/orders/pending",
-                                    "host": [
-                                        "{{api_gateway_url}}"
-                                    ],
-                                    "path": [
-                                        "api",
-                                        "v1",
-                                        "restaurants",
-                                        "{{restaurant_id}}",
-                                        "orders",
-                                        "pending"
-                                    ]
-                                }
-                            },
-                            "response": []
                         }
                     ]
                 },
