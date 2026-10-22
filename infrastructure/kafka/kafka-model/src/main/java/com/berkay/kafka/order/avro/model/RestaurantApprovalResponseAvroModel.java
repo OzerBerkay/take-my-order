@@ -13,10 +13,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 3978313729351604636L;
+  private static final long serialVersionUID = -1558887974519266727L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantApprovalResponseAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"sagaId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"orderApprovalStatus\",\"type\":{\"type\":\"enum\",\"name\":\"OrderApprovalStatus\",\"symbols\":[\"APPROVED\",\"REJECTED\"]}},{\"name\":\"failureMessages\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RestaurantApprovalResponseAvroModel\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"fields\":[{\"name\":\"id\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"sagaId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"restaurantId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdAt\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"orderApprovalStatus\",\"type\":{\"type\":\"enum\",\"name\":\"OrderApprovalStatus\",\"symbols\":[\"APPROVED\",\"VALIDATED\",\"REJECTED\"]}},{\"name\":\"failureMessages\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}},{\"name\":\"cancelReason\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -82,6 +82,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
   private java.time.Instant createdAt;
   private com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
   private java.util.List<java.lang.String> failureMessages;
+  private java.lang.String cancelReason;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -99,8 +100,9 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
    * @param createdAt The new value for createdAt
    * @param orderApprovalStatus The new value for orderApprovalStatus
    * @param failureMessages The new value for failureMessages
+   * @param cancelReason The new value for cancelReason
    */
-  public RestaurantApprovalResponseAvroModel(java.lang.String id, java.lang.String sagaId, java.lang.String restaurantId, java.lang.String orderId, java.time.Instant createdAt, com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages) {
+  public RestaurantApprovalResponseAvroModel(java.lang.String id, java.lang.String sagaId, java.lang.String restaurantId, java.lang.String orderId, java.time.Instant createdAt, com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus, java.util.List<java.lang.String> failureMessages, java.lang.String cancelReason) {
     this.id = id;
     this.sagaId = sagaId;
     this.restaurantId = restaurantId;
@@ -108,6 +110,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     this.createdAt = createdAt.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
     this.orderApprovalStatus = orderApprovalStatus;
     this.failureMessages = failureMessages;
+    this.cancelReason = cancelReason;
   }
 
   @Override
@@ -127,6 +130,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     case 4: return createdAt;
     case 5: return orderApprovalStatus;
     case 6: return failureMessages;
+    case 7: return cancelReason;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -138,6 +142,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       null,
       null,
       new org.apache.avro.data.TimeConversions.TimestampMillisConversion(),
+      null,
       null,
       null,
       null
@@ -160,6 +165,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     case 4: createdAt = (java.time.Instant)value$; break;
     case 5: orderApprovalStatus = (com.berkay.kafka.order.avro.model.OrderApprovalStatus)value$; break;
     case 6: failureMessages = (java.util.List<java.lang.String>)value$; break;
+    case 7: cancelReason = value$ != null ? value$.toString() : null; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -284,6 +290,23 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
   }
 
   /**
+   * Gets the value of the 'cancelReason' field.
+   * @return The value of the 'cancelReason' field.
+   */
+  public java.lang.String getCancelReason() {
+    return cancelReason;
+  }
+
+
+  /**
+   * Sets the value of the 'cancelReason' field.
+   * @param value the value to set.
+   */
+  public void setCancelReason(java.lang.String value) {
+    this.cancelReason = value;
+  }
+
+  /**
    * Creates a new RestaurantApprovalResponseAvroModel RecordBuilder.
    * @return A new RestaurantApprovalResponseAvroModel RecordBuilder
    */
@@ -331,6 +354,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
     private java.time.Instant createdAt;
     private com.berkay.kafka.order.avro.model.OrderApprovalStatus orderApprovalStatus;
     private java.util.List<java.lang.String> failureMessages;
+    private java.lang.String cancelReason;
 
     /** Creates a new Builder */
     private Builder() {
@@ -371,6 +395,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
         this.failureMessages = data().deepCopy(fields()[6].schema(), other.failureMessages);
         fieldSetFlags()[6] = other.fieldSetFlags()[6];
       }
+      if (isValidValue(fields()[7], other.cancelReason)) {
+        this.cancelReason = data().deepCopy(fields()[7].schema(), other.cancelReason);
+        fieldSetFlags()[7] = other.fieldSetFlags()[7];
+      }
     }
 
     /**
@@ -406,6 +434,10 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       if (isValidValue(fields()[6], other.failureMessages)) {
         this.failureMessages = data().deepCopy(fields()[6].schema(), other.failureMessages);
         fieldSetFlags()[6] = true;
+      }
+      if (isValidValue(fields()[7], other.cancelReason)) {
+        this.cancelReason = data().deepCopy(fields()[7].schema(), other.cancelReason);
+        fieldSetFlags()[7] = true;
       }
     }
 
@@ -688,6 +720,46 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
       return this;
     }
 
+    /**
+      * Gets the value of the 'cancelReason' field.
+      * @return The value.
+      */
+    public java.lang.String getCancelReason() {
+      return cancelReason;
+    }
+
+
+    /**
+      * Sets the value of the 'cancelReason' field.
+      * @param value The value of 'cancelReason'.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder setCancelReason(java.lang.String value) {
+      validate(fields()[7], value);
+      this.cancelReason = value;
+      fieldSetFlags()[7] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'cancelReason' field has been set.
+      * @return True if the 'cancelReason' field has been set, false otherwise.
+      */
+    public boolean hasCancelReason() {
+      return fieldSetFlags()[7];
+    }
+
+
+    /**
+      * Clears the value of the 'cancelReason' field.
+      * @return This builder.
+      */
+    public com.berkay.kafka.order.avro.model.RestaurantApprovalResponseAvroModel.Builder clearCancelReason() {
+      cancelReason = null;
+      fieldSetFlags()[7] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public RestaurantApprovalResponseAvroModel build() {
@@ -700,6 +772,7 @@ public class RestaurantApprovalResponseAvroModel extends org.apache.avro.specifi
         record.createdAt = fieldSetFlags()[4] ? this.createdAt : (java.time.Instant) defaultValue(fields()[4]);
         record.orderApprovalStatus = fieldSetFlags()[5] ? this.orderApprovalStatus : (com.berkay.kafka.order.avro.model.OrderApprovalStatus) defaultValue(fields()[5]);
         record.failureMessages = fieldSetFlags()[6] ? this.failureMessages : (java.util.List<java.lang.String>) defaultValue(fields()[6]);
+        record.cancelReason = fieldSetFlags()[7] ? this.cancelReason : (java.lang.String) defaultValue(fields()[7]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;

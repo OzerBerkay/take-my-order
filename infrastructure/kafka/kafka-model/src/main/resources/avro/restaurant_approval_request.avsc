@@ -32,7 +32,7 @@
             "type": {
                   "type": "enum",
                   "name": "RestaurantOrderStatus",
-                  "symbols": ["PAID"]
+                  "symbols": ["PAID", "CANCELLED"]
             }
         },
         {
