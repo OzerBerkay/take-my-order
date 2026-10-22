@@ -216,4 +216,49 @@ public class AssignUserRoleCommandHandlerTest {
         org.junit.jupiter.api.Assertions.assertEquals("Global roles can only be assigned to INTERNAL users!", exception.getMessage());
         verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
     }
+
+    @Test
+    void shouldThrowException_WhenAssigningRoleToUserWhoIsAlreadyRestaurantOwner() {
+        Role ownerRole = Role.builder()
+                .roleId(new RoleId(UUID.randomUUID()))
+                .name(com.berkay.identity.service.domain.constants.RoleConstants.RESTAURANT_OWNER)
+                .organizationalUnitId(merchantOrgUnitId)
+                .isStatic(true)
+                .build();
+
+        User ownerUser = User.builder()
+                .userId(new UserId(userId))
+                .userType(com.berkay.identity.service.domain.valueobject.UserType.MERCHANT)
+                .organizationalUnitIds(List.of(merchantOrgUnitId))
+                .roles(List.of(ownerRole))
+                .build();
+
+        AssignUserRoleCommand command = new AssignUserRoleCommand(
+                userId, roleId, requesterId, com.berkay.identity.service.domain.valueobject.UserType.MERCHANT, List.of(requesterRestaurantRole.getId().getValue())
+        );
+
+        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(ownerUser));
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(restaurantRole));
+        when(roleRepository.findAllById(command.requesterRoleIds())).thenReturn(List.of(requesterRestaurantRole));
+
+        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.assign(command));
+        org.junit.jupiter.api.Assertions.assertTrue(exception.getMessage().contains("Restaurant owner already possesses full permissions"));
+        verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldThrowException_WhenUserAttemptsToAssignRoleToThemselves() {
+        AssignUserRoleCommand command = new AssignUserRoleCommand(
+                userId, roleId, userId, com.berkay.identity.service.domain.valueobject.UserType.MERCHANT, List.of(requesterRestaurantRole.getId().getValue())
+        );
+
+        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(targetRestaurantUser));
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(restaurantRole));
+        when(roleRepository.findAllById(command.requesterRoleIds())).thenReturn(List.of(requesterRestaurantRole));
+
+        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.assign(command));
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", exception.getMessage());
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", exception.getErrorCode());
+        verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
+    }
 }

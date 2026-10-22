@@ -389,4 +389,57 @@ public class UpdateMerchantUserRolesCommandHandlerTest {
         verify(userUpdateIntentHelper, never()).completeIntent(any(), any());
         verify(tokenRevocationPort, never()).revokeAccessToken(any());
     }
+
+    @Test
+    void shouldThrowExceptionWhenTargetUserIsAlreadyRestaurantOwner() {
+        Role ownerRole = Role.builder()
+                .roleId(new RoleId(UUID.randomUUID()))
+                .name(com.berkay.identity.service.domain.constants.RoleConstants.RESTAURANT_OWNER)
+                .organizationalUnitId(merchantOrgUnitId)
+                .isStatic(true)
+                .build();
+
+        User ownerUser = User.builder()
+                .userId(new UserId(userId))
+                .userType(UserType.MERCHANT)
+                .organizationalUnitIds(List.of(merchantOrgUnitId))
+                .roles(List.of(ownerRole))
+                .build();
+
+        UpdateMerchantUserRolesCommand command = new UpdateMerchantUserRolesCommand(
+                userId,
+                merchantOrgUnitId,
+                List.of(restaurantRole1.getId().getValue()),
+                requesterId,
+                UserType.MERCHANT,
+                List.of(requesterRestaurantRole.getId().getValue())
+        );
+
+        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(ownerUser));
+        when(roleRepository.findAllById(command.requesterRoleIds())).thenReturn(List.of(requesterRestaurantRole));
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () -> handler.update(command));
+        org.junit.jupiter.api.Assertions.assertTrue(ex.getMessage().contains("Restaurant owner already possesses full permissions"));
+        verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserAttemptsToModifyOwnRoles() {
+        UpdateMerchantUserRolesCommand command = new UpdateMerchantUserRolesCommand(
+                userId,
+                merchantOrgUnitId,
+                List.of(restaurantRole1.getId().getValue()),
+                userId, // requesterId == target userId (Self-modification attempt)
+                UserType.MERCHANT,
+                List.of(requesterRestaurantRole.getId().getValue())
+        );
+
+        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(targetMerchantUser));
+        when(roleRepository.findAllById(command.requesterRoleIds())).thenReturn(List.of(requesterRestaurantRole));
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () -> handler.update(command));
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", ex.getMessage());
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", ex.getErrorCode());
+        verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
+    }
 }
