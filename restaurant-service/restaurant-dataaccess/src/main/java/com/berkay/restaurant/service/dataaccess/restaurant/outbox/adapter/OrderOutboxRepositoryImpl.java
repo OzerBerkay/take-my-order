@@ -51,6 +51,14 @@ public class OrderOutboxRepositoryImpl implements OrderOutboxRepository {
     }
 
     @Override
+    public Optional<OrderOutboxMessage> findByTypeAndSagaIdAndApprovalStatusAndOutboxStatus(String type, UUID sagaId,
+                                                                                           com.berkay.domain.valueobject.OrderApprovalStatus approvalStatus,
+                                                                                           OutboxStatus outboxStatus) {
+        return orderOutboxJpaRepository.findByTypeAndSagaIdAndApprovalStatusAndOutboxStatus(type, sagaId, approvalStatus, outboxStatus)
+                .map(orderOutboxDataAccessMapper::orderOutboxEntityToOrderOutboxMessage);
+    }
+
+    @Override
     public void deleteByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus) {
         orderOutboxJpaRepository.deleteByTypeAndOutboxStatus(type, outboxStatus);
     }

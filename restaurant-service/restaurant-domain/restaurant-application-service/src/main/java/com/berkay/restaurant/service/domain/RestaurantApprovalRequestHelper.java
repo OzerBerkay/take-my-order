@@ -20,7 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.berkay.domain.valueobject.OrderApprovalStatus;
+import com.berkay.domain.valueobject.RestaurantOrderStatus;
+import com.berkay.restaurant.service.domain.event.OrderRejectedEvent;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
+
+import static com.berkay.domain.DomainConstants.UTC;
 
 @Slf4j
 @Component
@@ -51,50 +59,89 @@ public class RestaurantApprovalRequestHelper {
     }
 
     @Transactional
+    public void processOrderApprovalRequest(RestaurantApprovalRequest restaurantApprovalRequest) {
+        if (RestaurantOrderStatus.CANCELLED == restaurantApprovalRequest.getRestaurantOrderStatus()) {
+            persistCancelOrderApproval(restaurantApprovalRequest);
+        } else {
+            persistOrderApproval(restaurantApprovalRequest);
+        }
+    }
+
+    @Transactional
     public void persistOrderApproval(RestaurantApprovalRequest restaurantApprovalRequest) {
-        if (publishIfOutboxMessageProcessed(restaurantApprovalRequest)) {
+        if (publishIfOutboxMessageProcessed(restaurantApprovalRequest, OrderApprovalStatus.VALIDATED)
+                || publishIfOutboxMessageProcessed(restaurantApprovalRequest, OrderApprovalStatus.APPROVED)) {
             log.info("An outbox message with saga id: {} already saved to database!",
                     restaurantApprovalRequest.getSagaId());
             return;
         }
 
         log.info("Processing restaurant approval for order id: {}", restaurantApprovalRequest.getOrderId());
-        List<String> failureMessages = new ArrayList<>();
 
         // Restoranı ve Menüsünü Bul
         Restaurant restaurant = findRestaurant(restaurantApprovalRequest);
 
         // Validasyon Yap (Domain Core)
         Optional<OrderApprovalEvent> orderApprovalEventOpt =
-                restaurantDomainService.validateOrder(
-                        restaurant,
-                        failureMessages);
-
-        // Sonucu ve güncel stoku Kaydet
-        orderApprovalRepository.save(restaurant.getOrderApproval());
-        restaurantRepository.saveRestaurant(restaurant);
+                restaurantDomainService.validateOrder(restaurant);
 
         if (orderApprovalEventOpt.isPresent()) {
             OrderApprovalEvent orderApprovalEvent = orderApprovalEventOpt.get();
+            orderApprovalRepository.save(restaurant.getOrderApproval());
+
+            if (OrderApprovalStatus.VALIDATED == orderApprovalEvent.getOrderApproval().getApprovalStatus()
+                    || OrderApprovalStatus.APPROVED == orderApprovalEvent.getOrderApproval().getApprovalStatus()) {
+                restaurantRepository.saveRestaurant(restaurant);
+            }
+
             orderOutboxHelper
                     .saveOrderOutboxMessage(restaurantDataMapper.orderApprovalEventToOrderEventPayload(orderApprovalEvent),
                             orderApprovalEvent.getOrderApproval().getApprovalStatus(),
                             OutboxStatus.STARTED,
                             UUID.fromString(restaurantApprovalRequest.getSagaId()));
         }
+    }
 
+    @Transactional
+    public void persistCancelOrderApproval(RestaurantApprovalRequest restaurantApprovalRequest) {
+        if (publishIfOutboxMessageProcessed(restaurantApprovalRequest, OrderApprovalStatus.REJECTED)) {
+            log.info("An outbox message with saga id: {} and status REJECTED already saved to database!",
+                    restaurantApprovalRequest.getSagaId());
+            return;
+        }
+
+        log.info("Processing stock compensation (restoreStock) for cancelled order id: {}", restaurantApprovalRequest.getOrderId());
+        Restaurant restaurant = findRestaurant(restaurantApprovalRequest);
+        restaurant.restoreStock(restaurant.getOrderDetail());
+
+        restaurantRepository.saveRestaurant(restaurant);
+        orderApprovalRepository.save(restaurant.getOrderApproval());
+
+        OrderRejectedEvent orderRejectedEvent = new OrderRejectedEvent(
+                restaurant.getOrderApproval(),
+                restaurant.getId(),
+                List.of("Order cancelled by chef: Stock successfully restored"),
+                null,
+                ZonedDateTime.now(ZoneId.of(UTC))
+        );
+
+        orderOutboxHelper.saveOrderOutboxMessage(
+                restaurantDataMapper.orderApprovalEventToOrderEventPayload(orderRejectedEvent),
+                OrderApprovalStatus.REJECTED,
+                OutboxStatus.STARTED,
+                UUID.fromString(restaurantApprovalRequest.getSagaId())
+        );
+        log.info("Stock restored and rejection event published for order id: {}", restaurantApprovalRequest.getOrderId());
     }
 
     private Restaurant findRestaurant(RestaurantApprovalRequest restaurantApprovalRequest) {
         // Restoranı Bul
-        // TODO: Restorandan sadece siparişe özel ürünler gelmeli tüm menü değil
         UUID restaurantId = UUID.fromString(restaurantApprovalRequest.getRestaurantId());
         Optional<Restaurant> restaurantResult = restaurantRepository.findRestaurantByIdWithLock(restaurantId);
 
         // Restoranın varlığını kontrol et
         if (restaurantResult.isEmpty()) {
             log.error("Restaurant with id " + restaurantId + " not found!");
-            // TODO: Kafka listener'da hatayı yutmak yerine rejected status ile event fırlatılmalı
             throw new RestaurantNotFoundException("Restaurant with id " + restaurantId + " not found!");
         }
 
@@ -122,10 +169,11 @@ public class RestaurantApprovalRequestHelper {
         return restaurantEntity;
     }
 
-    private boolean publishIfOutboxMessageProcessed(RestaurantApprovalRequest restaurantApprovalRequest) {
+    private boolean publishIfOutboxMessageProcessed(RestaurantApprovalRequest restaurantApprovalRequest,
+                                                    OrderApprovalStatus targetStatus) {
         Optional<OrderOutboxMessage> orderOutboxMessage =
-                orderOutboxHelper.getCompletedOrderOutboxMessageBySagaIdAndOutboxStatus(UUID
-                        .fromString(restaurantApprovalRequest.getSagaId()), OutboxStatus.COMPLETED);
+                orderOutboxHelper.getCompletedOrderOutboxMessageBySagaIdAndApprovalStatusAndOutboxStatus(
+                        UUID.fromString(restaurantApprovalRequest.getSagaId()), targetStatus, OutboxStatus.COMPLETED);
         if (orderOutboxMessage.isPresent()) {
             restaurantApprovalResponseMessagePublisher.publish(orderOutboxMessage.get(),
                     orderOutboxHelper::updateOutboxStatus);
