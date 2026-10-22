@@ -7,15 +7,12 @@ import com.berkay.order.service.domain.valueobject.OrderItemId;
 import com.berkay.order.service.domain.valueobject.StreetAddress;
 import com.berkay.order.service.domain.valueobject.TrackingId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// Order is an entity class.
-// Entity classes contains the methods to complete critical business rules and can act as an
-// aggregate root, and in that case forcing all business invariants is the responsibility of that entity.
 public class Order extends AggregateRoot<OrderId> {
-    // Comes from outside
-    // These are final because fixed on first order request.
+    public static final String FAILURE_MESSAGE_DELIMITER = ",";
     private final CustomerId customerId;
     private final RestaurantId restaurantId;
     private final StreetAddress deliveryAddress;
@@ -23,15 +20,14 @@ public class Order extends AggregateRoot<OrderId> {
     private final Money deliveryFee;
     private final List<OrderItem> items;
 
-    // Will be described in aggregate root
     private TrackingId trackingId;
-    // With the order status, saga states can be tracked
     private OrderStatus orderStatus;
     private java.time.ZonedDateTime createdAt;
-    // Will be described later if needed
-    private List<String> failureMessages;
 
-    public static final String FAILURE_MESSAGE_DELIMITER = ",";
+    private CancelReason cancelReason;
+    private MaterialAction materialAction;
+    private String internalNote;
+    private Integer version;
 
     public void initializeOrder() {
         setId(new OrderId(UUID.randomUUID()));
@@ -51,54 +47,115 @@ public class Order extends AggregateRoot<OrderId> {
         if (orderStatus != OrderStatus.PENDING) {
             throw new OrderDomainException("Order is not in correct state for payment");
         }
-        // If order status is pending, it means we can pay
         orderStatus = OrderStatus.PAID;
     }
 
-    // If price paid, then restaurant checks if order payment is approved
-    public void approve() {
+    public void waitForApproval() {
         if (orderStatus != OrderStatus.PAID) {
-            throw new OrderDomainException("Order is not in correct state for approval");
+            throw new OrderDomainException("Order is not in correct state for waiting for approval! Current state: " + orderStatus);
         }
+        orderStatus = OrderStatus.WAITING_FOR_APPROVAL;
+    }
 
+    public void approve() {
+        if (orderStatus != OrderStatus.WAITING_FOR_APPROVAL) {
+            throw new OrderDomainException("Order is not in correct state for approval! Current state: " + orderStatus);
+        }
         orderStatus = OrderStatus.APPROVED;
     }
 
-    // initCancel and cancel methods are for saga compensating methods
-    // initCancel comes after payment issue, Cancel comes after cancel operation in pending state that way before attempting to pay
+    public void startPreparing() {
+        if (orderStatus != OrderStatus.APPROVED) {
+            throw new OrderDomainException("Order is not in correct state for preparing! Current state: " + orderStatus);
+        }
+        orderStatus = OrderStatus.PREPARING;
+    }
+
+    public void readyForPickup() {
+        if (orderStatus != OrderStatus.PREPARING) {
+            throw new OrderDomainException("Order is not in correct state for ready for pickup! Current state: " + orderStatus);
+        }
+        orderStatus = OrderStatus.READY_FOR_PICKUP;
+    }
+
+    public void startDelivery() {
+        if (orderStatus != OrderStatus.READY_FOR_PICKUP) {
+            throw new OrderDomainException("Order is not in correct state for delivery! Current state: " + orderStatus);
+        }
+        orderStatus = OrderStatus.IN_DELIVERY;
+    }
+
+    public void deliver() {
+        if (orderStatus != OrderStatus.IN_DELIVERY) {
+            throw new OrderDomainException("Order is not in correct state for deliver operation! Current state: " + orderStatus);
+        }
+        orderStatus = OrderStatus.DELIVERED;
+    }
+
+    public void initCancel(CancelReason cancelReason, MaterialAction materialAction, String internalNote) {
+        boolean isCancellableState = orderStatus == OrderStatus.PAID ||
+                orderStatus == OrderStatus.WAITING_FOR_APPROVAL ||
+                orderStatus == OrderStatus.APPROVED ||
+                orderStatus == OrderStatus.PREPARING ||
+                orderStatus == OrderStatus.READY_FOR_PICKUP ||
+                orderStatus == OrderStatus.IN_DELIVERY;
+        if (!isCancellableState) {
+            throw new OrderDomainException("Order is not in correct state for initCancel operation! Current state: " + orderStatus);
+        }
+        if (cancelReason == CancelReason.INSUFFICIENT_STOCK && materialAction == MaterialAction.RESTORE_STOCK) {
+            throw new OrderDomainException("Cannot restore stock when cancellation reason is INSUFFICIENT_STOCK! Must be RECORD_WASTE.");
+        }
+        this.orderStatus = OrderStatus.CANCELLING;
+        this.cancelReason = cancelReason;
+        this.materialAction = materialAction;
+        this.internalNote = internalNote;
+    }
+
     public void initCancel(List<String> failureMessages) {
-        if (orderStatus != OrderStatus.PAID) {
-            throw new OrderDomainException("Order is not in correct state for initCancel operation!");
-        }
-
-        orderStatus = OrderStatus.CANCELLING;
-        updateFailureMessages(failureMessages);
+        initCancel(null, null, failureMessages != null ? String.join(",", failureMessages) : null);
     }
 
-    // To set cancelled status, present status must be Cancelling or Pending, so it means payment never completed
-    public void cancel(List<String> failureMessages) {
+    public void cancelWithoutRefund(CancelReason cancelReason, MaterialAction materialAction, String internalNote) {
+        if (orderStatus != OrderStatus.IN_DELIVERY) {
+            throw new OrderDomainException("Order is not in correct state for no-refund cancellation! Current state: " + orderStatus);
+        }
+        if (cancelReason != CancelReason.CUSTOMER_UNREACHABLE && cancelReason != CancelReason.WRONG_ADDRESS) {
+            throw new OrderDomainException("CancelReason " + cancelReason + " is not eligible for no-refund cancellation!");
+        }
+        this.orderStatus = OrderStatus.CANCELLED;
+        this.cancelReason = cancelReason;
+        this.materialAction = (materialAction != null ? materialAction : MaterialAction.RECORD_WASTE);
+        this.internalNote = internalNote;
+    }
+
+    public void cancel(CancelReason cancelReason) {
         if (!(orderStatus == OrderStatus.CANCELLING || orderStatus == OrderStatus.PENDING)) {
-            throw new OrderDomainException("Order is not in correct state for cancel operation!");
+            throw new OrderDomainException("Order is not in correct state for cancel operation! Current state: " + orderStatus);
         }
-        orderStatus = OrderStatus.CANCELLED;
-        updateFailureMessages(failureMessages);
-    }
-
-    private void updateFailureMessages(List<String> failureMessages) {
-        if (this.failureMessages != null && failureMessages != null) {
-            this.failureMessages.addAll(failureMessages.stream().filter(message -> !message.isEmpty()).toList());
-        }
-        if (failureMessages == null) {
-            this.failureMessages = failureMessages;
+        this.orderStatus = OrderStatus.CANCELLED;
+        if (cancelReason != null) {
+            this.cancelReason = cancelReason;
         }
     }
 
+    public void cancel(List<String> failureMessages) {
+        cancel(this.cancelReason);
+        if (failureMessages != null && !failureMessages.isEmpty() && this.internalNote == null) {
+            this.internalNote = String.join(",", failureMessages);
+        }
+    }
+
+    public void setCancelMetadata(CancelReason cancelReason, MaterialAction materialAction, String internalNote) {
+        this.cancelReason = cancelReason;
+        this.materialAction = materialAction;
+        this.internalNote = internalNote;
+    }
 
     public void validateItemsPrice(Money deliveryFee) {
         Money orderItemsTotal = items.stream().map(orderItem -> {
             orderItem.validatePrice();
-            return orderItem.getSubTotal(); // gets all order item's subtotal in map
-        }).reduce(Money.ZERO, Money::add); // add all order items' subtotal to get order items total so it reduces map to one value
+            return orderItem.getSubTotal();
+        }).reduce(Money.ZERO, Money::add);
 
         Money expectedTotal = orderItemsTotal.add(deliveryFee != null ? deliveryFee : Money.ZERO);
 
@@ -122,12 +179,9 @@ public class Order extends AggregateRoot<OrderId> {
         }
     }
 
-    // Each order item will have a unique id {OrderId, OrderItemId}, because to distinguish
     private void initializeOrderItems() {
         long itemId = 1;
         for (OrderItem orderItem : items) {
-            // Until here order item doesn't have an orderId and orderItemId yet
-            // With this definition we can know which order item belongs to which order
             orderItem.initializeOrderItem(super.getId(), new OrderItemId(itemId++));
         }
     }
@@ -143,13 +197,15 @@ public class Order extends AggregateRoot<OrderId> {
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
         createdAt = builder.createdAt;
-        failureMessages = builder.failureMessages;
+        cancelReason = builder.cancelReason;
+        materialAction = builder.materialAction;
+        internalNote = builder.internalNote;
+        version = builder.version;
     }
 
     public java.time.ZonedDateTime getCreatedAt() {
         return createdAt;
     }
-
 
     public CustomerId getCustomerId() {
         return customerId;
@@ -183,8 +239,31 @@ public class Order extends AggregateRoot<OrderId> {
         return orderStatus;
     }
 
+    public CancelReason getCancelReason() {
+        return cancelReason;
+    }
+
+    public MaterialAction getMaterialAction() {
+        return materialAction;
+    }
+
+    public String getInternalNote() {
+        return internalNote;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
     public List<String> getFailureMessages() {
-        return failureMessages;
+        List<String> list = new ArrayList<>();
+        if (cancelReason != null) {
+            list.add(cancelReason.name());
+        }
+        if (internalNote != null && !internalNote.isBlank()) {
+            list.add(internalNote);
+        }
+        return list;
     }
 
     public static Builder builder() {
@@ -202,7 +281,10 @@ public class Order extends AggregateRoot<OrderId> {
         private TrackingId trackingId;
         private OrderStatus orderStatus;
         private java.time.ZonedDateTime createdAt;
-        private List<String> failureMessages;
+        private CancelReason cancelReason;
+        private MaterialAction materialAction;
+        private String internalNote;
+        private Integer version;
 
         private Builder() {
         }
@@ -257,8 +339,28 @@ public class Order extends AggregateRoot<OrderId> {
             return this;
         }
 
+        public Builder cancelReason(CancelReason val) {
+            cancelReason = val;
+            return this;
+        }
+
+        public Builder materialAction(MaterialAction val) {
+            materialAction = val;
+            return this;
+        }
+
+        public Builder internalNote(String val) {
+            internalNote = val;
+            return this;
+        }
+
+        public Builder version(Integer val) {
+            version = val;
+            return this;
+        }
+
         public Builder failureMessages(List<String> val) {
-            failureMessages = val;
+            // Backward compatibility
             return this;
         }
 
