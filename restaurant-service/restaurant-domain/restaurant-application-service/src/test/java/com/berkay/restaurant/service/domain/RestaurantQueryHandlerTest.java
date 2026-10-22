@@ -172,4 +172,95 @@ public class RestaurantQueryHandlerTest {
 
         assertTrue(exception.getMessage().contains("Restaurant not found"));
     }
+
+    @Test
+    public void testGetPublicProducts_WithAvailableStatus_Success() {
+        UUID availableProductId = UUID.randomUUID();
+        UUID unavailableProductId = UUID.randomUUID();
+        UUID hiddenProductId = UUID.randomUUID();
+
+        com.berkay.restaurant.service.domain.entity.Product availableProduct = com.berkay.restaurant.service.domain.entity.Product.builder()
+                .productId(new com.berkay.domain.valueobject.ProductId(availableProductId))
+                .name("Available Burger")
+                .price(new com.berkay.domain.valueobject.Money(new java.math.BigDecimal("100.00")))
+                .stock(10)
+                .available(true)
+                .hidden(false)
+                .build();
+
+        com.berkay.restaurant.service.domain.entity.Product unavailableProduct = com.berkay.restaurant.service.domain.entity.Product.builder()
+                .productId(new com.berkay.domain.valueobject.ProductId(unavailableProductId))
+                .name("Unavailable Burger")
+                .price(new com.berkay.domain.valueobject.Money(new java.math.BigDecimal("120.00")))
+                .stock(5)
+                .available(false)
+                .hidden(false)
+                .build();
+
+        com.berkay.restaurant.service.domain.entity.Product hiddenProduct = com.berkay.restaurant.service.domain.entity.Product.builder()
+                .productId(new com.berkay.domain.valueobject.ProductId(hiddenProductId))
+                .name("Secret Burger")
+                .price(new com.berkay.domain.valueobject.Money(new java.math.BigDecimal("150.00")))
+                .stock(20)
+                .available(true)
+                .hidden(true)
+                .build();
+
+        Restaurant restaurantWithMenu = Restaurant.builder()
+                .restaurantId(new RestaurantId(restaurantId))
+                .restaurantName(new com.berkay.restaurant.service.domain.valueobject.RestaurantName("Burger House"))
+                .active(true)
+                .menu(List.of(availableProduct, unavailableProduct, hiddenProduct))
+                .build();
+
+        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.of(restaurantWithMenu));
+
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse response =
+                restaurantQueryHandler.getPublicProducts(restaurantId);
+
+        assertNotNull(response);
+        assertEquals(2, response.getProducts().size());
+
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse first = response.getProducts().get(0);
+        assertEquals("Available Burger", first.getName());
+        assertTrue(first.getAvailable());
+        assertTrue(first.getInStock());
+
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse second = response.getProducts().get(1);
+        assertEquals("Unavailable Burger", second.getName());
+        assertFalse(second.getAvailable());
+        assertTrue(second.getInStock());
+    }
+
+    @Test
+    public void testGetPublicProduct_Success() {
+        UUID prodId = UUID.randomUUID();
+
+        com.berkay.restaurant.service.domain.entity.Product product = com.berkay.restaurant.service.domain.entity.Product.builder()
+                .productId(new com.berkay.domain.valueobject.ProductId(prodId))
+                .name("Special Pizza")
+                .price(new com.berkay.domain.valueobject.Money(new java.math.BigDecimal("85.00")))
+                .stock(15)
+                .available(false)
+                .hidden(false)
+                .build();
+
+        Restaurant restaurantWithMenu = Restaurant.builder()
+                .restaurantId(new RestaurantId(restaurantId))
+                .restaurantName(new com.berkay.restaurant.service.domain.valueobject.RestaurantName("Pizza Hub"))
+                .active(true)
+                .menu(List.of(product))
+                .build();
+
+        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.of(restaurantWithMenu));
+
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse response =
+                restaurantQueryHandler.getPublicProduct(restaurantId, prodId);
+
+        assertNotNull(response);
+        assertEquals(prodId, response.getProductId());
+        assertEquals("Special Pizza", response.getName());
+        assertFalse(response.getAvailable());
+        assertTrue(response.getInStock());
+    }
 }

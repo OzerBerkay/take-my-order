@@ -59,6 +59,9 @@ public class RestaurantEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductCategoryEntity> categories;
 
+    @Version
+    private Integer version;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

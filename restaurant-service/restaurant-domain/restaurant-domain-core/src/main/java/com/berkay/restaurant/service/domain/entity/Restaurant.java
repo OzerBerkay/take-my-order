@@ -11,6 +11,7 @@ import com.berkay.restaurant.service.domain.valueobject.Address;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -256,61 +257,41 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         this.categoryVersion++;
     }
 
-    public void validateOrder(List<String> failureMessages) {
+    public Optional<CancelReason> validateOrder() {
         // 1. KURAL: Restoran Aktif mi?
         if (!this.isActive()) {
-            failureMessages.add("Restaurant with name " + this.restaurantName + " is currently not active!");
+            return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
         }
 
         // 1.5 KURAL: Restoran Açık mı?
         if (!this.isAvailable()) {
-            failureMessages.add("Restaurant with name " + this.restaurantName + " is currently not accepting orders!");
+            return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
         }
 
         // 2. KURAL: Ödeme Tamamlanmış mı?
         if (orderDetail.getOrderStatus() != OrderStatus.PAID) {
-            failureMessages.add("Payment is not completed for order: " + orderDetail.getId());
+            return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
         }
 
-        // Key: ProductId, Value: Product (Restoranın gerçek ürünü)
         Map<ProductId, Product> restaurantMenu = this.menu.stream()
-                .collect(Collectors.toMap(Product::getId, Function.identity()));
+                .collect(Collectors.toMap(Product::getId, Function.identity(), (p1, p2) -> p1));
 
-        // 3. Kural: Ürün Kontrolü (Siparişteki her ürün için)
         Money totalAmount = Money.ZERO;
 
+        // 3. Kural: Validate-First (Salt-Okunur Ürün & Stok Kontrolü)
         for (Map.Entry<ProductId, Integer> productQuantity : orderDetail.getProductQuantities().entrySet()) {
             ProductId orderedProductId = productQuantity.getKey();
             Integer requestedQuantity = productQuantity.getValue();
             Product menuProduct = restaurantMenu.get(orderedProductId);
 
-            // Ürün menüde var mı?
-            if (menuProduct == null) {
-                failureMessages.add("Product with id: " + orderedProductId.getValue() + " is not found.");
-                continue;
+            if (menuProduct == null || !menuProduct.isAvailable() || menuProduct.isHidden()) {
+                return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
             }
 
-            // Ürün satışta mı?
-            if (!menuProduct.isAvailable()) {
-                failureMessages.add("Product with name: " + menuProduct.getName() + " is not available.");
-            }
-
-            // Ürün gizli mi?
-            if (menuProduct.isHidden()) {
-                failureMessages.add("Product with name: " + menuProduct.getName() + " is hidden and cannot be ordered.");
-            }
-
-            // Stok Yeterli mi?
             if (menuProduct.getStock() < requestedQuantity) {
-                failureMessages.add("Product with name: " + menuProduct.getName()
-                        + " has insufficient stock. Requested: " + requestedQuantity
-                        + ", Available: " + menuProduct.getStock());
-            } else {
-                // Stok miktarını düş
-                menuProduct.updateWith(menuProduct.getName(), menuProduct.getDescription(), menuProduct.getPrice(), menuProduct.isAvailable(), menuProduct.getStock() - requestedQuantity, menuProduct.isHidden(), menuProduct.getImageUrl(), menuProduct.getCategoryId());
+                return Optional.of(CancelReason.AUTO_REJECTED_OUT_OF_STOCK);
             }
 
-            // Fiyat hesaplama
             Money itemTotal = menuProduct.getPrice().multiply(requestedQuantity);
             totalAmount = totalAmount.add(itemTotal);
         }
@@ -319,7 +300,7 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         // 4. KURAL: Sepet Tutarı Minimum Sipariş Tutarını Sağlıyor mu?
         if (this.minimumOrderAmount != null && this.minimumOrderAmount.isGreaterThanZero() && this.minimumOrderAmount.isGreaterThan(itemsTotal)) {
-            failureMessages.add("Order amount is less than minimum order amount!");
+            return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
         }
 
         // Delivery fee'yi ekle
@@ -329,14 +310,62 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         // 5. KURAL: Toplam Tutar Tutuyor mu?
         if (!totalAmount.equals(orderDetail.getTotalAmount())) {
-            failureMessages.add("Total price (" + orderDetail.getTotalAmount().getAmount() 
-                + ") not equal to total item price (" + itemsTotal.getAmount() 
-                + ") + delivery fee (" + (this.deliveryFee != null ? this.deliveryFee.getAmount() : "0") 
-                + ") = " + totalAmount.getAmount());
+            return Optional.of(CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS);
+        }
+
+        // Phase 2: Mutate-Last (Tüm kontroller başarılı olduğunda atomik stok düşümü)
+        for (Map.Entry<ProductId, Integer> productQuantity : orderDetail.getProductQuantities().entrySet()) {
+            Product menuProduct = restaurantMenu.get(productQuantity.getKey());
+            menuProduct.updateWith(
+                    menuProduct.getName(),
+                    menuProduct.getDescription(),
+                    menuProduct.getPrice(),
+                    menuProduct.isAvailable(),
+                    menuProduct.getStock() - productQuantity.getValue(),
+                    menuProduct.isHidden(),
+                    menuProduct.getImageUrl(),
+                    menuProduct.getCategoryId()
+            );
+        }
+
+        constructOrderApproval(OrderApprovalStatus.VALIDATED);
+        return Optional.empty();
+    }
+
+    public void validateOrder(List<String> failureMessages) {
+        Optional<CancelReason> cancelReason = validateOrder();
+        if (cancelReason.isPresent()) {
+            failureMessages.add(cancelReason.get().name());
         }
     }
 
-    
+    public void restoreStock(OrderDetail orderDetail) {
+        Map<ProductId, Product> menuMap = this.menu.stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity(), (p1, p2) -> p1));
+
+        orderDetail.getProductQuantities().forEach((productId, quantity) -> {
+            Product menuProduct = menuMap.get(productId);
+            if (menuProduct != null) {
+                int restoredStock = menuProduct.getStock() + quantity;
+                menuProduct.updateWith(
+                        menuProduct.getName(),
+                        menuProduct.getDescription(),
+                        menuProduct.getPrice(),
+                        menuProduct.isAvailable(),
+                        restoredStock,
+                        menuProduct.isHidden(),
+                        menuProduct.getImageUrl(),
+                        menuProduct.getCategoryId()
+                );
+            }
+        });
+        this.orderApproval = OrderApproval.builder()
+                .orderApprovalId(new OrderApprovalId(UUID.randomUUID()))
+                .restaurantId(this.getId())
+                .orderId(orderDetail.getId())
+                .approvalStatus(OrderApprovalStatus.REJECTED)
+                .build();
+    }
 
     public OrderApprovedEvent approveOrder() {
         if (this.orderApproval == null || this.orderApproval.getApprovalStatus() != OrderApprovalStatus.PENDING) {

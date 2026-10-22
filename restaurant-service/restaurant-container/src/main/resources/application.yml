@@ -34,7 +34,7 @@ spring:
     show-sql: ${SHOW_SQL:false}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -47,8 +47,8 @@ spring:
 
   flyway:
     enabled: true
-    clean-disabled: false
-    clean-on-validation-error: true
+    clean-disabled: true
+    clean-on-validation-error: false
     baseline-on-migrate: true
     baseline-version: 1
     schemas: restaurant

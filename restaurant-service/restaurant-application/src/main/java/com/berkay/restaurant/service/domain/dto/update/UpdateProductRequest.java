@@ -34,4 +34,12 @@ public class UpdateProductRequest {
 
     @NotNull(message = "Product hidden status cannot be null!")
     private Boolean hidden;
+
+    @Size(max = 255, message = "Description cannot exceed 255 characters!")
+    private String description;
+
+    private String imageUrl;
+
+    @NotNull(message = "Category id cannot be null!")
+    private java.util.UUID categoryId;
 }

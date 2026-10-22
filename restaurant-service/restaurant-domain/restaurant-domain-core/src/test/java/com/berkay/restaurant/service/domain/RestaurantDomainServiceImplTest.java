@@ -68,7 +68,8 @@ public class RestaurantDomainServiceImplTest {
 
         assertTrue(eventOpt.isPresent());
         assertTrue(eventOpt.get() instanceof OrderRejectedEvent);
-        assertTrue(failureMessages.stream().anyMatch(m -> m.contains("is hidden")));
+        OrderRejectedEvent rejectedEvent = (OrderRejectedEvent) eventOpt.get();
+        assertEquals(com.berkay.domain.valueobject.CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS, rejectedEvent.getCancelReason());
     }
 
     @Test
@@ -88,10 +89,10 @@ public class RestaurantDomainServiceImplTest {
 
         assertTrue(eventOpt.isPresent());
         assertTrue(eventOpt.get() instanceof OrderRejectedEvent);
-        assertTrue(failureMessages.stream().anyMatch(m -> m.contains("has insufficient stock")));
+        OrderRejectedEvent rejectedEvent = (OrderRejectedEvent) eventOpt.get();
+        assertEquals(com.berkay.domain.valueobject.CancelReason.AUTO_REJECTED_OUT_OF_STOCK, rejectedEvent.getCancelReason());
         assertEquals(5, product.getStock()); // Stock should not be subtracted
     }
-
 
     @Test
     void validateOrder_ShouldReject_WhenBelowMinimumOrderAmount() {
@@ -110,7 +111,8 @@ public class RestaurantDomainServiceImplTest {
 
         assertTrue(eventOpt.isPresent());
         assertTrue(eventOpt.get() instanceof OrderRejectedEvent);
-        assertTrue(failureMessages.stream().anyMatch(m -> m.contains("Order amount is less than minimum order amount!")));
+        OrderRejectedEvent rejectedEvent = (OrderRejectedEvent) eventOpt.get();
+        assertEquals(com.berkay.domain.valueobject.CancelReason.AUTO_REJECTED_RESTAURANT_DISRUPTIONS, rejectedEvent.getCancelReason());
     }
 
     @Test
@@ -128,13 +130,14 @@ public class RestaurantDomainServiceImplTest {
         List<String> failureMessages = new ArrayList<>();
         Optional<OrderApprovalEvent> eventOpt = restaurantDomainService.validateOrder(restaurant, failureMessages);
 
-        assertFalse(eventOpt.isPresent()); // Expected empty (PENDING state) when valid
-        assertTrue(failureMessages.isEmpty());
+        assertTrue(eventOpt.isPresent());
+        assertTrue(eventOpt.get() instanceof com.berkay.restaurant.service.domain.event.OrderApprovedEvent);
         assertEquals(2, product.getStock()); // 5 - 3 = 2
+        assertEquals(com.berkay.domain.valueobject.OrderApprovalStatus.VALIDATED, restaurant.getOrderApproval().getApprovalStatus());
     }
 
     @Test
-    void approveOrder_ShouldTransitionToApproved_WhenPending() {
+    void restoreStock_ShouldIncreaseStockAndSetRejected_WhenStockRestored() {
         Product product = restaurant.getMenu().get(0);
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderId(new OrderId(UUID.randomUUID()))
@@ -143,50 +146,12 @@ public class RestaurantDomainServiceImplTest {
                 .productQuantities(Map.of(product.getId(), 3))
                 .build();
         restaurant.initOrderDetail(orderDetail);
-        
-        restaurantDomainService.validateOrder(restaurant, new ArrayList<>());
-        
-        OrderApprovalEvent event = restaurant.approveOrder();
-        
-        assertTrue(event instanceof com.berkay.restaurant.service.domain.event.OrderApprovedEvent);
-        assertEquals(com.berkay.domain.valueobject.OrderApprovalStatus.APPROVED, restaurant.getOrderApproval().getApprovalStatus());
-    }
 
-    @Test
-    void rejectOrder_ShouldTransitionToRejected_WhenPending() {
-        Product product = restaurant.getMenu().get(0);
-        OrderDetail orderDetail = OrderDetail.builder()
-                .orderId(new OrderId(UUID.randomUUID()))
-                .orderStatus(OrderStatus.PAID)
-                .totalAmount(new Money(new BigDecimal("35.00")))
-                .productQuantities(Map.of(product.getId(), 3))
-                .build();
-        restaurant.initOrderDetail(orderDetail);
-        
-        restaurantDomainService.validateOrder(restaurant, new ArrayList<>());
-        
-        List<String> failureMessages = List.of("Out of stock suddenly");
-        OrderApprovalEvent event = restaurant.rejectOrder(failureMessages);
-        
-        assertTrue(event instanceof OrderRejectedEvent);
+        restaurantDomainService.validateOrder(restaurant);
+        assertEquals(2, product.getStock()); // 5 - 3 = 2
+
+        restaurant.restoreStock(orderDetail);
+        assertEquals(5, product.getStock()); // 2 + 3 = 5
         assertEquals(com.berkay.domain.valueobject.OrderApprovalStatus.REJECTED, restaurant.getOrderApproval().getApprovalStatus());
-    }
-
-    @Test
-    void approveOrder_ShouldThrowException_WhenNotPending() {
-        Product product = restaurant.getMenu().get(0);
-        OrderDetail orderDetail = OrderDetail.builder()
-                .orderId(new OrderId(UUID.randomUUID()))
-                .orderStatus(OrderStatus.PAID)
-                .totalAmount(new Money(new BigDecimal("35.00")))
-                .productQuantities(Map.of(product.getId(), 3))
-                .build();
-        restaurant.initOrderDetail(orderDetail);
-        
-        restaurantDomainService.validateOrder(restaurant, new ArrayList<>());
-        restaurant.approveOrder(); // transitions to APPROVED
-        
-        com.berkay.restaurant.service.domain.exception.RestaurantDomainException exception = assertThrows(com.berkay.restaurant.service.domain.exception.RestaurantDomainException.class, () -> restaurant.approveOrder());
-        assertTrue(exception.getMessage().contains("Order is not in PENDING state for approval"));
     }
 }

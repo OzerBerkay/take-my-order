@@ -16,6 +16,9 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     private final RestaurantJpaRepository restaurantJpaRepository;
     private final RestaurantDataAccessMapper restaurantDataAccessMapper;
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
     public RestaurantRepositoryImpl(RestaurantJpaRepository restaurantJpaRepository,
                                     RestaurantDataAccessMapper restaurantDataAccessMapper) {
         this.restaurantJpaRepository = restaurantJpaRepository;
@@ -43,7 +46,24 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     @Override
     public Restaurant saveRestaurant(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = restaurantDataAccessMapper.restaurantToRestaurantEntity(restaurant);
-        RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);
+        restaurantJpaRepository.findById(restaurant.getId().getValue()).ifPresent(existing -> {
+            restaurantEntity.setVersion(existing.getVersion());
+            if (existing.getMenu() != null && restaurantEntity.getMenu() != null) {
+                java.util.Map<UUID, Integer> productVersions = existing.getMenu().stream()
+                        .filter(p -> p.getVersion() != null)
+                        .collect(java.util.stream.Collectors.toMap(
+                                com.berkay.restaurant.service.dataaccess.restaurant.entity.ProductEntity::getProductId,
+                                com.berkay.restaurant.service.dataaccess.restaurant.entity.ProductEntity::getVersion,
+                                (v1, v2) -> v1));
+                restaurantEntity.getMenu().forEach(p -> {
+                    if (productVersions.containsKey(p.getProductId())) {
+                        p.setVersion(productVersions.get(p.getProductId()));
+                    }
+                });
+            }
+            entityManager.detach(existing);
+        });
+        RestaurantEntity savedEntity = entityManager.merge(restaurantEntity);
         return restaurantDataAccessMapper.restaurantEntityToRestaurant(savedEntity);
     }
 
