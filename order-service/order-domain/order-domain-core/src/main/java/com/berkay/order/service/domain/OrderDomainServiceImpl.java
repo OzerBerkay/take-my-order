@@ -66,9 +66,39 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     }
 
     @Override
+    public void waitForApproval(Order order) {
+        order.waitForApproval();
+        log.info("Order with id: {} is waiting for approval", order.getId().getValue());
+    }
+
+    @Override
     public void approveOrder(Order order) {
         order.approve();
         log.info("Order with id: {} is approved", order.getId().getValue());
+    }
+
+    @Override
+    public void startPreparing(Order order) {
+        order.startPreparing();
+        log.info("Order with id: {} started preparing", order.getId().getValue());
+    }
+
+    @Override
+    public void readyForPickup(Order order) {
+        order.readyForPickup();
+        log.info("Order with id: {} is ready for pickup", order.getId().getValue());
+    }
+
+    @Override
+    public void startDelivery(Order order) {
+        order.startDelivery();
+        log.info("Order with id: {} started delivery", order.getId().getValue());
+    }
+
+    @Override
+    public void deliver(Order order) {
+        order.deliver();
+        log.info("Order with id: {} is delivered", order.getId().getValue());
     }
 
     @Override
@@ -79,9 +109,28 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     }
 
     @Override
+    public OrderCancelledEvent cancelOrderPayment(Order order, com.berkay.domain.valueobject.CancelReason cancelReason, com.berkay.domain.valueobject.MaterialAction materialAction, String internalNote) {
+        order.initCancel(cancelReason, materialAction, internalNote);
+        log.info("Order payment with id: {} is cancelling with reason: {}", order.getId().getValue(), cancelReason);
+        return new OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
+    }
+
+    @Override
     public void cancelOrder(Order order, List<String> failureMessages) {
         order.cancel(failureMessages);
         log.info("Order with id: {} is cancelled", order.getId().getValue());
+    }
+
+    @Override
+    public void cancelOrder(Order order, com.berkay.domain.valueobject.CancelReason cancelReason) {
+        order.cancel(cancelReason);
+        log.info("Order with id: {} is cancelled with reason: {}", order.getId().getValue(), cancelReason);
+    }
+
+    @Override
+    public void cancelOrderWithoutRefund(Order order, com.berkay.domain.valueobject.CancelReason cancelReason, com.berkay.domain.valueobject.MaterialAction materialAction, String internalNote) {
+        order.cancelWithoutRefund(cancelReason, materialAction, internalNote);
+        log.info("Order with id: {} cancelled without refund with reason: {}", order.getId().getValue(), cancelReason);
     }
 
     private void validateRestaurant(Restaurant restaurant) {
