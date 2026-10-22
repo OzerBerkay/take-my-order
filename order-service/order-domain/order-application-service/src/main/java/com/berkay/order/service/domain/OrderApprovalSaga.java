@@ -33,22 +33,32 @@ public class OrderApprovalSaga implements SagaStep<RestaurantApprovalResponse> {
     private final PaymentOutboxHelper paymentOutboxHelper;
     private final ApprovalOutboxHelper approvalOutboxHelper;
     private final OrderDataMapper orderDataMapper;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public OrderApprovalSaga(OrderDomainService orderDomainService,
                              OrderSagaHelper orderSagaHelper,
                              PaymentOutboxHelper paymentOutboxHelper,
                              ApprovalOutboxHelper approvalOutboxHelper,
-                             OrderDataMapper orderDataMapper) {
+                             OrderDataMapper orderDataMapper,
+                             com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.orderDomainService = orderDomainService;
         this.orderSagaHelper = orderSagaHelper;
         this.paymentOutboxHelper = paymentOutboxHelper;
         this.approvalOutboxHelper = approvalOutboxHelper;
         this.orderDataMapper = orderDataMapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     @Transactional
     public void process(RestaurantApprovalResponse restaurantApprovalResponse) {
+        Order order = orderSagaHelper.findOrder(restaurantApprovalResponse.getOrderId());
+        if (order.getOrderStatus() != OrderStatus.PAID) {
+            log.warn("Order with id: {} is already processed or moved past PAID state (current status: {}). Duplicate Kafka VALIDATED response ignored.",
+                    order.getId().getValue(), order.getOrderStatus());
+            return;
+        }
+
         Optional<OrderApprovalOutboxMessage> orderApprovalOutboxMessageResponse =
                 approvalOutboxHelper.getApprovalOutboxMessageBySagaIdAndSagaStatus(
                         UUID.fromString(restaurantApprovalResponse.getSagaId()),
@@ -62,17 +72,16 @@ public class OrderApprovalSaga implements SagaStep<RestaurantApprovalResponse> {
 
         OrderApprovalOutboxMessage orderApprovalOutboxMessage = orderApprovalOutboxMessageResponse.get();
 
-        Order order = approveOrder(restaurantApprovalResponse);
+        orderDomainService.waitForApproval(order);
+        orderSagaHelper.saveOrder(order);
 
-        SagaStatus sagaStatus = orderSagaHelper.orderStatusToSagaStatus(order.getOrderStatus());
+        orderApprovalOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
+        orderApprovalOutboxMessage.setOrderStatus(OrderStatus.WAITING_FOR_APPROVAL);
+        orderApprovalOutboxMessage.setSagaStatus(SagaStatus.PROCESSING);
+        orderApprovalOutboxMessage.setOutboxStatus(OutboxStatus.COMPLETED);
+        approvalOutboxHelper.save(orderApprovalOutboxMessage);
 
-        approvalOutboxHelper.save(getUpdatedApprovalOutboxMessage(orderApprovalOutboxMessage,
-                order.getOrderStatus(), sagaStatus));
-
-        paymentOutboxHelper.save(getUpdatedPaymentOutboxMessage(restaurantApprovalResponse.getSagaId(),
-                order.getOrderStatus(), sagaStatus));
-
-        log.info("Order with id: {} is approved", order.getId().getValue());
+        log.info("Order with id: {} is in WAITING_FOR_APPROVAL state", order.getId().getValue());
     }
 
     @Override
@@ -81,75 +90,96 @@ public class OrderApprovalSaga implements SagaStep<RestaurantApprovalResponse> {
         Optional<OrderApprovalOutboxMessage> orderApprovalOutboxMessageResponse =
                 approvalOutboxHelper.getApprovalOutboxMessageBySagaIdAndSagaStatus(
                         UUID.fromString(restaurantApprovalResponse.getSagaId()),
-                        SagaStatus.PROCESSING);
+                        SagaStatus.COMPENSATING, SagaStatus.PROCESSING);
 
         if (orderApprovalOutboxMessageResponse.isEmpty()) {
-            log.info("An outbox message with saga id: {} is already roll backed!",
+            log.info("Approval outbox message with saga id: {} is already processed or compensated!",
                     restaurantApprovalResponse.getSagaId());
             return;
         }
 
-        OrderApprovalOutboxMessage orderApprovalOutboxMessage = orderApprovalOutboxMessageResponse.get();
+        OrderApprovalOutboxMessage approvalOutboxMessage = orderApprovalOutboxMessageResponse.get();
 
-        OrderCancelledEvent domainEvent = rollbackOrder(restaurantApprovalResponse);
+        if (approvalOutboxMessage.getSagaStatus() == SagaStatus.PROCESSING) {
+            // KOL 1: İlk oluşturma evresinde restoran otomatik ret yanıtı (Senaryo 1.2.B)
+            Order order = orderSagaHelper.findOrder(restaurantApprovalResponse.getOrderId());
+            if (order.getOrderStatus() != OrderStatus.PAID) {
+                log.warn("Order with id: {} is already processed or moved past PAID state (current status: {}). Duplicate Kafka REJECTED response ignored.",
+                        order.getId().getValue(), order.getOrderStatus());
+                return;
+            }
 
-        SagaStatus sagaStatus = orderSagaHelper.orderStatusToSagaStatus(domainEvent.getOrder().getOrderStatus());
+            com.berkay.domain.valueobject.CancelReason reason = restaurantApprovalResponse.getCancelReason() != null
+                    ? com.berkay.domain.valueobject.CancelReason.valueOf(restaurantApprovalResponse.getCancelReason())
+                    : com.berkay.domain.valueobject.CancelReason.AUTO_REJECTED_OUT_OF_STOCK;
 
-        approvalOutboxHelper.save(getUpdatedApprovalOutboxMessage(orderApprovalOutboxMessage,
-                domainEvent.getOrder().getOrderStatus(), sagaStatus));
+            order.initCancel(reason, null, "Restoran otomatik ön doğrulamada siparişi reddetti.");
+            orderSagaHelper.saveOrder(order);
 
-        paymentOutboxHelper.savePaymentOutboxMessage(orderDataMapper
-                        .orderCancelledEventToOrderPaymentEventPayload(domainEvent),
-                domainEvent.getOrder().getOrderStatus(),
-                sagaStatus,
-                OutboxStatus.STARTED,
-                UUID.fromString(restaurantApprovalResponse.getSagaId()));
+            // AO_1'i yerel olarak COMPENSATED kapat (stok hiç düşmediği için Kafka mesajı atılmaz)
+            approvalOutboxMessage.setOrderStatus(OrderStatus.CANCELLING);
+            approvalOutboxMessage.setSagaStatus(SagaStatus.COMPENSATED);
+            approvalOutboxMessage.setOutboxStatus(OutboxStatus.COMPLETED);
+            approvalOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
+            approvalOutboxHelper.save(approvalOutboxMessage);
 
-        log.info("Order with id: {} is cancelling", domainEvent.getOrder().getId().getValue());
-    }
+            // PO_1'i ödeme iadesi için COMPENSATING + STARTED olarak re-arm et
+            Optional<OrderPaymentOutboxMessage> paymentOutboxOpt = paymentOutboxHelper
+                    .getPaymentOutboxMessageBySagaIdAndSagaStatus(UUID.fromString(restaurantApprovalResponse.getSagaId()),
+                            SagaStatus.PROCESSING);
+            if (paymentOutboxOpt.isPresent()) {
+                OrderPaymentOutboxMessage paymentOutboxMessage = paymentOutboxOpt.get();
+                paymentOutboxMessage.setOrderStatus(OrderStatus.CANCELLING);
+                paymentOutboxMessage.setSagaStatus(SagaStatus.COMPENSATING);
+                paymentOutboxMessage.setOutboxStatus(OutboxStatus.STARTED);
+                paymentOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
+                paymentOutboxMessage.setPayload(createPaymentPayload(
+                        orderDataMapper.orderToOrderPaymentEventPayload(order, com.berkay.domain.valueobject.PaymentOrderStatus.CANCELLED)));
+                paymentOutboxHelper.save(paymentOutboxMessage);
+            }
+            log.info("Order with id: {} initiated auto-reject cancellation and payment refund re-armed.", order.getId().getValue());
+        } else if (approvalOutboxMessage.getSagaStatus() == SagaStatus.COMPENSATING) {
+            // KOL 2: Şefin manuel iptali sonrası stok iadesinin tamamlanması (Senaryo 1.2.C)
+            approvalOutboxMessage.setSagaStatus(SagaStatus.COMPENSATED);
+            approvalOutboxMessage.setOutboxStatus(OutboxStatus.COMPLETED);
+            approvalOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
+            approvalOutboxHelper.save(approvalOutboxMessage);
 
-    private Order approveOrder(RestaurantApprovalResponse restaurantApprovalResponse) {
-        log.info("Approving order with id: {}", restaurantApprovalResponse.getOrderId());
-        Order order = orderSagaHelper.findOrder(restaurantApprovalResponse.getOrderId());
-        orderDomainService.approveOrder(order);
-        orderSagaHelper.saveOrder(order);
-        return order;
-    }
+            // Fork-Join Kontrolü: Ödeme iadesi de bitti mi (veya ödeme outbox hiç yok mu)?
+            Optional<OrderPaymentOutboxMessage> paymentOutboxOpt = paymentOutboxHelper
+                    .getPaymentOutboxMessageBySagaId(UUID.fromString(restaurantApprovalResponse.getSagaId()));
 
-    private OrderApprovalOutboxMessage getUpdatedApprovalOutboxMessage(OrderApprovalOutboxMessage
-                                                                               orderApprovalOutboxMessage,
-                                                                       OrderStatus
-                                                                               orderStatus,
-                                                                       SagaStatus
-                                                                               sagaStatus) {
-        orderApprovalOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
-        orderApprovalOutboxMessage.setOrderStatus(orderStatus);
-        orderApprovalOutboxMessage.setSagaStatus(sagaStatus);
-        return orderApprovalOutboxMessage;
-    }
+            boolean isPaymentCompensatedOrNotNeeded = paymentOutboxOpt.isEmpty()
+                    || paymentOutboxOpt.get().getSagaStatus() == SagaStatus.COMPENSATED;
 
-    private OrderPaymentOutboxMessage getUpdatedPaymentOutboxMessage(String sagaId,
-                                                                     OrderStatus orderStatus,
-                                                                     SagaStatus sagaStatus) {
-        Optional<OrderPaymentOutboxMessage> orderPaymentOutboxMessageResponse = paymentOutboxHelper
-                .getPaymentOutboxMessageBySagaIdAndSagaStatus(UUID.fromString(sagaId), SagaStatus.PROCESSING);
-        if (orderPaymentOutboxMessageResponse.isEmpty()) {
-            throw new OrderDomainException("Payment outbox message cannot be found in " +
-                    SagaStatus.PROCESSING.name() + " state");
+            if (isPaymentCompensatedOrNotNeeded) {
+                Order order = orderSagaHelper.findOrder(restaurantApprovalResponse.getOrderId());
+                order.cancel(order.getCancelReason());
+                orderSagaHelper.saveOrder(order);
+
+                // Nihai senkronizasyon: Her iki outbox'ı CANCELLED olarak mühürle
+                approvalOutboxMessage.setOrderStatus(OrderStatus.CANCELLED);
+                approvalOutboxHelper.save(approvalOutboxMessage);
+
+                if (paymentOutboxOpt.isPresent()) {
+                    OrderPaymentOutboxMessage paymentOutboxMessage = paymentOutboxOpt.get();
+                    paymentOutboxMessage.setOrderStatus(OrderStatus.CANCELLED);
+                    paymentOutboxHelper.save(paymentOutboxMessage);
+                }
+                log.info("Order with id: {} is finalized as CANCELLED (Fork-Join barrier complete).", order.getId().getValue());
+            } else {
+                log.info("Order with id: {} remains in CANCELLING state, awaiting payment compensation.",
+                        restaurantApprovalResponse.getOrderId());
+            }
         }
-        OrderPaymentOutboxMessage orderPaymentOutboxMessage = orderPaymentOutboxMessageResponse.get();
-        orderPaymentOutboxMessage.setProcessedAt(ZonedDateTime.now(ZoneId.of(UTC)));
-        orderPaymentOutboxMessage.setOrderStatus(orderStatus);
-        orderPaymentOutboxMessage.setSagaStatus(sagaStatus);
-        return orderPaymentOutboxMessage;
     }
 
-    private OrderCancelledEvent rollbackOrder(RestaurantApprovalResponse restaurantApprovalResponse) {
-        log.info("Cancelling order with id: {}", restaurantApprovalResponse.getOrderId());
-        Order order = orderSagaHelper.findOrder(restaurantApprovalResponse.getOrderId());
-        OrderCancelledEvent domainEvent = orderDomainService.cancelOrderPayment(order,
-                restaurantApprovalResponse.getFailureMessages());
-        orderSagaHelper.saveOrder(order);
-        return domainEvent;
+    private String createPaymentPayload(com.berkay.order.service.domain.outbox.model.payment.OrderPaymentEventPayload payload) {
+        try {
+            return objectMapper.writeValueAsString(payload);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            log.error("Could not create OrderPaymentEventPayload JSON for order id: {}", payload.getOrderId(), e);
+            throw new OrderDomainException("Could not create OrderPaymentEventPayload JSON for order id: " + payload.getOrderId(), e);
+        }
     }
 }

@@ -20,6 +20,8 @@ public interface PaymentOutboxRepository {
                                                                          UUID sagaId,
                                                                          SagaStatus... sagaStatus);
 
+    Optional<OrderPaymentOutboxMessage> findByTypeAndSagaId(String type, UUID sagaId);
+
     void deleteByTypeAndOutboxStatusAndSagaStatus(String type,
                                                   OutboxStatus outboxStatus,
                                                   SagaStatus... sagaStatus);

@@ -21,6 +21,8 @@ public interface ApprovalOutboxJpaRepository extends JpaRepository<ApprovalOutbo
                                                                       UUID sagaId,
                                                                       List<SagaStatus> sagaStatus);
 
+    Optional<ApprovalOutboxEntity> findByTypeAndSagaId(String type, UUID sagaId);
+
     void deleteByTypeAndOutboxStatusAndSagaStatusIn(String type,
                                                     OutboxStatus outboxStatus,
                                                     List<SagaStatus> sagaStatus);

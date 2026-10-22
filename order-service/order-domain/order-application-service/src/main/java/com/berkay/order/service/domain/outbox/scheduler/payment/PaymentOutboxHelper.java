@@ -46,6 +46,11 @@ public class PaymentOutboxHelper {
         return paymentOutboxRepository.findByTypeAndSagaIdAndSagaStatus(ORDER_SAGA_NAME, sagaId, sagaStatus);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<OrderPaymentOutboxMessage> getPaymentOutboxMessageBySagaId(UUID sagaId) {
+        return paymentOutboxRepository.findByTypeAndSagaId(ORDER_SAGA_NAME, sagaId);
+    }
+
     @Transactional
     public void save(OrderPaymentOutboxMessage orderPaymentOutboxMessage) {
         OrderPaymentOutboxMessage response = paymentOutboxRepository.save(orderPaymentOutboxMessage);
