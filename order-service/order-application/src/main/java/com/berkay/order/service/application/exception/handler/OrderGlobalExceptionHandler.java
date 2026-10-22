@@ -36,4 +36,15 @@ public class OrderGlobalExceptionHandler extends GlobalExceptionHandler {
                 .message(orderNotFoundException.getMessage())
                 .build();
     }
+
+    @ResponseBody
+    @ExceptionHandler(value = {com.berkay.order.service.domain.exception.OrderConflictException.class, org.springframework.dao.OptimisticLockingFailureException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorDTO handleConflictException(Exception exception) {
+        log.warn("Conflict detected: {}", exception.getMessage());
+        return ErrorDTO.builder()
+                .code(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(exception.getMessage())
+                .build();
+    }
 }
