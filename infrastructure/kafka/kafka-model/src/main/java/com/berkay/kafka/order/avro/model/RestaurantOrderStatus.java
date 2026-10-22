@@ -6,8 +6,8 @@
 package com.berkay.kafka.order.avro.model;
 @org.apache.avro.specific.AvroGenerated
 public enum RestaurantOrderStatus implements org.apache.avro.generic.GenericEnumSymbol<RestaurantOrderStatus> {
-  PAID  ;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"RestaurantOrderStatus\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"symbols\":[\"PAID\"]}");
+  PAID, CANCELLED  ;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"RestaurantOrderStatus\",\"namespace\":\"com.berkay.kafka.order.avro.model\",\"symbols\":[\"PAID\",\"CANCELLED\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   @Override
