@@ -16,6 +16,10 @@ public interface OrderOutboxRepository {
     Optional<OrderOutboxMessage> findByTypeAndSagaIdAndOutboxStatus(String type, UUID sagaId,
                                                                     OutboxStatus outboxStatus);
 
+    Optional<OrderOutboxMessage> findByTypeAndSagaIdAndApprovalStatusAndOutboxStatus(String type, UUID sagaId,
+                                                                                    com.berkay.domain.valueobject.OrderApprovalStatus approvalStatus,
+                                                                                    OutboxStatus outboxStatus);
+
     void deleteByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus);
 
 }

@@ -28,5 +28,8 @@ public class OrderEventPayload {
     @JsonProperty
     private List<String> failureMessages;
 
+    @JsonProperty
+    private String cancelReason;
+
 
 }

@@ -53,11 +53,10 @@ public class RestaurantApprovalRequestKafkaListener implements KafkaConsumer<Res
                 restaurantApprovalRequestMessageListener.approveOrder(restaurantMessagingDataMapper.
                         restaurantApprovalRequestAvroModelToRestaurantApproval(restaurantApprovalRequestAvroModel));
             } catch (DataAccessException e) {
-                SQLException sqlException = (SQLException) e.getRootCause();
-                if (sqlException != null && sqlException.getSQLState() != null &&
+                if (e.getRootCause() instanceof SQLException sqlException && sqlException.getSQLState() != null &&
                         PSQLState.UNIQUE_VIOLATION.getState().equals(sqlException.getSQLState())) {
                     //NO-OP for unique constraint exception
-                    log.error("Caught unique constraint exception with sql state: {} " +
+                    log.warn("Caught unique constraint exception with sql state: {} " +
                                     "in RestaurantApprovalRequestKafkaListener for order id: {}",
                             sqlException.getSQLState(), restaurantApprovalRequestAvroModel.getOrderId());
                 } else {
@@ -66,7 +65,7 @@ public class RestaurantApprovalRequestKafkaListener implements KafkaConsumer<Res
                 }
             } catch (RestaurantNotFoundException e) {
                 //NO-OP for RestaurantNotFoundException
-                log.error("No restaurant found for restaurant id: {}, and order id: {}",
+                log.warn("No restaurant found for restaurant id: {}, and order id: {}",
                         restaurantApprovalRequestAvroModel.getRestaurantId(),
                         restaurantApprovalRequestAvroModel.getOrderId());
             }

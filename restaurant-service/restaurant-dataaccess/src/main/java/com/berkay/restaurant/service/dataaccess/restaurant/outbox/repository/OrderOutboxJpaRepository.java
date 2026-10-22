@@ -16,6 +16,10 @@ public interface OrderOutboxJpaRepository extends JpaRepository<OrderOutboxEntit
 
     Optional<OrderOutboxEntity> findByTypeAndSagaIdAndOutboxStatus(String type, UUID sagaId, OutboxStatus outboxStatus);
 
+    Optional<OrderOutboxEntity> findByTypeAndSagaIdAndApprovalStatusAndOutboxStatus(String type, UUID sagaId,
+                                                                                    com.berkay.domain.valueobject.OrderApprovalStatus approvalStatus,
+                                                                                    OutboxStatus outboxStatus);
+
     void deleteByTypeAndOutboxStatus(String type, OutboxStatus outboxStatus);
 
 }
