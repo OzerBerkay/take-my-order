@@ -85,6 +85,17 @@ public class AssignUserRoleCommandHandler {
             if (!user.getOrganizationalUnitIds().contains(role.getOrganizationalUnitId())) {
                 throw new IdentityDomainException("Cannot assign a restaurant-specific role to a user who is not a member of that restaurant!");
             }
+
+            boolean isTargetUserOwner = user.getRoles().stream()
+                    .anyMatch(r -> com.berkay.identity.service.domain.constants.RoleConstants.RESTAURANT_OWNER.equals(r.getName())
+                            && role.getOrganizationalUnitId().equals(r.getOrganizationalUnitId()));
+            if (isTargetUserOwner) {
+                throw new IdentityDomainException("Restaurant owner already possesses full permissions and cannot be assigned redundant personnel roles.");
+            }
+
+            if (command.requesterId() != null && command.requesterId().equals(user.getId().getValue())) {
+                throw new IdentityDomainException("CANNOT_MODIFY_OWN_ROLES", "CANNOT_MODIFY_OWN_ROLES");
+            }
         }
 
         java.util.List<String> updatedRoleIds = user.getRoles().stream()

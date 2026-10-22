@@ -113,12 +113,34 @@ public class AdminUserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private com.berkay.application.security.JwtAuthenticationToken getMerchantAuth() {
+        return new com.berkay.application.security.JwtAuthenticationToken(
+                UUID.randomUUID(),
+                "externalId",
+                "MERCHANT",
+                java.util.List.of(),
+                java.util.List.of(),
+                "sid",
+                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_USER"))
+        );
+    }
+
     @Test
     void getAdminUsers_WithWrongAuthority_ShouldReturnForbidden() throws Exception {
         Mockito.when(roleAuthService.hasPermission(Mockito.any(), Mockito.eq("can_view_users"))).thenReturn(false);
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/users")
                 .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(getAdminAuth()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAdminUsers_WithMerchantUserType_ShouldReturnForbidden() throws Exception {
+        Mockito.when(roleAuthService.hasPermission(Mockito.any(), Mockito.eq("can_view_users"))).thenReturn(true);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/users")
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication(getMerchantAuth()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }

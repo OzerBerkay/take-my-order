@@ -46,7 +46,7 @@ public class IdentityGlobalExceptionHandler extends GlobalExceptionHandler {
     public ErrorDTO handleException(IdentityDomainException exception) {
         log.warn(exception.getMessage());
         return ErrorDTO.builder()
-                .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .code(exception.getErrorCode() != null ? exception.getErrorCode() : HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(exception.getMessage())
                 .build();
     }

@@ -85,6 +85,10 @@ public class UnassignUserRoleCommandHandler {
             if (!user.getOrganizationalUnitIds().contains(role.getOrganizationalUnitId())) {
                 throw new IdentityDomainException("Cannot unassign a restaurant-specific role from a user who is not a member of that restaurant!");
             }
+
+            if (command.requesterId() != null && command.requesterId().equals(user.getId().getValue())) {
+                throw new IdentityDomainException("CANNOT_MODIFY_OWN_ROLES", "CANNOT_MODIFY_OWN_ROLES");
+            }
         }
 
         java.util.List<String> updatedRoleIds = user.getRoles().stream()

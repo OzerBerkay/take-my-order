@@ -198,4 +198,20 @@ public class UnassignUserRoleCommandHandlerTest {
         org.junit.jupiter.api.Assertions.assertEquals("Global roles can only be unassigned from INTERNAL users!", exception.getMessage());
         verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
     }
+
+    @Test
+    void shouldThrowException_WhenUserAttemptsToUnassignRoleFromThemselves() {
+        UnassignUserRoleCommand command = new UnassignUserRoleCommand(
+                userId, roleId, userId, com.berkay.identity.service.domain.valueobject.UserType.MERCHANT, List.of(requesterRestaurantRole.getId().getValue())
+        );
+
+        when(userRepository.findById(new UserId(userId))).thenReturn(Optional.of(targetRestaurantUser));
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(restaurantRole));
+        when(roleRepository.findAllById(command.requesterRoleIds())).thenReturn(List.of(requesterRestaurantRole));
+
+        IdentityDomainException exception = assertThrows(IdentityDomainException.class, () -> handler.unassign(command));
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", exception.getMessage());
+        org.junit.jupiter.api.Assertions.assertEquals("CANNOT_MODIFY_OWN_ROLES", exception.getErrorCode());
+        verify(userUpdateIntentHelper, never()).createIntent(any(), any(), any(), any());
+    }
 }
