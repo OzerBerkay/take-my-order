@@ -39,7 +39,7 @@
             "type": {
                   "type": "enum",
                   "name": "OrderApprovalStatus",
-                  "symbols": ["APPROVED", "REJECTED"]
+                  "symbols": ["APPROVED", "VALIDATED", "REJECTED"]
                }
         },
         {
@@ -50,6 +50,14 @@
                   "type":"string"
                }
             }
+        },
+        {
+            "name": "cancelReason",
+            "type": ["null", {
+                "type": "string",
+                "avro.java.string": "String"
+            }],
+            "default": null
         }
     ]
 }
