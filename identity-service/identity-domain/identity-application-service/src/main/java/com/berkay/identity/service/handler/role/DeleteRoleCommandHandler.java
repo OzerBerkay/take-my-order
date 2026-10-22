@@ -19,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -38,24 +40,35 @@ public class DeleteRoleCommandHandler {
         Role role = roleRepository.findById(new RoleId(command.getRoleId()))
                 .orElseThrow(() -> new IdentityDomainException("Role not found with id: " + command.getRoleId()));
 
-        UserType callerUserType = securityContextPort.getCurrentUserType();
-
-        // 2. Spoofing Koruması: MERCHANT kendi organizationalUnitId'si dışında işlem yapamaz
-        java.util.Set<java.util.UUID> allowedOrganizationalUnitIds = securityContextPort.getAllowedOrganizationalUnitIds();
-        if (command.getOrganizationalUnitId() != null && !allowedOrganizationalUnitIds.contains(command.getOrganizationalUnitId())) {
-            throw new IdentityDomainException("Spoofing detected! The provided organizationalUnitId does not match your allowed contexts!");
+        // 2. Statik rol koruması (Fail-fast)
+        if (role.isStatic()) {
+            throw new IdentityDomainException("Static roles (is_static=true) cannot be deleted!");
         }
 
-        // 3. INTERNAL kullanıcıların Global rolleri (organizationalUnitId == null) silebilmesi gerekir.
-        // MERCHANT kullanıcıların ise SADECE kendi restaurant (context) rollerini silebilmesi gerekir.
+        UserType callerUserType = securityContextPort.getCurrentUserType();
+        UUID targetOrgUnitId = role.getOrganizationalUnitId();
+
+        List<UUID> callerRoleIds = securityContextPort.getCurrentUserRoleIds();
+        List<Role> callerRoles = roleRepository.findAllById(callerRoleIds);
+
         if (UserType.INTERNAL.equals(callerUserType)) {
-            if (role.getOrganizationalUnitId() != null) {
+            if (targetOrgUnitId != null) {
                 throw new IdentityDomainException("Internal users can only delete global roles (organizationalUnitId must be null)!");
             }
         } else if (UserType.MERCHANT.equals(callerUserType)) {
-            if (role.getOrganizationalUnitId() == null || !role.getOrganizationalUnitId().equals(command.getOrganizationalUnitId())) {
-                throw new IdentityDomainException("You cannot delete a role that belongs to a different organizationalUnitId or is global!");
+            if (targetOrgUnitId == null) {
+                throw new IdentityDomainException("Merchant users cannot delete global roles!");
             }
+            boolean hasContextRole = callerRoles.stream()
+                    .anyMatch(r -> r.getOrganizationalUnitId() != null && r.getOrganizationalUnitId().equals(targetOrgUnitId));
+            if (!hasContextRole) {
+                throw new IdentityDomainException("Spoofing detected! The provided organizationalUnitId does not match your allowed contexts!");
+            }
+            if (command.getOrganizationalUnitId() != null && !targetOrgUnitId.equals(command.getOrganizationalUnitId())) {
+                throw new IdentityDomainException("Provided organizationalUnitId does not match the role's organizationalUnitId!");
+            }
+        } else {
+            throw new IdentityDomainException("Customers are not allowed to delete roles.");
         }
 
         // 3. Domain Service Çağrısı (Statik rol silinemez vs kuralı burada işletilir)

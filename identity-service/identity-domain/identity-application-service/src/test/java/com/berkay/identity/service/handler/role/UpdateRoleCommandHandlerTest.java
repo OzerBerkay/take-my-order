@@ -63,6 +63,8 @@ class UpdateRoleCommandHandlerTest {
 
     private UUID restaurantId;
     private UUID roleId;
+    private UUID callerRoleId;
+    private Role callerRole;
     private Permission permViewUsers;
     private Permission permManageRest;
 
@@ -70,6 +72,7 @@ class UpdateRoleCommandHandlerTest {
     void setUp() {
         restaurantId = UUID.randomUUID();
         roleId = UUID.randomUUID();
+        callerRoleId = UUID.randomUUID();
 
         permViewUsers = Permission.builder()
                 .permissionId(new PermissionId(UUID.randomUUID()))
@@ -88,6 +91,14 @@ class UpdateRoleCommandHandlerTest {
                 .active(true)
                 .isRestricted(false)
                 .build();
+
+        callerRole = Role.builder()
+                .roleId(new RoleId(callerRoleId))
+                .name("RESTAURANT_OWNER")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(restaurantId)
+                .isStatic(true)
+                .build();
     }
 
     @Test
@@ -100,9 +111,6 @@ class UpdateRoleCommandHandlerTest {
                 .permissionIds(Set.of(permViewUsers.getId().getValue(), permManageRest.getId().getValue()))
                 .build();
 
-        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
-        when(securityContextPort.getAllowedOrganizationalUnitIds()).thenReturn(Set.of(restaurantId));
-
         Role existingRole = Role.builder()
                 .roleId(new RoleId(roleId))
                 .name("Old Supervisor")
@@ -114,15 +122,17 @@ class UpdateRoleCommandHandlerTest {
                 .build();
 
         when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(existingRole));
+        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole));
+
         when(roleRepository.existsByNameAndOrganizationalUnitIdAndIdNot("Updated Supervisor", restaurantId, roleId))
                 .thenReturn(false);
 
         when(permissionRepository.findActivePermissionsByIds(command.getPermissionIds()))
                 .thenReturn(List.of(permViewUsers, permManageRest));
 
-        UUID userRoleUuid = UUID.randomUUID();
-        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(userRoleUuid));
-        when(permissionRepository.findActivePermissionsByRoleIds(List.of(userRoleUuid)))
+        when(permissionRepository.findActivePermissionsByRoleIds(List.of(callerRoleId)))
                 .thenReturn(List.of(permViewUsers, permManageRest));
 
         when(identityDomainService.validateAndInitiateRoleUpdate(any(), any(), anyList(), anyList()))
@@ -141,7 +151,34 @@ class UpdateRoleCommandHandlerTest {
     }
 
     @Test
-    @DisplayName("IDOR Engeli: Restoran sahibi başka bir restorana ait rolü güncelleyemez")
+    @DisplayName("Statik Rol Dokunulmazlığı: Statik rol güncellenmek istendiğinde hata fırlatılır")
+    void shouldThrowException_WhenRoleIsStatic() {
+        UpdateRoleCommand command = UpdateRoleCommand.builder()
+                .roleId(roleId)
+                .name("Updated Static Role")
+                .permissionIds(Set.of(permViewUsers.getId().getValue()))
+                .build();
+
+        Role staticRole = Role.builder()
+                .roleId(new RoleId(roleId))
+                .name("RESTAURANT_OWNER")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(restaurantId)
+                .isStatic(true)
+                .build();
+
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(staticRole));
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
+                commandHandler.updateRole(command)
+        );
+
+        assertTrue(ex.getMessage().contains("Static roles (is_static=true) cannot be updated"));
+        verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("IDOR Engeli: Restoran yetkilisi başka bir restorana ait rolü güncelleyemez")
     void shouldThrowException_WhenMerchantTriesToUpdateRoleOfAnotherRestaurant() {
         UUID otherRestaurantId = UUID.randomUUID();
         UpdateRoleCommand command = UpdateRoleCommand.builder()
@@ -151,14 +188,96 @@ class UpdateRoleCommandHandlerTest {
                 .permissionIds(Set.of(permViewUsers.getId().getValue()))
                 .build();
 
+        Role existingRoleOfOtherRestaurant = Role.builder()
+                .roleId(new RoleId(roleId))
+                .name("Role In Other Restaurant")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(otherRestaurantId)
+                .isStatic(false)
+                .build();
+
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(existingRoleOfOtherRestaurant));
         when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
-        when(securityContextPort.getAllowedOrganizationalUnitIds()).thenReturn(Set.of(restaurantId));
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole)); // caller is in restaurantId
 
         IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
                 commandHandler.updateRole(command)
         );
 
         assertTrue(ex.getMessage().contains("Spoofing detected"));
+        verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Kısıtlı İzin Engeli: Özel role is_restricted=true olan yetki verilemez")
+    void shouldThrowException_WhenUpdatingWithRestrictedPermission() {
+        Permission restrictedPerm = Permission.builder()
+                .permissionId(new PermissionId(UUID.randomUUID()))
+                .code("can_create_role")
+                .description("Create role")
+                .domain(DomainType.IDENTITY)
+                .active(true)
+                .isRestricted(true)
+                .build();
+
+        UpdateRoleCommand command = UpdateRoleCommand.builder()
+                .roleId(roleId)
+                .name("Supervisor")
+                .organizationalUnitId(restaurantId)
+                .permissionIds(Set.of(restrictedPerm.getId().getValue()))
+                .build();
+
+        Role existingRole = Role.builder()
+                .roleId(new RoleId(roleId))
+                .name("Supervisor")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(restaurantId)
+                .isStatic(false)
+                .build();
+
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(existingRole));
+        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole));
+        when(roleRepository.existsByNameAndOrganizationalUnitIdAndIdNot("Supervisor", restaurantId, roleId))
+                .thenReturn(false);
+        when(permissionRepository.findActivePermissionsByIds(command.getPermissionIds()))
+                .thenReturn(List.of(restrictedPerm));
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
+                commandHandler.updateRole(command)
+        );
+
+        assertTrue(ex.getMessage().contains("Cannot assign restricted permissions to a custom role"));
+        verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("İç Kullanıcı İzolasyonu: INTERNAL kullanıcı restoran bazlı rolü güncelleyemez")
+    void shouldThrowException_WhenInternalUserTriesToUpdateRestaurantRole() {
+        UpdateRoleCommand command = UpdateRoleCommand.builder()
+                .roleId(roleId)
+                .name("Internal Attempt")
+                .permissionIds(Set.of(permViewUsers.getId().getValue()))
+                .build();
+
+        Role existingRestaurantRole = Role.builder()
+                .roleId(new RoleId(roleId))
+                .name("Restaurant Custom Role")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(restaurantId)
+                .isStatic(false)
+                .build();
+
+        when(roleRepository.findById(new RoleId(roleId))).thenReturn(Optional.of(existingRestaurantRole));
+        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.INTERNAL);
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
+                commandHandler.updateRole(command)
+        );
+
+        assertTrue(ex.getMessage().contains("Internal users can only manage global roles"));
         verify(roleRepository, never()).save(any());
     }
 }

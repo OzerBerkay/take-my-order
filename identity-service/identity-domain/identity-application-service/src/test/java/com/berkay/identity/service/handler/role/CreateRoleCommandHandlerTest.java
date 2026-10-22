@@ -66,6 +66,8 @@ class CreateRoleCommandHandlerTest {
     private UUID permManageRestId;
     private Permission permViewUsers;
     private Permission permManageRest;
+    private UUID callerRoleId;
+    private Role callerRole;
 
     @BeforeEach
     void setUp() {
@@ -91,10 +93,19 @@ class CreateRoleCommandHandlerTest {
                 .active(true)
                 .isRestricted(false)
                 .build();
+
+        callerRoleId = UUID.randomUUID();
+        callerRole = Role.builder()
+                .roleId(new RoleId(callerRoleId))
+                .name("RESTAURANT_OWNER")
+                .userType(UserType.MERCHANT)
+                .organizationalUnitId(restaurantId)
+                .isStatic(true)
+                .build();
     }
 
     @Test
-    @DisplayName("Başarılı Özel Rol Oluşturma: Restoran sahibi can_view_merchant_users içeren rolü başarıyla oluşturabilir")
+    @DisplayName("Başarılı Özel Rol Oluşturma: Restoran yetkilisi geçerli izinlerle özel rol oluşturabilir")
     void shouldSuccessfullyCreateCustomRole_WhenMerchantAssignsValidPermissions() {
         CreateRoleCommand command = CreateRoleCommand.builder()
                 .name("Shift Supervisor")
@@ -104,15 +115,14 @@ class CreateRoleCommandHandlerTest {
 
         when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
         when(securityContextPort.getCurrentInternalUserId()).thenReturn(callerUserId);
-        when(securityContextPort.getAllowedOrganizationalUnitIds()).thenReturn(Set.of(restaurantId));
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole));
         when(roleRepository.existsByNameAndOrganizationalUnitId("Shift Supervisor", restaurantId)).thenReturn(false);
 
         when(permissionRepository.findActivePermissionsByIds(Set.of(permViewUsersId, permManageRestId)))
                 .thenReturn(List.of(permViewUsers, permManageRest));
 
-        UUID roleUuid = UUID.randomUUID();
-        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(roleUuid));
-        when(permissionRepository.findActivePermissionsByRoleIds(List.of(roleUuid)))
+        when(permissionRepository.findActivePermissionsByRoleIds(List.of(callerRoleId)))
                 .thenReturn(List.of(permViewUsers, permManageRest));
 
         Role savedRole = Role.builder()
@@ -152,7 +162,8 @@ class CreateRoleCommandHandlerTest {
 
         when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
         when(securityContextPort.getCurrentInternalUserId()).thenReturn(callerUserId);
-        when(securityContextPort.getAllowedOrganizationalUnitIds()).thenReturn(Set.of(restaurantId));
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole));
 
         IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
                 commandHandler.createRole(command)
@@ -167,8 +178,8 @@ class CreateRoleCommandHandlerTest {
     void shouldThrowException_WhenAssigningRestrictedPermission() {
         Permission restrictedPerm = Permission.builder()
                 .permissionId(new PermissionId(UUID.randomUUID()))
-                .code("can_assign_role")
-                .description("Assign role")
+                .code("can_reset_password")
+                .description("Reset password")
                 .domain(DomainType.IDENTITY)
                 .active(true)
                 .isRestricted(true)
@@ -182,7 +193,8 @@ class CreateRoleCommandHandlerTest {
 
         when(securityContextPort.getCurrentUserType()).thenReturn(UserType.MERCHANT);
         when(securityContextPort.getCurrentInternalUserId()).thenReturn(callerUserId);
-        when(securityContextPort.getAllowedOrganizationalUnitIds()).thenReturn(Set.of(restaurantId));
+        when(securityContextPort.getCurrentUserRoleIds()).thenReturn(List.of(callerRoleId));
+        when(roleRepository.findAllById(List.of(callerRoleId))).thenReturn(List.of(callerRole));
         when(roleRepository.existsByNameAndOrganizationalUnitId("Super Role", restaurantId)).thenReturn(false);
         when(permissionRepository.findActivePermissionsByIds(anySet()))
                 .thenReturn(List.of(restrictedPerm));
@@ -192,6 +204,46 @@ class CreateRoleCommandHandlerTest {
         );
 
         assertTrue(ex.getMessage().contains("Cannot assign restricted permissions to a custom role"));
+        verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("İç Kullanıcı İzolasyonu: INTERNAL kullanıcı restoran bazlı rol oluşturamaz")
+    void shouldThrowException_WhenInternalUserSpecifiesOrganizationalUnitId() {
+        CreateRoleCommand command = CreateRoleCommand.builder()
+                .name("Internal Custom Role")
+                .organizationalUnitId(restaurantId)
+                .permissionIds(Set.of(permViewUsersId))
+                .build();
+
+        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.INTERNAL);
+        when(securityContextPort.getCurrentInternalUserId()).thenReturn(callerUserId);
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
+                commandHandler.createRole(command)
+        );
+
+        assertTrue(ex.getMessage().contains("Internal users can only manage global roles"));
+        verify(roleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Müşteri Engeli: CUSTOMER kullanıcı rol oluşturamaz")
+    void shouldThrowException_WhenCustomerTriesToCreateRole() {
+        CreateRoleCommand command = CreateRoleCommand.builder()
+                .name("Customer Role")
+                .organizationalUnitId(null)
+                .permissionIds(Set.of(permViewUsersId))
+                .build();
+
+        when(securityContextPort.getCurrentUserType()).thenReturn(UserType.CUSTOMER);
+        when(securityContextPort.getCurrentInternalUserId()).thenReturn(callerUserId);
+
+        IdentityDomainException ex = assertThrows(IdentityDomainException.class, () ->
+                commandHandler.createRole(command)
+        );
+
+        assertTrue(ex.getMessage().contains("Customers are not allowed to create roles"));
         verify(roleRepository, never()).save(any());
     }
 }

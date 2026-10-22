@@ -61,8 +61,8 @@ class IdentityDomainServiceImplTest {
 
         permRestricted = Permission.builder()
                 .permissionId(new PermissionId(UUID.randomUUID()))
-                .code("can_assign_role")
-                .description("Assign role")
+                .code("can_reset_password")
+                .description("Reset password")
                 .domain(DomainType.IDENTITY)
                 .active(true)
                 .isRestricted(true)

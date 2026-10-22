@@ -24,57 +24,57 @@ public class RoleController {
     private final RoleAuthorizationService roleAuthService;
 
     @PostMapping
-    // SpEL (Spring Expression Language) ile RoleAuthorizationService bean'ine gidiyoruz.
-    // Eğer false dönerse Spring Security otomatik olarak 403 Forbidden patlatır, Use-Case'e hiç inilmez.
-    @PreAuthorize("@roleAuthService.canCreateRole(authentication, #organizationalUnitId)")
+    @PreAuthorize("@roleAuthService.canCreateRole(authentication, #organizationalUnitId != null ? #organizationalUnitId : #command.organizationalUnitId)")
     public ResponseEntity<CreateRoleResponse> createRole(@RequestParam(required = false) UUID organizationalUnitId,
                                                          @RequestBody @Valid CreateRoleCommand command) {
         log.info("Received create role request for role name: {}", command.getName());
 
-        // Body'den gelen verilerle Query Param'dan gelen veriyi tek Command'de birleştiriyoruz.
+        UUID effectiveOrgUnitId = organizationalUnitId != null ? organizationalUnitId : command.getOrganizationalUnitId();
+
         CreateRoleCommand finalCommand = CreateRoleCommand.builder()
                 .name(command.getName())
                 .permissionIds(command.getPermissionIds())
-                .organizationalUnitId(organizationalUnitId)
+                .organizationalUnitId(effectiveOrgUnitId)
                 .build();
 
-        // Application service artık tek ve dolgun bir Command objesi alıyor.
         CreateRoleResponse response = roleApplicationService.createRole(finalCommand);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{roleId}")
-    @PreAuthorize("@roleAuthService.canUpdateRole(authentication, #organizationalUnitId)")
+    @PreAuthorize("@roleAuthService.canUpdateRole(authentication, #roleId)")
     public ResponseEntity<UpdateRoleResponse> updateRole(@PathVariable UUID roleId,
                                                          @RequestParam(required = false) UUID organizationalUnitId,
                                                          @RequestBody @Valid UpdateRoleCommand command) {
         log.info("Received update role request for role id: {}", roleId);
 
-        // Path, Param ve Body birleşiyor.
+        UUID effectiveOrgUnitId = organizationalUnitId != null ? organizationalUnitId : command.getOrganizationalUnitId();
+
         UpdateRoleCommand finalCommand = UpdateRoleCommand.builder()
                 .roleId(roleId)
                 .name(command.getName())
                 .permissionIds(command.getPermissionIds())
-                .organizationalUnitId(organizationalUnitId)
+                .organizationalUnitId(effectiveOrgUnitId)
                 .build();
 
         UpdateRoleResponse response = roleApplicationService.updateRole(finalCommand);
+        roleAuthService.evictRoleCache(roleId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{roleId}")
-    @PreAuthorize("@roleAuthService.canDeleteRole(authentication, #organizationalUnitId)")
+    @PreAuthorize("@roleAuthService.canDeleteRole(authentication, #roleId)")
     public ResponseEntity<DeleteRoleResponse> deleteRole(@PathVariable UUID roleId,
                                                          @RequestParam(required = false) UUID organizationalUnitId) {
         log.info("Received delete role request for role id: {}", roleId);
 
-        // Delete için body olmadığından command'i doğrudan oluşturuyoruz.
         DeleteRoleCommand finalCommand = DeleteRoleCommand.builder()
                 .roleId(roleId)
                 .organizationalUnitId(organizationalUnitId)
                 .build();
 
         DeleteRoleResponse response = roleApplicationService.deleteRole(finalCommand);
+        roleAuthService.evictRoleCache(roleId);
         return ResponseEntity.ok(response);
     }
 
