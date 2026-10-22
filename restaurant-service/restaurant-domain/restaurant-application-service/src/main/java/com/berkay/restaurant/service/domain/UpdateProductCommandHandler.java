@@ -63,16 +63,15 @@ public class UpdateProductCommandHandler {
                 command.getStock(),
                 command.getHidden(),
                 command.getImageUrl(),
-                command.getCategoryId() != null ? new com.berkay.domain.valueobject.ProductCategoryId(command.getCategoryId()) : null
+                command.getCategoryId() != null
+                        ? new com.berkay.domain.valueobject.ProductCategoryId(command.getCategoryId())
+                        : existingProduct.getCategoryId()
         );
 
         log.info("Product updated with id: {}", existingProduct.getId().getValue());
 
         // Kaydet ve DÖNEN OBJEYİ AL (@Version tutarlılığı için)
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);
-
-        // Restoranı Kaydet (JPA cascade ile product da güncellenir)
-        restaurantRepository.saveRestaurant(restaurant);
 
         restaurantOutboxHelper.saveRestaurantOutboxMessage(
                 restaurantDataMapper.restaurantToRestaurantInformationEvent(savedRestaurant),

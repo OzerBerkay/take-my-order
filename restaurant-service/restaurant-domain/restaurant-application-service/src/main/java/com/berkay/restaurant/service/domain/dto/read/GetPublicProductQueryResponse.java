@@ -16,6 +16,7 @@ public class GetPublicProductQueryResponse {
     private final String description;
     private final BigDecimal price;
     private final Boolean inStock;
+    private final Boolean available;
     private final String imageUrl;
     private final UUID categoryId;
 }

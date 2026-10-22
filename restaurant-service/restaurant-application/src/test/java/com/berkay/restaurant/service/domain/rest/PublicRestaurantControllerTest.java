@@ -67,4 +67,31 @@ public class PublicRestaurantControllerTest {
         assertEquals(expectedResponse, responseEntity.getBody());
         verify(restaurantApplicationService, times(1)).getPublicRestaurant(eq(restaurantId));
     }
+
+    @Test
+    void shouldReturnPublicProductsSuccessfully() {
+        UUID restaurantId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse productResponse =
+                com.berkay.restaurant.service.domain.dto.read.GetPublicProductQueryResponse.builder()
+                        .productId(productId)
+                        .name("Burger")
+                        .price(new java.math.BigDecimal("100.00"))
+                        .inStock(true)
+                        .available(false)
+                        .build();
+
+        com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse expectedResponse =
+                new com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse(restaurantId, java.util.List.of(productResponse));
+
+        when(restaurantApplicationService.getPublicProducts(eq(restaurantId)))
+                .thenReturn(expectedResponse);
+
+        ResponseEntity<com.berkay.restaurant.service.domain.dto.read.GetPublicProductListQueryResponse> responseEntity =
+                publicRestaurantController.getPublicProducts(restaurantId);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResponse, responseEntity.getBody());
+        verify(restaurantApplicationService, times(1)).getPublicProducts(eq(restaurantId));
+    }
 }

@@ -47,10 +47,13 @@ public class ProductRequestMapper {
                 .restaurantId(restaurantId)
                 .productId(productId)
                 .name(updateProductRequest.getName())
+                .description(updateProductRequest.getDescription())
                 .price(updateProductRequest.getPrice())
                 .stock(updateProductRequest.getStock())
                 .available(updateProductRequest.getAvailable())
                 .hidden(updateProductRequest.getHidden())
+                .imageUrl(updateProductRequest.getImageUrl())
+                .categoryId(updateProductRequest.getCategoryId())
                 .build();
     }
 }

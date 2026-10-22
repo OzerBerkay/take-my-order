@@ -70,6 +70,8 @@ public class RestaurantDataMapper {
                 .orderApprovalStatus(orderApprovalEvent.getOrderApproval().getApprovalStatus().name())
                 .createdAt(orderApprovalEvent.getCreatedAt())
                 .failureMessages(orderApprovalEvent.getFailureMessages())
+                .cancelReason(orderApprovalEvent instanceof com.berkay.restaurant.service.domain.event.OrderRejectedEvent rejectedEvent
+                        && rejectedEvent.getCancelReason() != null ? rejectedEvent.getCancelReason().name() : null)
                 .build();
     }
 
@@ -149,6 +151,7 @@ public class RestaurantDataMapper {
                 .description(product.getDescription())
                 .price(product.getPrice().getAmount())
                 .inStock(product.getStock() > 0)
+                .available(product.isAvailable())
                 .imageUrl(product.getImageUrl())
                 .categoryId(product.getCategoryId() != null ? product.getCategoryId().getValue() : null)
                 .build();

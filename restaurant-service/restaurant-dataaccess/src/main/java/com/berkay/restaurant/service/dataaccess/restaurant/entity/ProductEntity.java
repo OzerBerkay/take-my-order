@@ -35,6 +35,9 @@ public class ProductEntity {
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 
+    @Version
+    private Integer version;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

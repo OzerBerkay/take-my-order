@@ -39,14 +39,22 @@ public class RestaurantMessagingDataMapper {
 
     public RestaurantApprovalResponseAvroModel
     orderEventPayloadToRestaurantApprovalResponseAvroModel(String sagaId, OrderEventPayload orderEventPayload) {
+        OrderApprovalStatus status;
+        if ("APPROVED".equalsIgnoreCase(orderEventPayload.getOrderApprovalStatus()) || "VALIDATED".equalsIgnoreCase(orderEventPayload.getOrderApprovalStatus())) {
+            status = OrderApprovalStatus.VALIDATED;
+        } else {
+            status = OrderApprovalStatus.REJECTED;
+        }
+
         return RestaurantApprovalResponseAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
                 .setSagaId(sagaId)
                 .setOrderId(orderEventPayload.getOrderId())
                 .setRestaurantId(orderEventPayload.getRestaurantId())
                 .setCreatedAt(orderEventPayload.getCreatedAt().toInstant())
-                .setOrderApprovalStatus(OrderApprovalStatus.valueOf(orderEventPayload.getOrderApprovalStatus()))
+                .setOrderApprovalStatus(status)
                 .setFailureMessages(orderEventPayload.getFailureMessages())
+                .setCancelReason(orderEventPayload.getCancelReason())
                 .build();
     }
 

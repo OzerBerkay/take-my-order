@@ -11,5 +11,7 @@ public interface RestaurantDomainService {
 
     Optional<OrderApprovalEvent> validateOrder(Restaurant restaurant, List<String> failureMessages);
 
+    Optional<OrderApprovalEvent> validateOrder(Restaurant restaurant);
+
     RestaurantInformationEvent validateAndInitiateRestaurant(Restaurant restaurant);
 }

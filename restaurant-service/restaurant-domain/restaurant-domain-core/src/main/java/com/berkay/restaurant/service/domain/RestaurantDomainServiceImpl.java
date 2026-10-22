@@ -21,22 +21,30 @@ public class RestaurantDomainServiceImpl implements RestaurantDomainService {
     @Override
     public Optional<OrderApprovalEvent> validateOrder(Restaurant restaurant,
                                             List<String> failureMessages) {
-        restaurant.validateOrder(failureMessages);
-        log.info("Validating order with id: {}", restaurant.getOrderDetail().getId().getValue());
+        return validateOrder(restaurant);
+    }
 
-        if (failureMessages.isEmpty()) {
+    @Override
+    public Optional<OrderApprovalEvent> validateOrder(Restaurant restaurant) {
+        log.info("Validating order with id: {}", restaurant.getOrderDetail().getId().getValue());
+        Optional<com.berkay.domain.valueobject.CancelReason> cancelReasonOpt = restaurant.validateOrder();
+
+        if (cancelReasonOpt.isEmpty()) {
             log.info("Order is approved for order id: {}", restaurant.getOrderDetail().getId().getValue());
-            restaurant.constructOrderApproval(OrderApprovalStatus.PENDING);
-            return Optional.empty();
+            return Optional.of(new OrderApprovedEvent(restaurant.getOrderApproval(),
+                    restaurant.getId(),
+                    new java.util.ArrayList<>(),
+                    ZonedDateTime.now(ZoneId.of(UTC))));
         } else {
-            log.info("Order is rejected for order id: {}", restaurant.getOrderDetail().getId().getValue());
+            com.berkay.domain.valueobject.CancelReason reason = cancelReasonOpt.get();
+            log.info("Order is rejected with reason: {} for order id: {}", reason, restaurant.getOrderDetail().getId().getValue());
             restaurant.constructOrderApproval(OrderApprovalStatus.REJECTED);
             return Optional.of(new OrderRejectedEvent(restaurant.getOrderApproval(),
                     restaurant.getId(),
-                    failureMessages,
+                    List.of(reason.name()),
+                    reason,
                     ZonedDateTime.now(ZoneId.of(UTC))));
         }
-
     }
 
     @Override
