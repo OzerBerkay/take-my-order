@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class OrderApprovalOutboxMessage {
     private UUID id;
@@ -39,5 +39,9 @@ public class OrderApprovalOutboxMessage {
 
     public void setOutboxStatus(OutboxStatus outboxStatus) {
         this.outboxStatus = outboxStatus;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }

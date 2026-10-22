@@ -2,12 +2,12 @@
 DELETE FROM "order".orders WHERE id = 'd215b5f8-0249-4dc5-89a3-51fd148cfb17';
 DELETE FROM "order".payment_outbox WHERE id = '8904808e-286f-449b-9b56-b63ba8351cf2';
 
-insert into "order".orders(id, customer_id, restaurant_id, tracking_id, price, order_status, failure_messages)
+insert into "order".orders(id, customer_id, restaurant_id, tracking_id, price, order_status)
 values('d215b5f8-0249-4dc5-89a3-51fd148cfb17', 'd215b5f8-0249-4dc5-89a3-51fd148cfb41', 'd215b5f8-0249-4dc5-89a3-51fd148cfb45',
-       'd215b5f8-0249-4dc5-89a3-51fd148cfb18', 100.00, 'PENDING', '');
+       'd215b5f8-0249-4dc5-89a3-51fd148cfb18', 100.00, 'PENDING');
 
-insert into "order".order_items(id, order_id, product_id, price, quantity, sub_total)
-values(1, 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'd215b5f8-0249-4dc5-89a3-51fd148cfb47', 100.00, 1, 100.00);
+insert into "order".order_items(id, order_id, product_id, price, quantity, sub_total, product_name)
+values(1, 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'd215b5f8-0249-4dc5-89a3-51fd148cfb47', 100.00, 1, 100.00, 'Test Product');
 
 insert into "order".order_address(id, order_id, city, district, neighborhood, street, building_number, door_number, contact_first_name, contact_last_name, contact_phone)
 values('d215b5f8-0249-4dc5-89a3-51fd148cfb15', 'd215b5f8-0249-4dc5-89a3-51fd148cfb17', 'test city', 'test district', 'test neighborhood', 'test street', '1A', '12', 'John', 'Doe', '+1234567890');

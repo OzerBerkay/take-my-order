@@ -35,7 +35,8 @@ public class RestaurantApprovalOutboxScheduler implements OutboxScheduler {
         Optional<List<OrderApprovalOutboxMessage>> outboxMessagesResponse =
                 approvalOutboxHelper.getApprovalOutboxMessageByOutboxStatusAndSagaStatus(
                         OutboxStatus.STARTED,
-                        SagaStatus.PROCESSING);
+                        SagaStatus.PROCESSING,
+                        SagaStatus.COMPENSATING);
         if (outboxMessagesResponse.isPresent() && outboxMessagesResponse.get().size() > 0) {
             List<OrderApprovalOutboxMessage> outboxMessages = outboxMessagesResponse.get();
             log.info("Received {} OrderApprovalOutboxMessage with ids: {}, sending to message bus!",

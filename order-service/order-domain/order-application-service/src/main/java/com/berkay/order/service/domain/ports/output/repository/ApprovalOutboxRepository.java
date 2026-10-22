@@ -20,6 +20,8 @@ public interface ApprovalOutboxRepository {
                                                                          UUID sagaId,
                                                                          SagaStatus... sagaStatus);
 
+    Optional<OrderApprovalOutboxMessage> findByTypeAndSagaId(String type, UUID sagaId);
+
     void deleteByTypeAndOutboxStatusAndSagaStatus(String type,
                                                   OutboxStatus outboxStatus,
                                                   SagaStatus... sagaStatus);

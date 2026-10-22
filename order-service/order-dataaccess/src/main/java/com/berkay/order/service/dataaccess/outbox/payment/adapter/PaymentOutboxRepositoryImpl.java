@@ -59,6 +59,13 @@ public class PaymentOutboxRepositoryImpl implements PaymentOutboxRepository {
     }
 
     @Override
+    public Optional<OrderPaymentOutboxMessage> findByTypeAndSagaId(String type, UUID sagaId) {
+        return paymentOutboxJpaRepository
+                .findByTypeAndSagaId(type, sagaId)
+                .map(paymentOutboxDataAccessMapper::paymentOutboxEntityToOrderPaymentOutboxMessage);
+    }
+
+    @Override
     public void deleteByTypeAndOutboxStatusAndSagaStatus(String type, OutboxStatus outboxStatus, SagaStatus... sagaStatus) {
         paymentOutboxJpaRepository.deleteByTypeAndOutboxStatusAndSagaStatusIn(type, outboxStatus,
                 Arrays.asList(sagaStatus));

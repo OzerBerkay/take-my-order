@@ -60,6 +60,13 @@ public class ApprovalOutboxRepositoryImpl implements ApprovalOutboxRepository {
     }
 
     @Override
+    public Optional<OrderApprovalOutboxMessage> findByTypeAndSagaId(String type, UUID sagaId) {
+        return approvalOutboxJpaRepository
+                .findByTypeAndSagaId(type, sagaId)
+                .map(approvalOutboxDataAccessMapper::approvalOutboxEntityToOrderApprovalOutboxMessage);
+    }
+
+    @Override
     public void deleteByTypeAndOutboxStatusAndSagaStatus(String type, OutboxStatus outboxStatus, SagaStatus... sagaStatus) {
         approvalOutboxJpaRepository.deleteByTypeAndOutboxStatusAndSagaStatusIn(type, outboxStatus,
                 Arrays.asList(sagaStatus));

@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class OrderPaymentOutboxMessage { // DB'ye kaydedilecek olan outbox mesajı
     private UUID id;
@@ -39,5 +39,9 @@ public class OrderPaymentOutboxMessage { // DB'ye kaydedilecek olan outbox mesaj
 
     public void setOutboxStatus(OutboxStatus outboxStatus) {
         this.outboxStatus = outboxStatus;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }
