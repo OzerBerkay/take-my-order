@@ -16,8 +16,20 @@ public final class PermissionConstants {
     public static final String PAYMENT_SERVICE_CAN_SYNC_ROLES = "payment_service_can_sync_roles";
     public static final String ORDER_SERVICE_CAN_SYNC_ROLES = "order_service_can_sync_roles";
 
-    // Order Permissions
+    // Order Lifecycle Permissions
     public static final String CAN_READ_ORDERS = "can_read_orders";
+    public static final String CAN_APPROVE_ORDER = "can_approve_order";
+    public static final String CAN_CANCEL_WAITING_ORDER = "can_cancel_waiting_order";
+    public static final String CAN_START_PREPARING_ORDER = "can_start_preparing_order";
+    public static final String CAN_CANCEL_APPROVED_ORDER = "can_cancel_approved_order";
+    public static final String CAN_READY_ORDER = "can_ready_order";
+    public static final String CAN_CANCEL_PREPARING_ORDER = "can_cancel_preparing_order";
+    public static final String CAN_START_DELIVERY = "can_start_delivery";
+    public static final String CAN_CANCEL_READY_ORDER = "can_cancel_ready_order";
+    public static final String CAN_DELIVER_ORDER = "can_deliver_order";
+    public static final String CAN_CANCEL_IN_DELIVERY_ORDER = "can_cancel_in_delivery_order";
+    public static final String CAN_FORCE_CANCEL_ORDER = "can_force_cancel_order";
+    public static final String CAN_READ_ALL_ORDERS = "can_read_all_orders";
 
     // Restaurant Permissions
     public static final String CAN_MANAGE_RESTAURANT = "can_manage_restaurant";
@@ -27,7 +39,6 @@ public final class PermissionConstants {
     public static final String CAN_DELETE_PRODUCT = "can_delete_product";
     public static final String CAN_ADD_PERSONNEL = "can_add_personnel";
     public static final String CAN_REMOVE_PERSONNEL = "can_remove_personnel";
-    public static final String CAN_REVIEW_ORDERS = "can_review_orders";
 
     // Payment Permissions
     public static final String CAN_MANAGE_PAYMENT = "can_manage_payment";
