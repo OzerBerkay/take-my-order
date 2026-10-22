@@ -50,10 +50,24 @@ public class CreateRoleCommandHandler {
         // Örn: CUSTOMER sadece null organizationalUnitId yaratabilir (ki CUSTOMER yaratamaz gerçi).
         validateUserTypeAndOrganizationalUnitIdLogic(callerUserType, command.getOrganizationalUnitId());
 
-        // 3. INTERNAL ise tüm contextlere erişebilir, MERCHANT ise sadece Security Context'teki kendi ID'sine erişebilir.
-        java.util.Set<java.util.UUID> allowedOrganizationalUnitIds = securityContextPort.getAllowedOrganizationalUnitIds();
-        if (command.getOrganizationalUnitId() != null && !allowedOrganizationalUnitIds.contains(command.getOrganizationalUnitId())) {
-            throw new IdentityDomainException("Spoofing detected! The provided organizationalUnitId does not match your allowed contexts!");
+        // 3. Context & Spoofing Koruması: Çağrıcının hedef context'te bir rolü var mı kontrolü
+        List<UUID> callerRoleIds = securityContextPort.getCurrentUserRoleIds();
+        List<Role> callerRoles = roleRepository.findAllById(callerRoleIds);
+
+        List<UUID> contextRoleIds;
+        if (callerUserType == UserType.MERCHANT) {
+            contextRoleIds = callerRoles.stream()
+                    .filter(r -> r.getOrganizationalUnitId() != null && r.getOrganizationalUnitId().equals(command.getOrganizationalUnitId()))
+                    .map(r -> r.getId().getValue())
+                    .toList();
+            if (contextRoleIds.isEmpty()) {
+                throw new IdentityDomainException("Spoofing detected! The provided organizationalUnitId does not match your allowed contexts!");
+            }
+        } else {
+            contextRoleIds = callerRoles.stream()
+                    .filter(r -> r.getOrganizationalUnitId() == null)
+                    .map(r -> r.getId().getValue())
+                    .toList();
         }
 
         // 4. Input Validations
@@ -81,22 +95,20 @@ public class CreateRoleCommandHandler {
             throw new IdentityDomainException("Cannot assign restricted permissions to a custom role!");
         }
 
-
-
-        // 6. Role Nesnesini Builder ile Oluştur (Id'si, başlangıç version'u ve tarihleri initializeRole'de atanacak)
+        // 7. Role Nesnesini Builder ile Oluştur
         Role role = Role.builder()
                 .name(command.getName())
-                .userType(callerUserType) // Rolün tipi, oluşturanın tipinden derive edilir (Döküman 3.c)
+                .userType(callerUserType)
                 .organizationalUnitId(command.getOrganizationalUnitId())
-                .isStatic(false) // Kullanıcının oluşturduğu roller statik olamaz
+                .isStatic(false)
                 .createdByUserId(callerUserId)
                 .permissions(permissions)
                 .build();
 
-        // 7. Caller'ın kendi yetkilerini çek (Alt küme kuralı için)
-        List<Permission> callerPermissions = permissionRepository.findActivePermissionsByRoleIds(securityContextPort.getCurrentUserRoleIds());
+        // 8. Caller'ın hedef context'teki yetkilerini çek (Alt küme kuralı için)
+        List<Permission> callerPermissions = permissionRepository.findActivePermissionsByRoleIds(contextRoleIds);
 
-        // 8. Domain Service'i çağırırız. (Dönen event nesnesini sadece domain kuralı çalışsın diye kullanıyoruz)
+        // 9. Domain Service'i çağırırız. (Alt küme kuralı ve aggregate invariants çalışır)
         RoleCreatedEvent event = identityDomainService.validateAndInitiateRoleCreate(role, callerPermissions);
 
         // 8. Önce Veritabanına Kaydet (Versiyon atansın)
