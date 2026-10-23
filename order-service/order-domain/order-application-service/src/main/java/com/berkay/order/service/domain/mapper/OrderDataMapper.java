@@ -43,11 +43,16 @@ public class OrderDataMapper {
     }
 
     public TrackOrderResponse orderToTrackOrderResponse(Order order) {
+        List<String> failureMessages = order.getCancelReason() != null
+                ? List.of(order.getCancelReason().name())
+                : (order.getFailureMessages() != null ? order.getFailureMessages() : List.of());
         return TrackOrderResponse.builder()
                 .orderTrackingId(order.getTrackingId().getValue())
                 .customerId(order.getCustomerId().getValue())
                 .orderStatus(order.getOrderStatus())
-                .failureMessages(order.getFailureMessages())
+                .failureMessages(failureMessages)
+                .cancelReason(order.getCancelReason())
+                .internalNote(order.getInternalNote())
                 .build();
     }
 
@@ -89,6 +94,32 @@ public class OrderDataMapper {
                 .build();
     }
 
+    public OrderPaymentEventPayload orderToOrderPaymentEventPayload(Order order, PaymentOrderStatus paymentOrderStatus) {
+        return OrderPaymentEventPayload.builder()
+                .customerId(order.getCustomerId().getValue().toString())
+                .restaurantId(order.getRestaurantId().getValue().toString())
+                .orderId(order.getId().getValue().toString())
+                .price(order.getPrice().getAmount())
+                .createdAt(java.time.ZonedDateTime.now(java.time.ZoneId.of(com.berkay.domain.DomainConstants.UTC)))
+                .paymentOrderStatus(paymentOrderStatus.name())
+                .build();
+    }
+
+    public OrderApprovalEventPayload orderToOrderApprovalEventPayload(Order order, RestaurantOrderStatus restaurantOrderStatus) {
+        return OrderApprovalEventPayload.builder()
+                .orderId(order.getId().getValue().toString())
+                .restaurantId(order.getRestaurantId().getValue().toString())
+                .restaurantOrderStatus(restaurantOrderStatus.name())
+                .products(order.getItems().stream().map(orderItem ->
+                        OrderApprovalEventProduct.builder()
+                                .id(orderItem.getProduct().getId().getValue().toString())
+                                .quantity(orderItem.getQuantity())
+                                .build()).collect(Collectors.toList()))
+                .price(order.getPrice().getAmount())
+                .createdAt(java.time.ZonedDateTime.now(java.time.ZoneId.of(com.berkay.domain.DomainConstants.UTC)))
+                .build();
+    }
+
     public Customer customerModelToCustomer(CustomerModel customerModel) {
         return new Customer(new CustomerId(UUID.fromString(customerModel.getId())),
                 customerModel.getUsername(),
@@ -123,5 +154,78 @@ public class OrderDataMapper {
                 orderAddress.getContactLastName(),
                 orderAddress.getContactPhone()
         );
+    }
+
+    public com.berkay.order.service.domain.dto.restaurant.RestaurantOrderResponse orderToRestaurantOrderResponse(Order order) {
+        return com.berkay.order.service.domain.dto.restaurant.RestaurantOrderResponse.builder()
+                .orderId(order.getId().getValue())
+                .trackingId(order.getTrackingId().getValue())
+                .restaurantId(order.getRestaurantId().getValue())
+                .orderStatus(order.getOrderStatus())
+                .price(order.getPrice().getAmount())
+                .deliveryFee(order.getDeliveryFee() != null ? order.getDeliveryFee().getAmount() : java.math.BigDecimal.ZERO)
+                .createdAt(order.getCreatedAt())
+                .items(order.getItems() != null ? order.getItems().stream()
+                        .map(this::orderItemToRestaurantOrderItemResponse)
+                        .collect(Collectors.toList()) : java.util.List.of())
+                .deliveryAddress(streetAddressToDeliveryAddressResponse(order.getDeliveryAddress()))
+                .cancelReason(order.getCancelReason())
+                .materialAction(order.getMaterialAction())
+                .internalNote(order.getInternalNote())
+                .build();
+    }
+
+    public com.berkay.order.service.domain.dto.read.CustomerOrderDetailResponse orderToCustomerOrderDetailResponse(Order order, String restaurantName) {
+        return com.berkay.order.service.domain.dto.read.CustomerOrderDetailResponse.builder()
+                .orderId(order.getId().getValue())
+                .trackingId(order.getTrackingId().getValue())
+                .restaurantId(order.getRestaurantId().getValue())
+                .restaurantName(restaurantName)
+                .orderStatus(order.getOrderStatus())
+                .price(order.getPrice().getAmount())
+                .deliveryFee(order.getDeliveryFee() != null ? order.getDeliveryFee().getAmount() : java.math.BigDecimal.ZERO)
+                .createdAt(order.getCreatedAt())
+                .items(order.getItems() != null ? order.getItems().stream()
+                        .map(this::orderItemToRestaurantOrderItemResponse)
+                        .collect(Collectors.toList()) : java.util.List.of())
+                .deliveryAddress(streetAddressToDeliveryAddressResponse(order.getDeliveryAddress()))
+                .cancelReason(order.getCancelReason())
+                .build();
+    }
+
+    public com.berkay.order.service.domain.dto.read.CustomerOrderDetailResponse orderToCustomerOrderDetailResponse(Order order) {
+        return orderToCustomerOrderDetailResponse(order, null);
+    }
+
+    public com.berkay.order.service.domain.dto.restaurant.RestaurantOrderItemResponse orderItemToRestaurantOrderItemResponse(OrderItem orderItem) {
+        String productName = orderItem.getProduct() != null && orderItem.getProduct().getName() != null
+                ? orderItem.getProduct().getName()
+                : "Product";
+        return com.berkay.order.service.domain.dto.restaurant.RestaurantOrderItemResponse.builder()
+                .productId(orderItem.getProduct().getId().getValue())
+                .productName(productName)
+                .quantity(orderItem.getQuantity())
+                .price(orderItem.getPrice().getAmount())
+                .subTotal(orderItem.getSubTotal().getAmount())
+                .build();
+    }
+
+    public com.berkay.order.service.domain.dto.restaurant.DeliveryAddressResponse streetAddressToDeliveryAddressResponse(StreetAddress address) {
+        if (address == null) {
+            return null;
+        }
+        return com.berkay.order.service.domain.dto.restaurant.DeliveryAddressResponse.builder()
+                .city(address.getCity())
+                .district(address.getDistrict())
+                .neighborhood(address.getNeighborhood())
+                .street(address.getStreet())
+                .buildingNumber(address.getBuildingNumber())
+                .doorNumber(address.getDoorNumber())
+                .floor(address.getFloor())
+                .addressInstructions(address.getAddressInstructions())
+                .contactFirstName(address.getContactFirstName())
+                .contactLastName(address.getContactLastName())
+                .contactPhone(address.getContactPhone())
+                .build();
     }
 }

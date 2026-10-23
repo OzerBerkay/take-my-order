@@ -25,6 +25,9 @@ public class OrderAuthServiceTest {
     private RolePermissionQueryPort rolePermissionQueryPort;
 
     @Mock
+    private com.berkay.order.service.domain.ports.output.repository.OrderRepository orderRepository;
+
+    @Mock
     private Authentication authentication;
 
     @Mock
@@ -93,6 +96,61 @@ public class OrderAuthServiceTest {
         when(userAuth.getInternalId()).thenReturn(anotherId);
 
         boolean result = orderAuthService.isOwner(userAuth, customerId);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isOrderCustomer_ReturnsTrue_WhenUserIsOrderOwner() {
+        UUID orderId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(userAuth.getInternalId()).thenReturn(customerId);
+
+        com.berkay.order.service.domain.ports.output.repository.OrderAuthProjection projection =
+                org.mockito.Mockito.mock(com.berkay.order.service.domain.ports.output.repository.OrderAuthProjection.class);
+        when(projection.getCustomerId()).thenReturn(customerId);
+        when(orderRepository.findAuthProjectionById(orderId)).thenReturn(java.util.Optional.of(projection));
+
+        boolean result = orderAuthService.isOrderCustomer(userAuth, orderId);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isOrderCustomer_ReturnsFalse_WhenUserIsNotOrderOwner() {
+        UUID orderId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+        UUID otherId = UUID.randomUUID();
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(userAuth.getInternalId()).thenReturn(otherId);
+
+        com.berkay.order.service.domain.ports.output.repository.OrderAuthProjection projection =
+                org.mockito.Mockito.mock(com.berkay.order.service.domain.ports.output.repository.OrderAuthProjection.class);
+        when(projection.getCustomerId()).thenReturn(customerId);
+        when(orderRepository.findAuthProjectionById(orderId)).thenReturn(java.util.Optional.of(projection));
+
+        boolean result = orderAuthService.isOrderCustomer(userAuth, orderId);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isOrderCustomer_ReturnsFalse_WhenOrderNotFound() {
+        UUID orderId = UUID.randomUUID();
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(orderRepository.findAuthProjectionById(orderId)).thenReturn(java.util.Optional.empty());
+
+        boolean result = orderAuthService.isOrderCustomer(userAuth, orderId);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isOrderCustomer_ReturnsFalse_WhenOrderIdIsNull() {
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+
+        boolean result = orderAuthService.isOrderCustomer(userAuth, null);
 
         assertFalse(result);
     }

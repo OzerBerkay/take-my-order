@@ -59,6 +59,7 @@ public class OrderMessagingDataMapper {
                 .orderApprovalStatus(com.berkay.domain.valueobject.OrderApprovalStatus.valueOf(
                         restaurantApprovalResponseAvroModel.getOrderApprovalStatus().name()))
                 .failureMessages(restaurantApprovalResponseAvroModel.getFailureMessages())
+                .cancelReason(restaurantApprovalResponseAvroModel.getCancelReason())
                 .build();
     }
 
@@ -105,6 +106,17 @@ public class OrderMessagingDataMapper {
                                 .hidden(avroProduct.getHidden())
                                 .build())
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    public OrderDeliveredAvroModel orderDeliveredEventToOrderDeliveredAvroModel(com.berkay.order.service.domain.outbox.model.delivery.OrderDeliveredEventPayload payload) {
+        return OrderDeliveredAvroModel.newBuilder()
+                .setId(UUID.randomUUID().toString())
+                .setOrderId(payload.getOrderId().toString())
+                .setRestaurantId(payload.getRestaurantId().toString())
+                .setCustomerId(payload.getCustomerId().toString())
+                .setPrice(payload.getPrice())
+                .setCreatedAt(payload.getCreatedAt().toInstant())
                 .build();
     }
 }
