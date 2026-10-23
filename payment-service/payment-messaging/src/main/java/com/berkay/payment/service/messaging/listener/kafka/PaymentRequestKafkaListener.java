@@ -57,14 +57,16 @@ public class PaymentRequestKafkaListener implements KafkaConsumer<PaymentRequest
                             .paymentRequestAvroModelToPaymentRequest(paymentRequestAvroModel));
                 }
             } catch (DataAccessException e) {
-                SQLException sqlException = (SQLException) e.getRootCause();
-                if (sqlException != null && sqlException.getSQLState() != null &&
+                if (e.getRootCause() instanceof SQLException sqlException &&
+                        sqlException.getSQLState() != null &&
                         PSQLState.UNIQUE_VIOLATION.getState().equals(sqlException.getSQLState())) {
                     //NO-OP for unique constraint exception
                     log.error("Caught unique constraint exception with sql state: {} " +
                                     "in PaymentRequestKafkaListener for order id: {}",
                             sqlException.getSQLState(), paymentRequestAvroModel.getOrderId());
                 } else {
+                    log.error("Throwing DataAccessException in PaymentRequestKafkaListener for order id: {}: {}",
+                            paymentRequestAvroModel.getOrderId(), e.getMessage());
                     throw new PaymentApplicationServiceException("Throwing DataAccessException in" +
                             " PaymentRequestKafkaListener: " + e.getMessage(), e);
                 }
