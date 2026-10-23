@@ -14,6 +14,7 @@ payment-service:
   restaurant-information-topic-name: restaurant-information
   role-topic-name: identity-role-events
   permission-topic-name: identity-permission-events
+  order-delivered-topic-name: order-delivered
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
@@ -31,7 +32,7 @@ spring:
     show-sql: ${SHOW_SQL:false}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -44,8 +45,8 @@ spring:
 
   flyway:
     enabled: true
-    clean-disabled: false
-    clean-on-validation-error: true
+    clean-disabled: true
+    clean-on-validation-error: false
     baseline-on-migrate: true
     baseline-version: 1
     schemas: payment
@@ -77,6 +78,7 @@ kafka-consumer-config:
   restaurant-information-consumer-group-id: payment-restaurant-information-topic-consumer
   role-consumer-group-id: payment-role-topic-consumer
   permission-consumer-group-id: payment-permission-topic-consumer
+  order-delivered-consumer-group-id: payment-order-delivered-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true
