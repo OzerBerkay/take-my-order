@@ -1,5 +1,6 @@
 package com.berkay.payment.service.domain;
 
+import com.berkay.payment.service.domain.dto.wallet.RestaurantFinancialSummaryResponse;
 import com.berkay.payment.service.domain.dto.wallet.WalletBalanceResponse;
 import com.berkay.payment.service.domain.dto.wallet.WalletDepositCommand;
 import com.berkay.payment.service.domain.dto.wallet.WalletHistoryResponse;
@@ -17,4 +18,8 @@ public interface WalletApplicationService {
     WalletBalanceResponse getBalance(UUID ownerId);
 
     WalletHistoryResponse getHistory(UUID ownerId);
+
+    WalletHistoryResponse getHistory(UUID ownerId, com.berkay.payment.service.domain.valueobject.WalletTransactionType type, int page, int size);
+
+    RestaurantFinancialSummaryResponse getFinancialSummary(UUID ownerId);
 }
