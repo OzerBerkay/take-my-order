@@ -57,9 +57,24 @@ public class WalletController {
 
     @GetMapping("/{ownerId}/history")
     @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_read_payment', #ownerId)")
-    public ResponseEntity<WalletHistoryResponse> getHistory(@PathVariable("ownerId") UUID ownerId) {
-        log.info("Received get history request for owner id: {}", ownerId);
-        WalletHistoryResponse response = walletApplicationService.getHistory(ownerId);
+    public ResponseEntity<WalletHistoryResponse> getHistory(
+            @PathVariable("ownerId") UUID ownerId,
+            @RequestParam(required = false) com.berkay.payment.service.domain.valueobject.WalletTransactionType type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.info("Received get history request for owner id: {}, type: {}, page: {}, size: {}",
+                ownerId, type, page, size);
+        WalletHistoryResponse response = walletApplicationService.getHistory(ownerId, type, page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{ownerId}/financial-summary")
+    @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_read_payment', #ownerId)")
+    public ResponseEntity<com.berkay.payment.service.domain.dto.wallet.RestaurantFinancialSummaryResponse> getFinancialSummary(
+            @PathVariable("ownerId") UUID ownerId) {
+        log.info("Received get financial summary request for owner id: {}", ownerId);
+        com.berkay.payment.service.domain.dto.wallet.RestaurantFinancialSummaryResponse response =
+                walletApplicationService.getFinancialSummary(ownerId);
         return ResponseEntity.ok(response);
     }
 }

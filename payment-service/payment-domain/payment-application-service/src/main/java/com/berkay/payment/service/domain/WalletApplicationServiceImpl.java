@@ -1,22 +1,22 @@
 package com.berkay.payment.service.domain;
 
 import com.berkay.domain.valueobject.Money;
-import com.berkay.payment.service.domain.dto.wallet.WalletBalanceResponse;
-import com.berkay.payment.service.domain.dto.wallet.WalletDepositCommand;
-import com.berkay.payment.service.domain.dto.wallet.WalletHistoryResponse;
-import com.berkay.payment.service.domain.dto.wallet.WalletTransactionDto;
-import com.berkay.payment.service.domain.dto.wallet.WalletWithdrawCommand;
+import com.berkay.payment.service.domain.dto.wallet.*;
 import com.berkay.payment.service.domain.entity.Wallet;
 import com.berkay.payment.service.domain.entity.WalletTransaction;
 import com.berkay.payment.service.domain.exception.PaymentApplicationServiceException;
+import com.berkay.payment.service.domain.ports.output.repository.OrderEscrowRepository;
+import com.berkay.payment.service.domain.ports.output.repository.OrderEscrowSummaryProjection;
 import com.berkay.payment.service.domain.ports.output.repository.WalletRepository;
 import com.berkay.payment.service.domain.ports.output.repository.WalletTransactionRepository;
+import com.berkay.payment.service.domain.valueobject.DomainPagedResult;
 import com.berkay.payment.service.domain.valueobject.WalletTransactionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -33,11 +33,14 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
 
     private final WalletRepository walletRepository;
     private final WalletTransactionRepository walletTransactionRepository;
+    private final OrderEscrowRepository orderEscrowRepository;
 
     public WalletApplicationServiceImpl(WalletRepository walletRepository,
-                                        WalletTransactionRepository walletTransactionRepository) {
+                                        WalletTransactionRepository walletTransactionRepository,
+                                        OrderEscrowRepository orderEscrowRepository) {
         this.walletRepository = walletRepository;
         this.walletTransactionRepository = walletTransactionRepository;
+        this.orderEscrowRepository = orderEscrowRepository;
     }
 
     @Override
@@ -97,10 +100,17 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
     @Override
     @Transactional(readOnly = true)
     public WalletHistoryResponse getHistory(UUID ownerId) {
+        return getHistory(ownerId, null, 0, 10);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public WalletHistoryResponse getHistory(UUID ownerId, WalletTransactionType type, int page, int size) {
         Wallet wallet = getWallet(ownerId);
-        List<WalletTransaction> transactions = walletTransactionRepository.findByWalletId(wallet.getId().getValue());
-        
-        List<WalletTransactionDto> dtos = transactions.stream()
+        DomainPagedResult<WalletTransaction> pagedResult = walletTransactionRepository
+                .findByWalletIdPaged(wallet.getId().getValue(), type, page, size);
+
+        List<WalletTransactionDto> dtos = pagedResult.getData().stream()
                 .map(t -> WalletTransactionDto.builder()
                         .amount(t.getAmount().getAmount())
                         .transactionType(t.getTransactionType())
@@ -111,7 +121,46 @@ public class WalletApplicationServiceImpl implements WalletApplicationService {
 
         return WalletHistoryResponse.builder()
                 .ownerId(ownerId)
-                .transactions(dtos)
+                .content(dtos)
+                .page(pagedResult.getPageNumber())
+                .size(pagedResult.getPageSize())
+                .totalElements(pagedResult.getTotalElements())
+                .totalPages(pagedResult.getTotalPages())
+                .last(pagedResult.getPageNumber() >= pagedResult.getTotalPages() - 1)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RestaurantFinancialSummaryResponse getFinancialSummary(UUID ownerId) {
+        BigDecimal withdrawableBalance = walletRepository.findByOwnerId(ownerId)
+                .map(w -> w.getBalance().getAmount())
+                .orElse(BigDecimal.ZERO);
+
+        ZonedDateTime startOfDay = ZonedDateTime.now(ZoneId.of(UTC))
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        OrderEscrowSummaryProjection projection = orderEscrowRepository
+                .getEscrowSummary(ownerId, startOfDay.toOffsetDateTime());
+
+        BigDecimal dailySettled = projection != null && projection.getDailySettledRevenue() != null
+                ? projection.getDailySettledRevenue()
+                : BigDecimal.ZERO;
+
+        BigDecimal pendingPayout = projection != null && projection.getPendingPayout() != null
+                ? projection.getPendingPayout()
+                : BigDecimal.ZERO;
+
+        BigDecimal dailyRefunded = projection != null && projection.getDailyRefundedAmount() != null
+                ? projection.getDailyRefundedAmount()
+                : BigDecimal.ZERO;
+
+        return RestaurantFinancialSummaryResponse.builder()
+                .restaurantId(ownerId)
+                .withdrawableBalance(withdrawableBalance)
+                .dailySettledRevenue(dailySettled)
+                .pendingPayout(pendingPayout)
+                .dailyRefundedAmount(dailyRefunded)
                 .build();
     }
 
