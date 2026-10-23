@@ -21,11 +21,15 @@ public class PaymentEntity {
     @Id
     private UUID id;
     private UUID customerId;
+    private UUID restaurantId;
     private UUID orderId;
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private ZonedDateTime createdAt;
+
+    @Version
+    private Integer version;
 
     @Override
     public boolean equals(Object o) {

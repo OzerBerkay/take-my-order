@@ -21,6 +21,7 @@ public class Payment extends AggregateRoot<PaymentId> {
 
     private PaymentStatus paymentStatus;
     private ZonedDateTime createdAt;
+    private final Integer version;
 
     public void initializePayment() {
         setId(new PaymentId(UUID.randomUUID()));
@@ -53,6 +54,7 @@ public class Payment extends AggregateRoot<PaymentId> {
         price = builder.price;
         paymentStatus = builder.paymentStatus;
         createdAt = builder.createdAt;
+        version = builder.version;
     }
 
     public static Builder builder() {
@@ -84,6 +86,10 @@ public class Payment extends AggregateRoot<PaymentId> {
         return createdAt;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
     public static final class Builder {
         private PaymentId paymentId;
         private OrderId orderId;
@@ -92,6 +98,7 @@ public class Payment extends AggregateRoot<PaymentId> {
         private Money price;
         private PaymentStatus paymentStatus;
         private ZonedDateTime createdAt;
+        private Integer version;
 
         private Builder() {
         }
@@ -128,6 +135,11 @@ public class Payment extends AggregateRoot<PaymentId> {
 
         public Builder createdAt(ZonedDateTime val) {
             createdAt = val;
+            return this;
+        }
+
+        public Builder version(Integer val) {
+            version = val;
             return this;
         }
 

@@ -17,8 +17,9 @@ public abstract class PaymentEvent implements DomainEvent<Payment> {
     private final Wallet customerWallet;
     private final WalletTransaction restaurantWalletTransaction;
     private final Wallet restaurantWallet;
+    private final com.berkay.payment.service.domain.entity.OrderEscrow orderEscrow;
 
-    public PaymentEvent(Payment payment, ZonedDateTime createdAt, List<String> failureMessages, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet) {
+    public PaymentEvent(Payment payment, ZonedDateTime createdAt, List<String> failureMessages, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet, com.berkay.payment.service.domain.entity.OrderEscrow orderEscrow) {
         this.payment = payment;
         this.createdAt = createdAt;
         this.failureMessages = failureMessages;
@@ -26,6 +27,11 @@ public abstract class PaymentEvent implements DomainEvent<Payment> {
         this.customerWallet = customerWallet;
         this.restaurantWalletTransaction = restaurantWalletTransaction;
         this.restaurantWallet = restaurantWallet;
+        this.orderEscrow = orderEscrow;
+    }
+
+    public PaymentEvent(Payment payment, ZonedDateTime createdAt, List<String> failureMessages, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet) {
+        this(payment, createdAt, failureMessages, customerWalletTransaction, customerWallet, restaurantWalletTransaction, restaurantWallet, null);
     }
 
     public Payment getPayment() {
@@ -54,5 +60,9 @@ public abstract class PaymentEvent implements DomainEvent<Payment> {
 
     public Wallet getRestaurantWallet() {
         return restaurantWallet;
+    }
+
+    public com.berkay.payment.service.domain.entity.OrderEscrow getOrderEscrow() {
+        return orderEscrow;
     }
 }

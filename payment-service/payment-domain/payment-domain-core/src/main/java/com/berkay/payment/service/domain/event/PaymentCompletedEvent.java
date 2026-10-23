@@ -9,6 +9,10 @@ import java.util.Collections;
 
 public class PaymentCompletedEvent extends PaymentEvent {
     
+    public PaymentCompletedEvent(Payment payment, ZonedDateTime createdAt, WalletTransaction customerWalletTransaction, Wallet customerWallet, com.berkay.payment.service.domain.entity.OrderEscrow orderEscrow) {
+        super(payment, createdAt, Collections.emptyList(), customerWalletTransaction, customerWallet, null, null, orderEscrow);
+    }
+
     public PaymentCompletedEvent(Payment payment, ZonedDateTime createdAt, WalletTransaction customerWalletTransaction, Wallet customerWallet, WalletTransaction restaurantWalletTransaction, Wallet restaurantWallet) {
         super(payment, createdAt, Collections.emptyList(), customerWalletTransaction, customerWallet, restaurantWalletTransaction, restaurantWallet);
     }
