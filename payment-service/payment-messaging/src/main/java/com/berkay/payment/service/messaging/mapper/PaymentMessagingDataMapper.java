@@ -43,4 +43,15 @@ public class PaymentMessagingDataMapper {
                 .paymentOrderStatus(PaymentOrderStatus.valueOf(paymentRequestAvroModel.getPaymentOrderStatus().name()))
                 .build();
     }
+
+    public com.berkay.payment.service.domain.dto.OrderDeliveredRequest orderDeliveredAvroModelToOrderDeliveredRequest(com.berkay.kafka.order.avro.model.OrderDeliveredAvroModel model) {
+        return com.berkay.payment.service.domain.dto.OrderDeliveredRequest.builder()
+                .id(model.getId())
+                .orderId(model.getOrderId())
+                .restaurantId(model.getRestaurantId())
+                .customerId(model.getCustomerId())
+                .price(model.getPrice())
+                .createdAt(model.getCreatedAt())
+                .build();
+    }
 }

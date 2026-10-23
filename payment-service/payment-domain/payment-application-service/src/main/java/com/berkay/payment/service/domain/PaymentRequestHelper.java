@@ -33,6 +33,7 @@ public class PaymentRequestHelper {
     private final PaymentRepository paymentRepository;
     private final WalletRepository walletRepository;
     private final WalletTransactionRepository walletTransactionRepository;
+    private final com.berkay.payment.service.domain.ports.output.repository.OrderEscrowRepository orderEscrowRepository;
     private final OrderOutboxHelper orderOutboxHelper;
     private final PaymentResponseMessagePublisher paymentResponseMessagePublisher;
 
@@ -41,6 +42,7 @@ public class PaymentRequestHelper {
                                 PaymentRepository paymentRepository,
                                 WalletRepository walletRepository,
                                 WalletTransactionRepository walletTransactionRepository,
+                                com.berkay.payment.service.domain.ports.output.repository.OrderEscrowRepository orderEscrowRepository,
                                 OrderOutboxHelper orderOutboxHelper,
                                 PaymentResponseMessagePublisher paymentResponseMessagePublisher) {
         this.paymentStrategies = paymentStrategies;
@@ -48,6 +50,7 @@ public class PaymentRequestHelper {
         this.paymentRepository = paymentRepository;
         this.walletRepository = walletRepository;
         this.walletTransactionRepository = walletTransactionRepository;
+        this.orderEscrowRepository = orderEscrowRepository;
         this.orderOutboxHelper = orderOutboxHelper;
         this.paymentResponseMessagePublisher = paymentResponseMessagePublisher;
     }
@@ -93,7 +96,6 @@ public class PaymentRequestHelper {
         }
         Payment paymentDb = paymentResponse.get();
 
-        // The database does not store restaurantId, so we recreate the Payment with the restaurantId from the cancel request
         Payment payment = Payment.builder()
                 .paymentId(paymentDb.getId())
                 .customerId(paymentDb.getCustomerId())
@@ -101,7 +103,9 @@ public class PaymentRequestHelper {
                 .price(paymentDb.getPrice())
                 .paymentStatus(paymentDb.getPaymentStatus())
                 .createdAt(paymentDb.getCreatedAt())
-                .restaurantId(new com.berkay.domain.valueobject.RestaurantId(UUID.fromString(paymentRequest.getRestaurantId())))
+                .restaurantId(paymentDb.getRestaurantId() != null ? paymentDb.getRestaurantId() :
+                        new com.berkay.domain.valueobject.RestaurantId(UUID.fromString(paymentRequest.getRestaurantId())))
+                .version(paymentDb.getVersion())
                 .build();
 
         PaymentProcessorStrategy strategy = getStrategy("WALLET");
@@ -137,6 +141,9 @@ public class PaymentRequestHelper {
             if (paymentEvent.getRestaurantWalletTransaction() != null && paymentEvent.getRestaurantWallet() != null) {
                 walletRepository.save(paymentEvent.getRestaurantWallet());
                 walletTransactionRepository.save(paymentEvent.getRestaurantWalletTransaction());
+            }
+            if (paymentEvent.getOrderEscrow() != null) {
+                orderEscrowRepository.save(paymentEvent.getOrderEscrow());
             }
         }
     }
