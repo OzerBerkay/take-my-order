@@ -35,6 +35,18 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
+    public java.util.Map<UUID, String> findRestaurantNamesByIds(List<UUID> restaurantIds) {
+        if (restaurantIds == null || restaurantIds.isEmpty()) {
+            return java.util.Collections.emptyMap();
+        }
+        java.util.Map<UUID, String> nameMap = new java.util.HashMap<>();
+        for (RestaurantEntity entity : restaurantJpaRepository.findAllById(restaurantIds)) {
+            nameMap.put(entity.getRestaurantId(), entity.getName() != null ? entity.getName() : "");
+        }
+        return nameMap;
+    }
+
+    @Override
     public Restaurant save(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = restaurantDataAccessMapper.restaurantToRestaurantEntity(restaurant);
         RestaurantEntity savedEntity = restaurantJpaRepository.save(restaurantEntity);
