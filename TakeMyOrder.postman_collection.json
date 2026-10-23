@@ -1282,19 +1282,13 @@
                                     }
                                 ],
                                 "url": {
-                                    "raw": "{{gateway_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "raw": "{{gateway_url}}/roles/{{roleId}}",
                                     "host": [
                                         "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "roles",
                                         "{{roleId}}"
-                                    ],
-                                    "query": [
-                                        {
-                                            "key": "organizationalUnitId",
-                                            "value": "{{organizationalUnitId}}"
-                                        }
                                     ]
                                 },
                                 "body": {
@@ -1325,19 +1319,13 @@
                                 "method": "DELETE",
                                 "header": [],
                                 "url": {
-                                    "raw": "{{gateway_url}}/roles/{{roleId}}?organizationalUnitId={{organizationalUnitId}}",
+                                    "raw": "{{gateway_url}}/roles/{{roleId}}",
                                     "host": [
                                         "{{gateway_url}}"
                                     ],
                                     "path": [
                                         "roles",
                                         "{{roleId}}"
-                                    ],
-                                    "query": [
-                                        {
-                                            "key": "organizationalUnitId",
-                                            "value": "{{organizationalUnitId}}"
-                                        }
                                     ]
                                 },
                                 "auth": {
@@ -2361,8 +2349,48 @@
                                     "type": "string"
                                 }
                             ]
+                        },
+                        "description": "Restoran menüsündeki mevcut ürünü günceller (Tam PUT semantiği). name, price, stock, available, hidden ve categoryId alanları zorunludur (@NotNull). description ve imageUrl alanları opsiyoneldir (@Nullable); boş bırakılmak veya silinmek istendiğinde null gönderilebilir. restaurantId ve productId ise URL'de taşınır."
+                    },
+                    "response": [
+                        {
+                            "name": "200 OK - Product Updated",
+                            "originalRequest": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Updated Pizza\",\n    \"price\": 15.0,\n    \"stock\": 120,\n    \"available\": true,\n    \"hidden\": false,\n    \"imageUrl\": \"https://example.com/product-image.jpg\",\n    \"description\": \"A great product\",\n    \"categoryId\": \"{{categoryId}}\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "products",
+                                        "{{product_id}}"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "text",
+                            "body": "Product updated"
                         }
-                    }
+                    ]
                 },
                 {
                     "name": "Delete Product (Success)",
@@ -2602,8 +2630,34 @@
                                         "{{restaurant_id}}",
                                         "products"
                                     ]
+                                },
+                                "description": "Restoranın halka açık menüsündeki ürünleri döner (hidden olmayan ürünler). Her ürün için productId, name, description, price, inStock, available, imageUrl ve categoryId döner. Frontend'de bir ürünün sepete eklenebilmesi için hem inStock hem available alanlarının true olması gerekir."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Public Products with Availability",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/public/restaurants/{{restaurant_id}}/products",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "public",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "products"
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"restaurantId\": \"341e985c-4285-4458-bdb6-ce8ac61ba08f\",\n  \"products\": [\n    {\n      \"productId\": \"4b7b6380-fb43-4884-b4fc-6100c30d5218\",\n      \"name\": \"Take My Order Özel İkili Menü\",\n      \"description\": \"2 Adet Medium Cheeseburger + 2 Adet İçecek\",\n      \"price\": 890.00,\n      \"inStock\": true,\n      \"available\": false,\n      \"imageUrl\": \"https://images.deliveryhero.io/image/fd-tr/Products/79763838.jpg\",\n      \"categoryId\": \"69ca8d6d-1aec-42c6-b3b7-aa2a5dd82034\"\n    }\n  ]\n}"
                                 }
-                            }
+                            ]
                         },
                         {
                             "name": "Get Public Product",
@@ -2622,8 +2676,35 @@
                                         "products",
                                         "{{product_id}}"
                                     ]
+                                },
+                                "description": "Restoranın tekil bir ürününün halka açık detayını döner. productId, name, description, price, inStock, available, imageUrl ve categoryId içerir."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Single Public Product with Availability",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/public/restaurants/{{restaurant_id}}/products/{{product_id}}",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "public",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "products",
+                                                "{{product_id}}"
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"productId\": \"4b7b6380-fb43-4884-b4fc-6100c30d5218\",\n  \"name\": \"Take My Order Özel İkili Menü\",\n  \"description\": \"2 Adet Medium Cheeseburger + 2 Adet İçecek\",\n  \"price\": 890.00,\n  \"inStock\": true,\n  \"available\": false,\n  \"imageUrl\": \"https://images.deliveryhero.io/image/fd-tr/Products/79763838.jpg\",\n  \"categoryId\": \"69ca8d6d-1aec-42c6-b3b7-aa2a5dd82034\"\n}"
                                 }
-                            }
+                            ]
                         },
                         {
                             "name": "Get Public Restaurants",
@@ -2742,90 +2823,18 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{gateway_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/restaurants/management/sync-roles",
                             "host": [
                                 "{{gateway_url}}"
                             ],
                             "path": [
+                                "restaurants",
                                 "management",
                                 "sync-roles"
                             ]
                         }
                     },
                     "response": []
-                },
-                {
-                    "name": "Order Management",
-                    "item": [
-                        {
-                            "name": "Approve Order",
-                            "request": {
-                                "method": "POST",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{access_token}}",
-                                        "type": "text"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/approve",
-                                    "host": [
-                                        "{{gateway_url}}"
-                                    ],
-                                    "path": [
-                                        "restaurants",
-                                        "{{restaurant_id}}",
-                                        "orders",
-                                        "{{order_id}}",
-                                        "approve"
-                                    ]
-                                }
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Reject Order",
-                            "request": {
-                                "method": "POST",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{access_token}}",
-                                        "type": "text"
-                                    },
-                                    {
-                                        "key": "Content-Type",
-                                        "value": "application/json",
-                                        "type": "text"
-                                    }
-                                ],
-                                "body": {
-                                    "mode": "raw",
-                                    "raw": "{\n    \"failureMessages\": []\n}",
-                                    "options": {
-                                        "raw": {
-                                            "language": "json"
-                                        }
-                                    }
-                                },
-                                "url": {
-                                    "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}/orders/{{order_id}}/reject",
-                                    "host": [
-                                        "{{gateway_url}}"
-                                    ],
-                                    "path": [
-                                        "restaurants",
-                                        "{{restaurant_id}}",
-                                        "orders",
-                                        "{{order_id}}",
-                                        "reject"
-                                    ]
-                                }
-                            },
-                            "response": []
-                        }
-                    ]
                 },
                 {
                     "name": "Get Categories (Success)",
@@ -2986,7 +2995,7 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8182/wallets/{{owner_id}}/history",
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/history?page=0&size=10",
                             "protocol": "http",
                             "host": [
                                 "localhost"
@@ -2996,6 +3005,54 @@
                                 "wallets",
                                 "{{owner_id}}",
                                 "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "0-indexed page number (default: 0)"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10",
+                                    "description": "Page size (default: 10, max: 50)"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "PAYMENT",
+                                    "disabled": true,
+                                    "description": "Transaction type filter: DEPOSIT, WITHDRAWAL, PAYMENT, REFUND (optional, default: all)"
+                                }
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Restaurant Financial Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://localhost:8182/wallets/{{owner_id}}/financial-summary",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8182",
+                            "path": [
+                                "wallets",
+                                "{{owner_id}}",
+                                "financial-summary"
                             ]
                         },
                         "auth": {
@@ -3026,11 +3083,12 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{gateway_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/payments/management/sync-roles",
                             "host": [
                                 "{{gateway_url}}"
                             ],
                             "path": [
+                                "payments",
                                 "management",
                                 "sync-roles"
                             ]
@@ -3055,7 +3113,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{gateway_url}}/orders?customerId={{customer_id}}&page=0&size=10",
+                            "raw": "{{gateway_url}}/orders?page=0&size=10&filter=ALL",
                             "host": [
                                 "{{gateway_url}}"
                             ],
@@ -3070,11 +3128,60 @@
                                 {
                                     "key": "size",
                                     "value": "10"
+                                },
+                                {
+                                    "key": "filter",
+                                    "value": "ALL",
+                                    "description": "Filtreleme grubu: ALL, ACTIVE, COMPLETED, CANCELLED (Varsayılan: ALL)"
                                 }
                             ]
-                        }
+                        },
+                        "description": "Müşterinin sipariş geçmişini durum filtresi (filter: ALL, ACTIVE, COMPLETED, CANCELLED) ile sayfalı ve createdAt DESC olarak listeler. customerId bilgisi JWT token içerisinden otomatik alınır. Response içerisinde sayfalama alanlarının yanı sıra FE rozet sayaçları için activeCount, succeededCount, abortCount ve allCount döner."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "name": "200 OK - Enriched Customer Orders Summary",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders?page=0&size=10&filter=ALL",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "filter",
+                                            "value": "ALL",
+                                            "description": "Filtreleme grubu: ALL, ACTIVE, COMPLETED, CANCELLED (Varsayılan: ALL)"
+                                        }
+                                    ]
+                                },
+                                "description": "Müşterinin sipariş geçmişini durum filtresi (filter: ALL, ACTIVE, COMPLETED, CANCELLED) ile sayfalı ve createdAt DESC olarak listeler. customerId bilgisi JWT token içerisinden otomatik alınır. Response içerisinde sayfalama alanlarının yanı sıra FE rozet sayaçları için activeCount, succeededCount, abortCount ve allCount döner."
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n  \"orders\": [\n    {\n      \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n      \"orderTrackingId\": \"ca77402f-bda5-4f40-8fb4-e1b2ab1ff03b\",\n      \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n      \"restaurantName\": \"Burger King\",\n      \"orderStatus\": \"DELIVERED\",\n      \"totalAmount\": 340.0,\n      \"totalItemCount\": 3,\n      \"items\": [\n        {\n          \"name\": \"Whopper Men\\u00fc\",\n          \"quantity\": 2\n        },\n        {\n          \"name\": \"Patates K\\u0131zartmas\\u0131\",\n          \"quantity\": 1\n        }\n      ],\n      \"failureMessages\": \"\",\n      \"cancelReason\": null,\n      \"createdAt\": \"2026-10-10T14:30:00Z\"\n    }\n  ],\n  \"page\": 0,\n  \"size\": 10,\n  \"totalElements\": 1,\n  \"totalPages\": 1,\n  \"isLast\": true,\n  \"activeCount\": 0,\n  \"succeededCount\": 1,\n  \"abortCount\": 0,\n  \"allCount\": 1\n}"
+                        }
+                    ]
                 },
                 {
                     "name": "Create Order",
@@ -3114,7 +3221,7 @@
                     "response": []
                 },
                 {
-                    "name": "Get Order By Tracking ID",
+                    "name": "Get Order By Tracking ID (Live Track)",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -3125,17 +3232,72 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{gateway_url}}/orders/{{tracking_id}}",
+                            "raw": "{{gateway_url}}/orders/{{tracking_id}}/track",
                             "host": [
                                 "{{gateway_url}}"
                             ],
                             "path": [
                                 "orders",
-                                "{{tracking_id}}"
+                                "{{tracking_id}}",
+                                "track"
                             ]
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Get Customer Order Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}"
+                            ]
+                        },
+                        "description": "Müşteri sipariş detayı. restaurantName bilgisi dahil edilmiş, restoran iç notu (internalNote) gizlenmiştir."
+                    },
+                    "response": [
+                        {
+                            "name": "200 OK - Customer Order Detail with Restaurant Name",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/{{order_id}}",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "{{order_id}}"
+                                    ]
+                                },
+                                "description": "Müşteri sipariş detayı. restaurantName bilgisi dahil edilmiş, restoran iç notu (internalNote) gizlenmiştir."
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"trackingId\": \"ca77402f-bda5-4f40-8fb4-e1b2ab1ff03b\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"restaurantName\": \"Burger King\",\n  \"orderStatus\": \"DELIVERED\",\n  \"price\": 340.0,\n  \"deliveryFee\": 25.0,\n  \"createdAt\": \"2026-10-10T14:30:00Z\",\n  \"items\": [\n    {\n      \"id\": \"11111111-1111-1111-1111-111111111111\",\n      \"name\": \"Whopper Men\\u00fc\",\n      \"quantity\": 2,\n      \"price\": 150.0,\n      \"subTotal\": 300.0\n    },\n    {\n      \"id\": \"22222222-2222-2222-2222-222222222222\",\n      \"name\": \"Patates K\\u0131zartmas\\u0131\",\n      \"quantity\": 1,\n      \"price\": 40.0,\n      \"subTotal\": 40.0\n    }\n  ],\n  \"deliveryAddress\": {\n    \"city\": \"Istanbul\",\n    \"district\": \"Kadikoy\",\n    \"neighborhood\": \"Moda\",\n    \"street\": \"Sair Nefi Sokak\",\n    \"buildingNumber\": \"10\",\n    \"doorNumber\": \"4\",\n    \"floor\": \"2\",\n    \"addressInstructions\": \"Zile basmayin\",\n    \"contactFirstName\": \"Ahmet\",\n    \"contactLastName\": \"Yilmaz\",\n    \"contactPhone\": \"+905551234567\"\n  },\n  \"cancelReason\": null\n}"
+                        }
+                    ]
                 },
                 {
                     "name": "Force Sync Roles",
@@ -3153,11 +3315,12 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{gateway_url}}/management/sync-roles",
+                            "raw": "{{gateway_url}}/orders/management/sync-roles",
                             "host": [
                                 "{{gateway_url}}"
                             ],
                             "path": [
+                                "orders",
                                 "management",
                                 "sync-roles"
                             ]
@@ -3166,7 +3329,235 @@
                     "response": []
                 },
                 {
-                    "name": "Get Paid Orders",
+                    "name": "Approve Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/approve",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "approve"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Start Preparing Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/start-preparing",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "start-preparing"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Ready For Pickup Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/ready-for-pickup",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "ready-for-pickup"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Start Delivery Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/start-delivery",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "start-delivery"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Deliver Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/deliver",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "deliver"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentStatus\": \"APPROVED\",\n  \"cancelReason\": \"OPERATIONAL_DISRUPTIONS\",\n  \"materialAction\": \"RESTORE_STOCK\",\n  \"internalNote\": \"Mutfak firin arizasi, siparis iptal edildi.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/cancel",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "cancel"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Force Cancel Order (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"adminReason\": \"Musteri adresinde bulunamadi, cagr\\u0131 merkezi onayiyla iptal edildi.\",\n  \"forceRefund\": false\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/force-cancel",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "force-cancel"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order Detail",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -3177,7 +3568,96 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/paid",
+                            "raw": "{{gateway_url}}/orders/{{order_id}}/detail",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "{{order_id}}",
+                                "detail"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Platform Order By Tracking ID (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/admin/{{tracking_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "admin",
+                                "{{tracking_id}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Restaurant Orders (Paginated & Filtered)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}?page=0&size=20&status=WAITING_FOR_APPROVAL",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "orders",
+                                "restaurants",
+                                "{{restaurant_id}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "WAITING_FOR_APPROVAL"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Restaurant Orders Summary",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/summary",
                             "host": [
                                 "{{gateway_url}}"
                             ],
@@ -3185,7 +3665,7 @@
                                 "orders",
                                 "restaurants",
                                 "{{restaurant_id}}",
-                                "paid"
+                                "summary"
                             ]
                         }
                     },
