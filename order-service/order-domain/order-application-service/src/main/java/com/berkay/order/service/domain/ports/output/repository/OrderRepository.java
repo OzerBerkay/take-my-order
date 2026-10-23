@@ -12,9 +12,29 @@ public interface OrderRepository {
 
     Optional<Order> findById(OrderId orderId);
 
+    Optional<Order> findByIdWithLock(OrderId orderId);
+
     Optional<Order> findByTrackingId(TrackingId trackingId);
 
     com.berkay.order.service.domain.dto.read.OrderPageResult findByCustomerId(com.berkay.domain.valueobject.CustomerId customerId, int page, int size);
+
+    com.berkay.order.service.domain.dto.read.OrderPageResult findByCustomerIdAndOrderStatusIn(com.berkay.domain.valueobject.CustomerId customerId,
+                                                                                              java.util.List<com.berkay.domain.valueobject.OrderStatus> statuses,
+                                                                                              int page,
+                                                                                              int size);
+
+    CustomerOrdersSummaryProjection getCustomerOrdersSummary(com.berkay.domain.valueobject.CustomerId customerId);
     
     Optional<java.util.List<Order>> findByRestaurantIdAndOrderStatus(com.berkay.domain.valueobject.RestaurantId restaurantId, com.berkay.domain.valueobject.OrderStatus orderStatus);
+
+    com.berkay.order.service.domain.dto.read.OrderPageResult findRestaurantOrders(com.berkay.domain.valueobject.RestaurantId restaurantId,
+                                                                                  com.berkay.domain.valueobject.OrderStatus status,
+                                                                                  String search,
+                                                                                  int page,
+                                                                                  int size,
+                                                                                  String sort);
+
+    Optional<OrderAuthProjection> findAuthProjectionById(java.util.UUID orderId);
+
+    RestaurantOrdersSummaryProjection getRestaurantOrdersSummary(com.berkay.domain.valueobject.RestaurantId restaurantId);
 }

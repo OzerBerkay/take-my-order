@@ -1,5 +1,7 @@
 package com.berkay.order.service.dataaccess.order.entity;
 
+import com.berkay.domain.valueobject.CancelReason;
+import com.berkay.domain.valueobject.MaterialAction;
 import com.berkay.domain.valueobject.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,14 +26,27 @@ public class OrderEntity {
     private UUID restaurantId;
     private UUID trackingId;
     private BigDecimal price;
+    private BigDecimal deliveryFee;
     private java.time.ZonedDateTime createdAt;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-    private String failureMessages;
+
+    @Enumerated(EnumType.STRING)
+    private CancelReason cancelReason;
+
+    @Enumerated(EnumType.STRING)
+    private MaterialAction materialAction;
+
+    private String internalNote;
+
+    @Version
+    private Integer version;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private OrderAddressEntity address;
 
+    @org.hibernate.annotations.BatchSize(size = 20)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItemEntity> items;
 

@@ -15,4 +15,9 @@ public class GetOrdersQuery {
     private final UUID customerId;
     private final int page;
     private final int size;
+    private final OrderFilterGroup filter;
+
+    public OrderFilterGroup getFilter() {
+        return filter != null ? filter : OrderFilterGroup.ALL;
+    }
 }

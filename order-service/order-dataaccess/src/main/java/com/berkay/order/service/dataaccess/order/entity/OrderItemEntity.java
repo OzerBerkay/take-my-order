@@ -18,19 +18,19 @@ import java.util.UUID;
 public class OrderItemEntity {
     @Id
     private Long id;
-    @Id // This set as composite primary key because to be guaranteed its uniqueness
-    // for example (orderItemId, orderId) => {(0,0) (0,1), (0,2), (1,2)} order item id starts from 0 for each order, so using composite id resolve confusion
+    @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_ID")
     private OrderEntity order;
 
     private UUID productId;
+    private String productName;
     private BigDecimal price;
     private Integer quantity;
     private BigDecimal subTotal;
 
     @Override
-    public boolean equals(Object o) { // My primary key consist of these two fields
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItemEntity that = (OrderItemEntity) o;
@@ -38,7 +38,7 @@ public class OrderItemEntity {
     }
 
     @Override
-    public int hashCode() { // My primary key consist of these two fields
+    public int hashCode() {
         return Objects.hash(id, order);
     }
 }

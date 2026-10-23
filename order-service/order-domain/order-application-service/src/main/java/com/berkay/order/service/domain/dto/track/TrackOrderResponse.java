@@ -1,5 +1,6 @@
 package com.berkay.order.service.domain.dto.track;
 
+import com.berkay.domain.valueobject.CancelReason;
 import com.berkay.domain.valueobject.OrderStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,6 @@ public class TrackOrderResponse {
     @NotNull
     private final OrderStatus orderStatus;
     private final List<String> failureMessages;
+    private final CancelReason cancelReason;
+    private final String internalNote;
 }

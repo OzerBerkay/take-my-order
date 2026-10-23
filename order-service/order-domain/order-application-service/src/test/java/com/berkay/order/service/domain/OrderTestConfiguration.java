@@ -51,8 +51,17 @@ public class OrderTestConfiguration {
     }
 
     @Bean
+    public DeliveryOutboxRepository deliveryOutboxRepository() {
+        return Mockito.mock(DeliveryOutboxRepository.class);
+    }
+
+    @Bean
+    public com.berkay.order.service.domain.ports.output.message.publisher.delivery.DeliveryMessagePublisher deliveryMessagePublisher() {
+        return Mockito.mock(com.berkay.order.service.domain.ports.output.message.publisher.delivery.DeliveryMessagePublisher.class);
+    }
+
+    @Bean
     public OrderDomainService orderDomainService() {
         return new OrderDomainServiceImpl();
     }
-
 }

@@ -2,12 +2,13 @@ package com.berkay.order.service.domain;
 
 import com.berkay.order.service.domain.dto.create.CreateOrderCommand;
 import com.berkay.order.service.domain.dto.create.CreateOrderResponse;
-import com.berkay.order.service.domain.dto.query.PaidOrderResponse;
+import com.berkay.order.service.domain.dto.operation.*;
+import com.berkay.order.service.domain.dto.read.GetOrdersQuery;
+import com.berkay.order.service.domain.dto.read.GetOrdersResponse;
+import com.berkay.order.service.domain.dto.restaurant.*;
 import com.berkay.order.service.domain.dto.track.TrackOrderQuery;
 import com.berkay.order.service.domain.dto.track.TrackOrderResponse;
 import com.berkay.order.service.domain.ports.input.service.OrderApplicationService;
-import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,18 +19,48 @@ import org.springframework.validation.annotation.Validated;
 class OrderApplicationServiceImpl implements OrderApplicationService {
 
     private final OrderCreateCommandHandler orderCreateCommandHandler;
-
     private final OrderTrackCommandHandler orderTrackCommandHandler;
-    
     private final CustomerOrderQueryHandler customerOrderQueryHandler;
-    
-    private final RestaurantPaidOrderQueryHandler restaurantPaidOrderQueryHandler;
+    private final OrderApproveCommandHandler orderApproveCommandHandler;
+    private final OrderStartPreparingCommandHandler orderStartPreparingCommandHandler;
+    private final OrderReadyForPickupCommandHandler orderReadyForPickupCommandHandler;
+    private final OrderStartDeliveryCommandHandler orderStartDeliveryCommandHandler;
+    private final OrderDeliverCommandHandler orderDeliverCommandHandler;
+    private final OrderCancelCommandHandler orderCancelCommandHandler;
+    private final OrderForceCancelCommandHandler orderForceCancelCommandHandler;
+    private final RestaurantOrdersQueryHandler restaurantOrdersQueryHandler;
+    private final OrderDetailQueryHandler orderDetailQueryHandler;
+    private final PlatformOrderQueryHandler platformOrderQueryHandler;
+    private final RestaurantOrdersSummaryQueryHandler restaurantOrdersSummaryQueryHandler;
 
-    public OrderApplicationServiceImpl(OrderCreateCommandHandler orderCreateCommandHandler, OrderTrackCommandHandler orderTrackCommandHandler, CustomerOrderQueryHandler customerOrderQueryHandler, RestaurantPaidOrderQueryHandler restaurantPaidOrderQueryHandler) {
+    public OrderApplicationServiceImpl(OrderCreateCommandHandler orderCreateCommandHandler,
+                                      OrderTrackCommandHandler orderTrackCommandHandler,
+                                      CustomerOrderQueryHandler customerOrderQueryHandler,
+                                      OrderApproveCommandHandler orderApproveCommandHandler,
+                                      OrderStartPreparingCommandHandler orderStartPreparingCommandHandler,
+                                      OrderReadyForPickupCommandHandler orderReadyForPickupCommandHandler,
+                                      OrderStartDeliveryCommandHandler orderStartDeliveryCommandHandler,
+                                      OrderDeliverCommandHandler orderDeliverCommandHandler,
+                                      OrderCancelCommandHandler orderCancelCommandHandler,
+                                      OrderForceCancelCommandHandler orderForceCancelCommandHandler,
+                                      RestaurantOrdersQueryHandler restaurantOrdersQueryHandler,
+                                      OrderDetailQueryHandler orderDetailQueryHandler,
+                                      PlatformOrderQueryHandler platformOrderQueryHandler,
+                                      RestaurantOrdersSummaryQueryHandler restaurantOrdersSummaryQueryHandler) {
         this.orderCreateCommandHandler = orderCreateCommandHandler;
         this.orderTrackCommandHandler = orderTrackCommandHandler;
         this.customerOrderQueryHandler = customerOrderQueryHandler;
-        this.restaurantPaidOrderQueryHandler = restaurantPaidOrderQueryHandler;
+        this.orderApproveCommandHandler = orderApproveCommandHandler;
+        this.orderStartPreparingCommandHandler = orderStartPreparingCommandHandler;
+        this.orderReadyForPickupCommandHandler = orderReadyForPickupCommandHandler;
+        this.orderStartDeliveryCommandHandler = orderStartDeliveryCommandHandler;
+        this.orderDeliverCommandHandler = orderDeliverCommandHandler;
+        this.orderCancelCommandHandler = orderCancelCommandHandler;
+        this.orderForceCancelCommandHandler = orderForceCancelCommandHandler;
+        this.restaurantOrdersQueryHandler = restaurantOrdersQueryHandler;
+        this.orderDetailQueryHandler = orderDetailQueryHandler;
+        this.platformOrderQueryHandler = platformOrderQueryHandler;
+        this.restaurantOrdersSummaryQueryHandler = restaurantOrdersSummaryQueryHandler;
     }
 
     @Override
@@ -43,12 +74,68 @@ class OrderApplicationServiceImpl implements OrderApplicationService {
     }
 
     @Override
-    public com.berkay.order.service.domain.dto.read.GetOrdersResponse getOrders(com.berkay.order.service.domain.dto.read.GetOrdersQuery getOrdersQuery) {
+    public GetOrdersResponse getOrders(GetOrdersQuery getOrdersQuery) {
         return customerOrderQueryHandler.getOrders(getOrdersQuery);
     }
-    
+
     @Override
-    public List<PaidOrderResponse> getPaidOrders(UUID restaurantId) {
-        return restaurantPaidOrderQueryHandler.getPaidOrders(restaurantId);
+    public com.berkay.order.service.domain.dto.read.CustomerOrderDetailResponse getCustomerOrderDetail(
+            com.berkay.order.service.domain.dto.read.CustomerOrderDetailQuery query) {
+        return customerOrderQueryHandler.getOrderDetail(query);
+    }
+
+    @Override
+    public RestaurantOrderResponse approveOrder(ApproveOrderCommand command) {
+        return orderApproveCommandHandler.approveOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse startPreparingOrder(StartPreparingOrderCommand command) {
+        return orderStartPreparingCommandHandler.startPreparingOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse readyForPickupOrder(ReadyForPickupOrderCommand command) {
+        return orderReadyForPickupCommandHandler.readyForPickupOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse startDeliveryOrder(StartDeliveryOrderCommand command) {
+        return orderStartDeliveryCommandHandler.startDeliveryOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse deliverOrder(DeliverOrderCommand command) {
+        return orderDeliverCommandHandler.deliverOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse cancelOrder(CancelOrderCommand command) {
+        return orderCancelCommandHandler.cancelOrder(command);
+    }
+
+    @Override
+    public RestaurantOrderResponse forceCancelOrder(ForceCancelOrderCommand command) {
+        return orderForceCancelCommandHandler.forceCancelOrder(command);
+    }
+
+    @Override
+    public RestaurantOrdersPageResponse getRestaurantOrders(RestaurantOrdersQuery query) {
+        return restaurantOrdersQueryHandler.getRestaurantOrders(query);
+    }
+
+    @Override
+    public RestaurantOrderResponse getOrderDetail(OrderDetailQuery query) {
+        return orderDetailQueryHandler.getOrderDetail(query);
+    }
+
+    @Override
+    public RestaurantOrderResponse getPlatformOrder(PlatformOrderQuery query) {
+        return platformOrderQueryHandler.getPlatformOrder(query);
+    }
+
+    @Override
+    public RestaurantOrdersSummaryResponse getRestaurantOrdersSummary(java.util.UUID restaurantId) {
+        return restaurantOrdersSummaryQueryHandler.getRestaurantOrdersSummary(restaurantId);
     }
 }

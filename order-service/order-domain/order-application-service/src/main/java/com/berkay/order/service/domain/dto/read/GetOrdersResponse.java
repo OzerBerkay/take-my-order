@@ -16,4 +16,8 @@ public class GetOrdersResponse {
     private final long totalElements;
     private final int totalPages;
     private final boolean isLast;
+    private final long activeCount;
+    private final long succeededCount;
+    private final long abortCount;
+    private final long allCount;
 }
