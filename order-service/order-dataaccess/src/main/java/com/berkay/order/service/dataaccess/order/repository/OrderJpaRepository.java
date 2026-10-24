@@ -20,6 +20,22 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID>,
 
     org.springframework.data.domain.Page<OrderEntity> findByCustomerId(UUID customerId, org.springframework.data.domain.Pageable pageable);
 
+    @org.springframework.data.jpa.repository.Query(value = """
+            SELECT o FROM OrderEntity o
+            WHERE o.customerId = :customerId
+            ORDER BY
+                CASE
+                    WHEN o.orderStatus IN :activeStatuses THEN 0
+                    ELSE 1
+                END ASC,
+                o.createdAt DESC
+            """,
+            countQuery = "SELECT count(o) FROM OrderEntity o WHERE o.customerId = :customerId")
+    org.springframework.data.domain.Page<OrderEntity> findByCustomerIdWithActivePriority(
+            @org.springframework.data.repository.query.Param("customerId") UUID customerId,
+            @org.springframework.data.repository.query.Param("activeStatuses") java.util.Collection<com.berkay.domain.valueobject.OrderStatus> activeStatuses,
+            org.springframework.data.domain.Pageable pageable);
+
     org.springframework.data.domain.Page<OrderEntity> findByCustomerIdAndOrderStatusIn(
             UUID customerId,
             java.util.Collection<com.berkay.domain.valueobject.OrderStatus> orderStatuses,

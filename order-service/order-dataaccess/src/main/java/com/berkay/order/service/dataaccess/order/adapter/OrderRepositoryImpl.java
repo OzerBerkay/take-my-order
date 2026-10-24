@@ -47,10 +47,12 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public com.berkay.order.service.domain.dto.read.OrderPageResult findByCustomerId(com.berkay.domain.valueobject.CustomerId customerId, int page, int size) {
-        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(
-                page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
         org.springframework.data.domain.Page<com.berkay.order.service.dataaccess.order.entity.OrderEntity> pagedResult =
-                orderJpaRepository.findByCustomerId(customerId.getValue(), pageRequest);
+                orderJpaRepository.findByCustomerIdWithActivePriority(
+                        customerId.getValue(),
+                        com.berkay.order.service.domain.dto.read.OrderFilterGroup.ACTIVE.getStatuses(),
+                        pageRequest);
 
         java.util.List<Order> orders = pagedResult.getContent().stream()
                 .map(orderDataAccessMapper::orderEntityToOrder)
