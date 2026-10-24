@@ -10,5 +10,8 @@ public interface TokenRevocationPort {
     
     void revokeTokenBySessionId(String sessionId);
     
+    void revokeRole(UUID roleId);
+    
     String checkTokenRevocation(String userId, String sid, long iat);
 }
+

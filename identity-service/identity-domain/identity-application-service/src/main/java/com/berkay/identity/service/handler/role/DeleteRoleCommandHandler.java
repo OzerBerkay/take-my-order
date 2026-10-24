@@ -33,6 +33,7 @@ public class DeleteRoleCommandHandler {
     private final RoleDataMapper roleDataMapper;
     private final RoleOutboxHelper roleOutboxHelper;
     private final SecurityContextPort securityContextPort;
+    private final com.berkay.identity.service.ports.output.repository.TokenRevocationPort tokenRevocationPort;
 
     @Transactional
     public DeleteRoleResponse deleteRole(DeleteRoleCommand command) {
@@ -82,7 +83,8 @@ public class DeleteRoleCommandHandler {
 
         // 6. Outbox'a yaz
         roleOutboxHelper.saveRoleOutboxMessage(eventPayload);
-        log.info("Role deleted successfully with ID: {}", role.getId().getValue());
+        tokenRevocationPort.revokeRole(role.getId().getValue());
+        log.info("Role deleted successfully with ID: {} and revoked in Redis", role.getId().getValue());
 
         return DeleteRoleResponse.builder()
                 .roleId(role.getId().getValue())

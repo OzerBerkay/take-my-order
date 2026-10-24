@@ -39,6 +39,7 @@ public class UpdateRoleCommandHandler {
 
     private final RoleDataMapper roleDataMapper;
     private final RoleOutboxHelper roleOutboxHelper;
+    private final com.berkay.identity.service.ports.output.repository.TokenRevocationPort tokenRevocationPort;
 
     @Transactional
     public UpdateRoleResponse updateRole(UpdateRoleCommand command) {
@@ -109,7 +110,8 @@ public class UpdateRoleCommandHandler {
 
         // 12. Outbox'a yaz
         roleOutboxHelper.saveRoleOutboxMessage(eventPayload);
-        log.info("Role updated successfully with ID: {}", savedRole.getId().getValue());
+        tokenRevocationPort.revokeRole(savedRole.getId().getValue());
+        log.info("Role updated successfully with ID: {} and revoked in Redis", savedRole.getId().getValue());
 
         return UpdateRoleResponse.builder()
                 .roleId(savedRole.getId().getValue())
