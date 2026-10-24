@@ -42,5 +42,6 @@ public class UpdateRestaurantCommand {
     private final String bannerUrl;
     private final java.time.LocalTime openingTime;
     private final java.time.LocalTime closingTime;
-
+    private final Boolean clearOpeningTime;
+    private final Boolean clearClosingTime;
 }

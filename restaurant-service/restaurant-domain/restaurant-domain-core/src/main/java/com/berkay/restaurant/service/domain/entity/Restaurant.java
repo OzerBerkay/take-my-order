@@ -144,6 +144,14 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         }
     }
 
+    public void clearOpeningTime() {
+        this.openingTime = null;
+    }
+
+    public void clearClosingTime() {
+        this.closingTime = null;
+    }
+
     public void initializeRestaurant() {
         if (getId() == null) {
             setId(new RestaurantId(UUID.randomUUID()));

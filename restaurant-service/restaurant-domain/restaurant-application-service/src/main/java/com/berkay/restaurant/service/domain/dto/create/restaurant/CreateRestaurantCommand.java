@@ -75,9 +75,11 @@ public class CreateRestaurantCommand {
     private final String bannerUrl;
 
     @JsonFormat(pattern = "HH:mm")
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.berkay.restaurant.service.domain.deserializer.LocalTimeOrEmptyDeserializer.class)
     private final LocalTime openingTime;
 
     @JsonFormat(pattern = "HH:mm")
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.berkay.restaurant.service.domain.deserializer.LocalTimeOrEmptyDeserializer.class)
     private final LocalTime closingTime;
 
     public void setMerchantId(String merchantId) {

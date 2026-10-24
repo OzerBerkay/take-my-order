@@ -87,8 +87,17 @@ public class UpdateRestaurantCommandHandler {
         restaurant.updateDescription(command.getDescription());
         restaurant.updateLogoUrl(command.getLogoUrl());
         restaurant.updateBannerUrl(command.getBannerUrl());
-        restaurant.updateOpeningTime(command.getOpeningTime());
-        restaurant.updateClosingTime(command.getClosingTime());
+        if (Boolean.TRUE.equals(command.getClearOpeningTime())) {
+            restaurant.clearOpeningTime();
+        } else if (command.getOpeningTime() != null) {
+            restaurant.updateOpeningTime(command.getOpeningTime());
+        }
+
+        if (Boolean.TRUE.equals(command.getClearClosingTime())) {
+            restaurant.clearClosingTime();
+        } else if (command.getClosingTime() != null) {
+            restaurant.updateClosingTime(command.getClosingTime());
+        }
 
         // Kaydet
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);

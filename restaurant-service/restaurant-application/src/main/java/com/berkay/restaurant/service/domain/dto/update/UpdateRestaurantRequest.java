@@ -9,9 +9,10 @@ import lombok.Getter;
 import java.math.BigDecimal;
 
 @Getter
+@lombok.Setter
 @Builder
 @AllArgsConstructor
-
+@lombok.NoArgsConstructor
 public class UpdateRestaurantRequest {
     @Size(min = 2, max = 50, message = "Restaurant name must be between 2 and 50 characters")
     private String restaurantName;
@@ -45,9 +46,21 @@ public class UpdateRestaurantRequest {
     private String bannerUrl;
 
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.berkay.restaurant.service.domain.deserializer.LocalTimeOrEmptyDeserializer.class)
     private java.time.LocalTime openingTime;
 
     @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.berkay.restaurant.service.domain.deserializer.LocalTimeOrEmptyDeserializer.class)
     private java.time.LocalTime closingTime;
 
+    private Boolean clearOpeningTime = false;
+    private Boolean clearClosingTime = false;
+
+    public Boolean getClearOpeningTime() {
+        return clearOpeningTime != null ? clearOpeningTime : Boolean.FALSE;
+    }
+
+    public Boolean getClearClosingTime() {
+        return clearClosingTime != null ? clearClosingTime : Boolean.FALSE;
+    }
 }

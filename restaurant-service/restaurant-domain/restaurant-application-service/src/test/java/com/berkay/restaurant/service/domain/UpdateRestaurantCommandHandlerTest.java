@@ -122,9 +122,32 @@ public class UpdateRestaurantCommandHandlerTest {
 
         verify(restaurant).updateAvailability(false);
         verify(restaurant).updateBannerUrl("https://newbanner.png");
-        verify(restaurant).updateName(isNull());
-        verify(restaurant).updateOpeningTime(isNull());
-        verify(restaurant).updateClosingTime(isNull());
+        verify(restaurant, never()).updateOpeningTime(any());
+        verify(restaurant, never()).updateClosingTime(any());
+        verify(restaurant, never()).clearOpeningTime();
+        verify(restaurant, never()).clearClosingTime();
+        verify(restaurantRepository).saveRestaurant(restaurant);
+    }
+
+    @Test
+    public void testUpdateRestaurant_Success_ClearOpeningAndClosingHours() {
+        when(restaurantRepository.findRestaurantById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(restaurant.getId()).thenReturn(new RestaurantId(restaurantId));
+        when(restaurantRepository.saveRestaurant(restaurant)).thenReturn(restaurant);
+
+        RestaurantInformationEvent event = mock(RestaurantInformationEvent.class);
+        when(restaurantDataMapper.restaurantToRestaurantInformationEvent(restaurant)).thenReturn(event);
+
+        UpdateRestaurantCommand command = UpdateRestaurantCommand.builder()
+                .restaurantId(restaurantId)
+                .clearOpeningTime(true)
+                .clearClosingTime(true)
+                .build();
+
+        updateRestaurantCommandHandler.updateRestaurant(command);
+
+        verify(restaurant).clearOpeningTime();
+        verify(restaurant).clearClosingTime();
         verify(restaurantRepository).saveRestaurant(restaurant);
     }
 

@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -189,4 +190,92 @@ public class RestaurantControllerTest {
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.message")
                         .value("Invalid time format for field 'openingTime'. Expected format is 'HH:mm' (e.g. '09:00', '22:30')."));
     }
+
+    @Test
+    void shouldAcceptEmptyStringOperatingHoursAsNull_WhenPatchingRestaurant() throws Exception {
+        org.springframework.test.web.servlet.MockMvc mockMvc = org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(restaurantController)
+                .setControllerAdvice(new com.berkay.restaurant.service.domain.exception.handler.RestaurantGlobalExceptionHandler())
+                .build();
+
+        when(restaurantRequestMapper.updateRestaurantRequestToCommand(eq(restaurantId), any(UpdateRestaurantRequest.class)))
+                .thenAnswer(invocation -> {
+                    UpdateRestaurantRequest req = invocation.getArgument(1);
+                    assertNull(req.getOpeningTime());
+                    assertNull(req.getClosingTime());
+                    org.junit.jupiter.api.Assertions.assertEquals(Boolean.TRUE, req.getClearOpeningTime());
+                    org.junit.jupiter.api.Assertions.assertEquals(Boolean.TRUE, req.getClearClosingTime());
+                    return UpdateRestaurantCommand.builder()
+                            .restaurantId(restaurantId)
+                            .openingTime(req.getOpeningTime())
+                            .closingTime(req.getClosingTime())
+                            .clearOpeningTime(req.getClearOpeningTime())
+                            .clearClosingTime(req.getClearClosingTime())
+                            .build();
+                });
+
+        String jsonPayload = "{\"openingTime\": \"\", \"closingTime\": \"   \"}";
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .patch("/restaurants/" + restaurantId)
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().string("Restaurant updated"));
+    }
+
+    @Test
+    void shouldClearClosingTimeAndKeepOpeningTime_WhenEmptyClosingTimeProvidedInFullPayload() throws Exception {
+        org.springframework.test.web.servlet.MockMvc mockMvc = org.springframework.test.web.servlet.setup.MockMvcBuilders
+                .standaloneSetup(restaurantController)
+                .setControllerAdvice(new com.berkay.restaurant.service.domain.exception.handler.RestaurantGlobalExceptionHandler())
+                .build();
+
+        when(restaurantRequestMapper.updateRestaurantRequestToCommand(eq(restaurantId), any(UpdateRestaurantRequest.class)))
+                .thenAnswer(invocation -> {
+                    UpdateRestaurantRequest req = invocation.getArgument(1);
+                    org.junit.jupiter.api.Assertions.assertEquals(LocalTime.of(22, 0), req.getOpeningTime());
+                    assertNull(req.getClosingTime());
+                    org.junit.jupiter.api.Assertions.assertEquals(Boolean.FALSE, req.getClearOpeningTime());
+                    org.junit.jupiter.api.Assertions.assertEquals(Boolean.TRUE, req.getClearClosingTime());
+                    org.junit.jupiter.api.Assertions.assertEquals("Burger Yiyelim", req.getRestaurantName());
+                    return UpdateRestaurantCommand.builder()
+                            .restaurantId(restaurantId)
+                            .restaurantName(req.getRestaurantName())
+                            .openingTime(req.getOpeningTime())
+                            .closingTime(req.getClosingTime())
+                            .clearOpeningTime(req.getClearOpeningTime())
+                            .clearClosingTime(req.getClearClosingTime())
+                            .build();
+                });
+
+        String userJsonPayload = "{\n" +
+                "  \"available\": true,\n" +
+                "  \"averageDeliveryTimeInMinutes\": 20,\n" +
+                "  \"bannerUrl\": \"https://images.deliveryhero.io/image/fd-tr/LH/ce6ah-listing.jpg\",\n" +
+                "  \"buildingNumber\": \"61\",\n" +
+                "  \"city\": \"Istanbul\",\n" +
+                "  \"closingTime\": \"\",\n" +
+                "  \"cuisineIds\": [\"5c107d88-42fe-4a16-82ba-a442400171ca\", \"cc4211a6-fe93-4e64-b79a-6598fc2c2de2\"],\n" +
+                "  \"deliveryFee\": 95,\n" +
+                "  \"description\": \"En güzel burgerler burada\",\n" +
+                "  \"district\": \"Kadıkoy\",\n" +
+                "  \"doorNumber\": \"1\",\n" +
+                "  \"logoUrl\": \"https://images.deliveryhero.io/image/fd-tr/tr-logos/ce6ah-logo.jpg\",\n" +
+                "  \"minimumOrderAmount\": 0,\n" +
+                "  \"neighborhood\": \"Osmanaga Mah\",\n" +
+                "  \"openingTime\": \"22:00\",\n" +
+                "  \"phoneNumber\": \"+902125550123\",\n" +
+                "  \"restaurantName\": \"Burger Yiyelim\",\n" +
+                "  \"street\": \"Sogutlucesme Cad\"\n" +
+                "}";
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .patch("/restaurants/" + restaurantId)
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(userJsonPayload))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().string("Restaurant updated"));
+    }
 }
+
