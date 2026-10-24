@@ -2310,6 +2310,48 @@
                     }
                 },
                 {
+                    "name": "Update Restaurant - Clear Operating Hours (Success)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"openingTime\": \"22:00\",\n    \"closingTime\": \"\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/restaurants/{{restaurant_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "restaurants",
+                                "{{restaurant_id}}"
+                            ]
+                        },
+                        "description": "Boş string (\"\") gönderilen openingTime veya closingTime veritabanında NULL olarak temizlenir. Gönderilmeyen alanlar mevcut değerini korur (PATCH).",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
                     "name": "Update Product (Success)",
                     "request": {
                         "method": "PUT",

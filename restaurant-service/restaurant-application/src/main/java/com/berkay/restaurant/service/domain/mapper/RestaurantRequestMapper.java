@@ -31,6 +31,8 @@ public class RestaurantRequestMapper {
                 .bannerUrl(request.getBannerUrl())
                 .openingTime(request.getOpeningTime())
                 .closingTime(request.getClosingTime())
+                .clearOpeningTime(request.getClearOpeningTime())
+                .clearClosingTime(request.getClearClosingTime())
                 .build();
     }
 
