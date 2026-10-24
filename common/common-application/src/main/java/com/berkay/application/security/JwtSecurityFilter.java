@@ -129,15 +129,23 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
 
 
+                    List<UUID> roleIds = extractUuidList(jsonNode, "role_ids");
                     String sid = extractFirstElementOrNull(jsonNode, "sid");
                     long iat = jsonNode.has("iat") ? jsonNode.get("iat").asLong() : 0L;
                     if (internalIdStr != null && sid != null) {
                         try {
-                            List<String> results = redisTemplate.opsForValue().multiGet(
-                                java.util.Arrays.asList("user:" + internalIdStr + ":revoke", "sid:" + sid + ":revoke")
-                            );
+                            List<String> keys = new ArrayList<>();
+                            keys.add("user:" + internalIdStr + ":revoke");
+                            keys.add("sid:" + sid + ":revoke");
+                            if (roleIds != null) {
+                                for (UUID roleId : roleIds) {
+                                    keys.add("role:" + roleId + ":revoke");
+                                }
+                            }
+
+                            List<String> results = redisTemplate.opsForValue().multiGet(keys);
                             
-                            if (results != null && results.size() == 2) {
+                            if (results != null && results.size() >= 2) {
                                 String userRevokeStr = results.get(0);
                                 String sidRevokeStr = results.get(1);
 
@@ -161,6 +169,22 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                                         }
                                     }
                                 }
+
+                                for (int i = 2; i < results.size(); i++) {
+                                    String roleRevokeStr = results.get(i);
+                                    if (roleRevokeStr != null) {
+                                        JsonNode roleRevoke = objectMapper.readTree(roleRevokeStr);
+                                        long roleIat = roleRevoke.path("iat").asLong(0);
+                                        long gracePeriod = 5L;
+                                        if (iat <= (roleIat + gracePeriod)) {
+                                            log.warn("Access token revoked due to role update. Role index: {}, token iat: {}, role revocation iat: {}", i - 2, iat, roleIat);
+                                            throw new com.berkay.application.exception.TokenRevokedException(
+                                                    "ACCESS_TOKEN_REVOKED",
+                                                    "Role permissions updated. Please refresh your access token."
+                                            );
+                                        }
+                                    }
+                                }
                             }
                         } catch (com.berkay.application.exception.TokenRevokedException e) {
                             handlerExceptionResolver.resolveException(request, response, null, e);
@@ -169,8 +193,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                             log.error("Failed to check Redis for token revocation: {}", e.getMessage());
                         }
                     }
-
-                    List<UUID> roleIds = extractUuidList(jsonNode, "role_ids");
 
                     if (internalId != null) {
                         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(

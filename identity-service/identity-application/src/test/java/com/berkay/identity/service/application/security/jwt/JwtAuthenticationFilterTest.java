@@ -196,4 +196,70 @@ public class JwtAuthenticationFilterTest {
         verify(filterChain).doFilter(request, response);
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
     }
+
+    private String createDummyTokenWithRoles(String sid, long iat, String internalId, String externalId, String accountStatus, List<UUID> roleIds) {
+        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
+        String roleIdsJson = roleIds.stream().map(r -> "\"" + r + "\"").reduce((a, b) -> a + "," + b).orElse("");
+        String payload = String.format("{\"sub\":\"%s\", \"internal_id\":\"%s\", \"user_type\":\"MERCHANT\", \"account_status\":\"%s\", \"sid\":\"%s\", \"iat\":%d, \"role_ids\":[%s]}", 
+                externalId, internalId, accountStatus, sid, iat, roleIdsJson);
+        String encodedPayload = Base64.getUrlEncoder().encodeToString(payload.getBytes());
+        return header + "." + encodedPayload + ".dummySignature";
+    }
+
+    @Test
+    public void testRoleUpdatedToken_WithinGracePeriod_ShouldReturn401() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        FilterChain filterChain = mock(FilterChain.class);
+
+        UUID internalId = UUID.randomUUID();
+        UUID externalId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        String sid = UUID.randomUUID().toString();
+        
+        long revokedIat = 1000L;
+        long tokenIat = 1003L; // <= 1000 + 5
+
+        String token = createDummyTokenWithRoles(sid, tokenIat, internalId.toString(), externalId.toString(), "ACTIVE", List.of(roleId));
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+
+        String roleRevocation = "{\"type\":\"role_updated\", \"iat\":" + revokedIat + "}";
+        when(valueOperations.multiGet(anyList())).thenReturn(java.util.Arrays.asList(null, null, roleRevocation));
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        verify(handlerExceptionResolver).resolveException(
+                eq(request), eq(response), isNull(),
+                argThat(ex -> ex instanceof com.berkay.identity.service.domain.exception.TokenRevokedDomainException
+                        && "ACCESS_TOKEN_REVOKED".equals(((com.berkay.identity.service.domain.exception.TokenRevokedDomainException) ex).getErrorCode()))
+        );
+        verify(filterChain, never()).doFilter(request, response);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    public void testRoleUpdatedToken_AfterGracePeriod_ShouldAuthenticate() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        FilterChain filterChain = mock(FilterChain.class);
+
+        UUID internalId = UUID.randomUUID();
+        UUID externalId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        String sid = UUID.randomUUID().toString();
+        
+        long revokedIat = 1000L;
+        long tokenIat = 1010L; // > 1000 + 5 (fresh token obtained after role update)
+
+        String token = createDummyTokenWithRoles(sid, tokenIat, internalId.toString(), externalId.toString(), "ACTIVE", List.of(roleId));
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+
+        String roleRevocation = "{\"type\":\"role_updated\", \"iat\":" + revokedIat + "}";
+        when(valueOperations.multiGet(anyList())).thenReturn(java.util.Arrays.asList(null, null, roleRevocation));
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        verify(filterChain).doFilter(request, response);
+        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+    }
 }
