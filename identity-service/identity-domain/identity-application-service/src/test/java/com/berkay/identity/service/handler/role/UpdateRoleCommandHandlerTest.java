@@ -58,6 +58,9 @@ class UpdateRoleCommandHandlerTest {
     @Mock
     private RoleOutboxHelper roleOutboxHelper;
 
+    @Mock
+    private com.berkay.identity.service.ports.output.repository.TokenRevocationPort tokenRevocationPort;
+
     @InjectMocks
     private UpdateRoleCommandHandler commandHandler;
 
@@ -148,6 +151,7 @@ class UpdateRoleCommandHandlerTest {
         assertEquals(roleId, response.getRoleId());
         verify(roleRepository).save(any(Role.class));
         verify(roleOutboxHelper).saveRoleOutboxMessage(any());
+        verify(tokenRevocationPort).revokeRole(roleId);
     }
 
     @Test

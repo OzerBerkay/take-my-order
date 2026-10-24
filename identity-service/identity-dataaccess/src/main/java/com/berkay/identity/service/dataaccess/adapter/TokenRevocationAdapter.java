@@ -75,6 +75,20 @@ public class TokenRevocationAdapter implements TokenRevocationPort {
     }
 
     @Override
+    public void revokeRole(UUID roleId) {
+        String key = "role:" + roleId + ":revoke";
+        long iat = System.currentTimeMillis() / 1000;
+        String value = "{\"type\":\"role_updated\", \"iat\":" + iat + "}";
+
+        try {
+            redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(5));
+            log.info("Revoked role {}. Added to Redis with 5 min TTL.", roleId);
+        } catch (Exception e) {
+            log.error("Failed to add role revocation to Redis for role {}", roleId, e);
+        }
+    }
+
+    @Override
     public String checkTokenRevocation(String userId, String sid, long iat) {
         String userKey = "user:" + userId + ":revoke";
         String sidKey = "sid:" + sid + ":revoke";

@@ -49,6 +49,9 @@ class DeleteRoleCommandHandlerTest {
     @Mock
     private SecurityContextPort securityContextPort;
 
+    @Mock
+    private com.berkay.identity.service.ports.output.repository.TokenRevocationPort tokenRevocationPort;
+
     @InjectMocks
     private DeleteRoleCommandHandler commandHandler;
 
@@ -104,6 +107,7 @@ class DeleteRoleCommandHandlerTest {
         assertEquals(roleId, response.getRoleId());
         verify(roleRepository).delete(existingRole);
         verify(roleOutboxHelper).saveRoleOutboxMessage(any());
+        verify(tokenRevocationPort).revokeRole(roleId);
     }
 
     @Test
