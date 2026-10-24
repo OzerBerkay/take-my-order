@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +39,30 @@ public class GlobalExceptionHandler {
         return ErrorDTO.builder()
                 .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message("Invalid parameter format for " + exception.getName())
+                .build();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        log.warn("Malformed JSON request or invalid parameter format: {}", exception.getMessage());
+        String message = "Malformed JSON request or invalid parameter format";
+        Throwable cause = exception.getCause();
+        if (cause instanceof InvalidFormatException ife) {
+            String fieldName = ife.getPath().stream()
+                    .map(JsonMappingException.Reference::getFieldName)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.joining("."));
+            if (ife.getTargetType() != null && ife.getTargetType().equals(java.time.LocalTime.class)) {
+                message = "Invalid time format for field '" + fieldName + "'. Expected format is 'HH:mm' (e.g. '09:00', '22:30').";
+            } else {
+                message = "Invalid format for field '" + fieldName + "': " + ife.getValue();
+            }
+        }
+        return ErrorDTO.builder()
+                .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(message)
                 .build();
     }
 

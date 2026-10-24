@@ -45,7 +45,7 @@ public class RestaurantController {
 
     @org.springframework.security.access.prepost.PreAuthorize("@restaurantAuthService.isMerchant(authentication)")
     @PostMapping
-    public ResponseEntity<CreateRestaurantResponse> createRestaurant(@RequestBody CreateRestaurantCommand createRestaurantCommand,
+    public ResponseEntity<CreateRestaurantResponse> createRestaurant(@RequestBody @Valid CreateRestaurantCommand createRestaurantCommand,
                                                                      @org.springframework.security.core.annotation.AuthenticationPrincipal java.util.UUID internalId) {
         createRestaurantCommand.setMerchantId(internalId.toString());
         log.info("Creating restaurant with name: {}", createRestaurantCommand.getRestaurantName());

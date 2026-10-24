@@ -29,6 +29,8 @@ public class RestaurantRequestMapper {
                 .description(request.getDescription())
                 .logoUrl(request.getLogoUrl())
                 .bannerUrl(request.getBannerUrl())
+                .openingTime(request.getOpeningTime())
+                .closingTime(request.getClosingTime())
                 .build();
     }
 

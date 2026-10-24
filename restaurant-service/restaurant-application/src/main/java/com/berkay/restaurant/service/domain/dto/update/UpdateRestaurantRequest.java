@@ -44,4 +44,10 @@ public class UpdateRestaurantRequest {
     private String logoUrl;
     private String bannerUrl;
 
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private java.time.LocalTime openingTime;
+
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private java.time.LocalTime closingTime;
+
 }
