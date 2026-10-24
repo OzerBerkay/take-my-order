@@ -120,15 +120,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         internalId = externalId;
                     }
 
-                    List<UUID> roleIds = new ArrayList<>();
-                    if (payload.hasNonNull("role_ids") && payload.get("role_ids").isArray()) {
-                        payload.get("role_ids").forEach(node -> roleIds.add(UUID.fromString(node.asText())));
-                    }
-
-                    List<UUID> orgUnitIds = new ArrayList<>();
-                    if (payload.hasNonNull("organizational_unit_ids") && payload.get("organizational_unit_ids").isArray()) {
-                        payload.get("organizational_unit_ids").forEach(node -> orgUnitIds.add(UUID.fromString(node.asText())));
-                    }
+                    List<UUID> roleIds = extractUuidList(payload, "role_ids");
+                    List<UUID> orgUnitIds = extractUuidList(payload, "organizational_unit_ids");
 
                     String sid = payload.hasNonNull("sid") ? payload.get("sid").asText() : null;
 
@@ -142,9 +135,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         
                         log.info("Checking Redis for token revocation. sidKey: {}, userKey: {}, iat: {}", sidKey, userKey, iat);
 
-                        List<String> values = redisTemplate.opsForValue().multiGet(List.of(sidKey, userKey));
+                        List<String> keys = new ArrayList<>();
+                        keys.add(sidKey);
+                        keys.add(userKey);
+                        for (UUID roleId : roleIds) {
+                            keys.add("role:" + roleId + ":revoke");
+                        }
 
-                        if (values != null) {
+                        List<String> values = redisTemplate.opsForValue().multiGet(keys);
+
+                        if (values != null && values.size() >= 2) {
                             String sidVal = values.get(0);
                             String userVal = values.get(1);
                             
@@ -179,6 +179,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     log.error("Failed to parse user revoke JSON", e);
                                 }
                             }
+
+                            for (int i = 2; i < values.size(); i++) {
+                                String roleVal = values.get(i);
+                                if (roleVal != null) {
+                                    try {
+                                        JsonNode roleNode = objectMapper.readTree(roleVal);
+                                        long roleRevokedIat = roleNode.path("iat").asLong(0);
+                                        long gracePeriod = 5L;
+                                        if (iat <= (roleRevokedIat + gracePeriod)) {
+                                            log.warn("Access token revoked due to role update. Role index: {}, token iat: {}, role revocation iat: {}", i - 2, iat, roleRevokedIat);
+                                            handlerExceptionResolver.resolveException(request, response, null,
+                                                new com.berkay.identity.service.domain.exception.TokenRevokedDomainException(
+                                                    "ACCESS_TOKEN_REVOKED",
+                                                    "Role permissions updated. Please refresh your access token."
+                                                )
+                                            );
+                                            return;
+                                        }
+                                    } catch (Exception e) {
+                                        log.error("Failed to parse role revoke JSON", e);
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -196,5 +219,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private List<UUID> extractUuidList(JsonNode rootNode, String fieldName) {
+        List<UUID> list = new ArrayList<>();
+        if (rootNode.hasNonNull(fieldName)) {
+            JsonNode node = rootNode.get(fieldName);
+            java.util.function.Consumer<String> parseAndAdd = (text) -> {
+                text = text.trim();
+                if (text.startsWith("[") && text.endsWith("]")) {
+                    text = text.substring(1, text.length() - 1);
+                }
+                if (text.isEmpty()) return;
+                String[] parts = text.split(",");
+                for (String part : parts) {
+                    try {
+                        list.add(UUID.fromString(part.trim()));
+                    } catch (IllegalArgumentException e) {
+                        log.warn("Invalid UUID in token field {}: {}", fieldName, part.trim());
+                    }
+                }
+            };
+
+            if (node.isArray()) {
+                for (JsonNode element : node) {
+                    parseAndAdd.accept(element.asText());
+                }
+            } else if (node.isTextual()) {
+                parseAndAdd.accept(node.asText());
+            }
+        }
+        return list;
     }
 }

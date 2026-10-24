@@ -319,4 +319,54 @@ public class JwtSecurityFilterTest {
         );
         verify(filterChain, never()).doFilter(any(), any());
     }
+
+    @Test
+    void shouldResolveTokenRevokedExceptionWhenRoleIsRevoked() throws Exception {
+        // Arrange
+        long validTime = (System.currentTimeMillis() / 1000) + 3600;
+        long tokenIat = (System.currentTimeMillis() / 1000) - 100;
+        String internalId = java.util.UUID.randomUUID().toString();
+        String sid = "session-role-test";
+        String roleId = java.util.UUID.randomUUID().toString();
+
+        String payloadJson = "{" +
+                "\"sub\":\"1234\"," +
+                "\"exp\":" + validTime + "," +
+                "\"iat\":" + tokenIat + "," +
+                "\"internal_id\":\"" + internalId + "\"," +
+                "\"sid\":\"" + sid + "\"," +
+                "\"role_ids\":[\"" + roleId + "\"]," +
+                "\"user_type\":\"MERCHANT\"" +
+                "}";
+
+        String header = Base64.getUrlEncoder().encodeToString("{\"alg\":\"HS256\"}".getBytes());
+        String payload = Base64.getUrlEncoder().encodeToString(payloadJson.getBytes());
+        String token = header + "." + payload + ".signature";
+
+        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+
+        ObjectMapper realMapper = new ObjectMapper();
+        JsonNode mockNode = realMapper.readTree(payloadJson);
+        String roleRevokeJson = "{\"type\":\"role_updated\", \"iat\":" + (tokenIat + 10) + "}";
+
+        when(objectMapper.readTree(anyString()))
+                .thenReturn(mockNode)
+                .thenReturn(realMapper.readTree(roleRevokeJson));
+
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
+        // Redis multiGet returns [userRevoke=null, sidRevoke=null, roleRevoke=roleRevokeJson]
+        when(valueOperations.multiGet(any())).thenReturn(java.util.Arrays.asList(null, null, roleRevokeJson));
+
+        // Act
+        jwtSecurityFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        verify(handlerExceptionResolver).resolveException(
+                eq(request), eq(response), eq(null),
+                argThat(ex -> ex instanceof com.berkay.application.exception.TokenRevokedException
+                        && "ACCESS_TOKEN_REVOKED".equals(((com.berkay.application.exception.TokenRevokedException) ex).getErrorCode()))
+        );
+        verify(filterChain, never()).doFilter(any(), any());
+    }
 }
