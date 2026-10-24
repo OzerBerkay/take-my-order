@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import com.berkay.restaurant.service.domain.event.OrderApprovedEvent;
 import com.berkay.restaurant.service.domain.event.OrderRejectedEvent;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import static com.berkay.domain.DomainConstants.UTC;
@@ -42,6 +43,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private String description;
     private String logoUrl;
     private String bannerUrl;
+    private LocalTime openingTime;
+    private LocalTime closingTime;
 
     public void updateName(String restaurantName) {
         if (restaurantName != null && !restaurantName.isBlank()) {
@@ -126,6 +129,18 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     public void updateBannerUrl(String url) {
         if (url != null) {
             this.bannerUrl = url;
+        }
+    }
+
+    public void updateOpeningTime(LocalTime openingTime) {
+        if (openingTime != null) {
+            this.openingTime = openingTime;
+        }
+    }
+
+    public void updateClosingTime(LocalTime closingTime) {
+        if (closingTime != null) {
+            this.closingTime = closingTime;
         }
     }
 
@@ -418,6 +433,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         description = builder.description;
         logoUrl = builder.logoUrl;
         bannerUrl = builder.bannerUrl;
+        openingTime = builder.openingTime;
+        closingTime = builder.closingTime;
     }
 
     public static Builder builder() {
@@ -496,6 +513,14 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         return bannerUrl;
     }
 
+    public LocalTime getOpeningTime() {
+        return openingTime;
+    }
+
+    public LocalTime getClosingTime() {
+        return closingTime;
+    }
+
     public static final class Builder {
         private RestaurantId restaurantId;
         private RestaurantName restaurantName;
@@ -515,6 +540,8 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private String description;
         private String logoUrl;
         private String bannerUrl;
+        private LocalTime openingTime;
+        private LocalTime closingTime;
 
         private Builder() {
         }
@@ -606,6 +633,16 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder bannerUrl(String val) {
             bannerUrl = val;
+            return this;
+        }
+
+        public Builder openingTime(LocalTime val) {
+            openingTime = val;
+            return this;
+        }
+
+        public Builder closingTime(LocalTime val) {
+            closingTime = val;
             return this;
         }
 

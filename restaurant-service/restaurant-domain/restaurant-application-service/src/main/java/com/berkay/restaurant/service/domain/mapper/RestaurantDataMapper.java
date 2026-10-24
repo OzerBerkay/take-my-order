@@ -52,6 +52,8 @@ public class RestaurantDataMapper {
                 .description(createRestaurantCommand.getDescription())
                 .logoUrl(createRestaurantCommand.getLogoUrl())
                 .bannerUrl(createRestaurantCommand.getBannerUrl())
+                .openingTime(createRestaurantCommand.getOpeningTime())
+                .closingTime(createRestaurantCommand.getClosingTime())
                 .build();
     }
 
@@ -179,6 +181,8 @@ public class RestaurantDataMapper {
                         .iconUrl(c.getIconUrl())
                         .isActive(c.isActive())
                         .build()).collect(Collectors.toList()) : java.util.Collections.emptyList())
+                .openingTime(restaurant.getOpeningTime())
+                .closingTime(restaurant.getClosingTime())
                 .build();
     }
 
@@ -209,6 +213,8 @@ public class RestaurantDataMapper {
                         .name(c.getName())
                         .sortOrder(c.getSortOrder())
                         .build()).collect(Collectors.toList()) : null)
+                .openingTime(restaurant.getOpeningTime())
+                .closingTime(restaurant.getClosingTime())
                 .build();
     }
 }

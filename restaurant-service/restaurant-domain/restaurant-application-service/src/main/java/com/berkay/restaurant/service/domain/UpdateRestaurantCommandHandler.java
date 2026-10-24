@@ -87,6 +87,8 @@ public class UpdateRestaurantCommandHandler {
         restaurant.updateDescription(command.getDescription());
         restaurant.updateLogoUrl(command.getLogoUrl());
         restaurant.updateBannerUrl(command.getBannerUrl());
+        restaurant.updateOpeningTime(command.getOpeningTime());
+        restaurant.updateClosingTime(command.getClosingTime());
 
         // Kaydet
         Restaurant savedRestaurant = restaurantRepository.saveRestaurant(restaurant);

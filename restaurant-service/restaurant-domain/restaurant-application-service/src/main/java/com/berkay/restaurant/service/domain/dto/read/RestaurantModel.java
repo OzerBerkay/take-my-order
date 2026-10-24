@@ -27,4 +27,8 @@ public class RestaurantModel {
     private final Boolean available;
     private final Long categoryVersion;
     private final List<ProductCategoryModel> categories;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private final java.time.LocalTime openingTime;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private final java.time.LocalTime closingTime;
 }

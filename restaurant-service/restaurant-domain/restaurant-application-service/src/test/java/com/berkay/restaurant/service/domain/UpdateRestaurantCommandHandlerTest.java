@@ -80,6 +80,8 @@ public class UpdateRestaurantCommandHandlerTest {
                 .description("Best burgers")
                 .logoUrl("https://logo.png")
                 .bannerUrl("https://banner.png")
+                .openingTime(java.time.LocalTime.of(10, 0))
+                .closingTime(java.time.LocalTime.of(22, 0))
                 .build();
 
         updateRestaurantCommandHandler.updateRestaurant(command);
@@ -95,6 +97,8 @@ public class UpdateRestaurantCommandHandlerTest {
         verify(restaurant).updateDescription("Best burgers");
         verify(restaurant).updateLogoUrl("https://logo.png");
         verify(restaurant).updateBannerUrl("https://banner.png");
+        verify(restaurant).updateOpeningTime(java.time.LocalTime.of(10, 0));
+        verify(restaurant).updateClosingTime(java.time.LocalTime.of(22, 0));
         verify(restaurantRepository).saveRestaurant(restaurant);
         verify(restaurantOutboxHelper).saveRestaurantOutboxMessage(eq(event), any(), isNull());
     }
@@ -119,6 +123,8 @@ public class UpdateRestaurantCommandHandlerTest {
         verify(restaurant).updateAvailability(false);
         verify(restaurant).updateBannerUrl("https://newbanner.png");
         verify(restaurant).updateName(isNull());
+        verify(restaurant).updateOpeningTime(isNull());
+        verify(restaurant).updateClosingTime(isNull());
         verify(restaurantRepository).saveRestaurant(restaurant);
     }
 
