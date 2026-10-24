@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,10 +83,14 @@ public class CreateRestaurantCommandHandlerTest {
                 .cuisineIds(List.of())
                 .description("Test Description")
                 .logoUrl("http://test.com/logo.png")
+                .openingTime(LocalTime.of(9, 0))
+                .closingTime(LocalTime.of(22, 0))
                 .build();
 
         when(restaurantRepository.saveRestaurant(any(Restaurant.class))).thenAnswer(invocation -> {
             Restaurant restaurant = invocation.getArgument(0);
+            assertEquals(LocalTime.of(9, 0), restaurant.getOpeningTime());
+            assertEquals(LocalTime.of(22, 0), restaurant.getClosingTime());
             return restaurant;
         });
 

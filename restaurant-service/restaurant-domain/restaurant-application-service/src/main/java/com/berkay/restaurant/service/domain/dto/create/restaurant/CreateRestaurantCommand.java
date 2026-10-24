@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -71,6 +73,12 @@ public class CreateRestaurantCommand {
     private final String logoUrl;
     
     private final String bannerUrl;
+
+    @JsonFormat(pattern = "HH:mm")
+    private final LocalTime openingTime;
+
+    @JsonFormat(pattern = "HH:mm")
+    private final LocalTime closingTime;
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;

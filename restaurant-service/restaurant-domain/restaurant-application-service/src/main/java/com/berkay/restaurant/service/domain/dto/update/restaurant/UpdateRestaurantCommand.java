@@ -40,5 +40,7 @@ public class UpdateRestaurantCommand {
     private final String logoUrl;
     
     private final String bannerUrl;
+    private final java.time.LocalTime openingTime;
+    private final java.time.LocalTime closingTime;
 
 }

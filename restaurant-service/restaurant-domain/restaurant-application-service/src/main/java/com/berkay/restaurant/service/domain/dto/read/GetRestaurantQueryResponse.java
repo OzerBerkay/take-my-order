@@ -26,4 +26,8 @@ public class GetRestaurantQueryResponse {
     private final Boolean available;
     private final Address address;
     private final List<CuisineModel> cuisines;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private final java.time.LocalTime openingTime;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
+    private final java.time.LocalTime closingTime;
 }
