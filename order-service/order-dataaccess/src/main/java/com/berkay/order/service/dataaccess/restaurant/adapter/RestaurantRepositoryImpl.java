@@ -35,6 +35,12 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
+    public Optional<Restaurant> findRestaurantByIdWithLock(UUID restaurantId) {
+        return restaurantJpaRepository.findByIdWithLock(restaurantId)
+                .map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
+    }
+
+    @Override
     public java.util.Map<UUID, String> findRestaurantNamesByIds(List<UUID> restaurantIds) {
         if (restaurantIds == null || restaurantIds.isEmpty()) {
             return java.util.Collections.emptyMap();
