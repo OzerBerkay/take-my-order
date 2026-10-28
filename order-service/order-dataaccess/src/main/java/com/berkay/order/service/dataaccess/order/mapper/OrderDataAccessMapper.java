@@ -35,6 +35,8 @@ public class OrderDataAccessMapper {
                 .internalNote(order.getInternalNote())
                 .version(order.getVersion())
                 .createdAt(order.getCreatedAt())
+                .deliveredAt(order.getDeliveredAt())
+                .isReviewed(order.isReviewed())
                 .build();
         orderEntity.getAddress().setOrder(orderEntity);
         orderEntity.getItems().forEach(orderItemEntity -> orderItemEntity.setOrder(orderEntity));
@@ -58,6 +60,8 @@ public class OrderDataAccessMapper {
                 .internalNote(orderEntity.getInternalNote())
                 .version(orderEntity.getVersion())
                 .createdAt(orderEntity.getCreatedAt())
+                .deliveredAt(orderEntity.getDeliveredAt())
+                .isReviewed(orderEntity.isReviewed())
                 .build();
     }
 

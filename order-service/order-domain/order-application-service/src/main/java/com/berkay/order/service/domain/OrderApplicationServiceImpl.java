@@ -32,6 +32,12 @@ class OrderApplicationServiceImpl implements OrderApplicationService {
     private final OrderDetailQueryHandler orderDetailQueryHandler;
     private final PlatformOrderQueryHandler platformOrderQueryHandler;
     private final RestaurantOrdersSummaryQueryHandler restaurantOrdersSummaryQueryHandler;
+    private final com.berkay.order.service.domain.review.CreateOrderReviewCommandHandler createOrderReviewCommandHandler;
+    private final com.berkay.order.service.domain.review.GetCustomerOrderReviewQueryHandler getCustomerOrderReviewQueryHandler;
+    private final com.berkay.order.service.domain.review.ReplyOrderReviewCommandHandler replyOrderReviewCommandHandler;
+    private final com.berkay.order.service.domain.review.DeactivateOrderReviewCommandHandler deactivateOrderReviewCommandHandler;
+    private final com.berkay.order.service.domain.review.GetRestaurantReviewsQueryHandler getRestaurantReviewsQueryHandler;
+    private final com.berkay.order.service.domain.review.GetAdminRestaurantReviewsQueryHandler getAdminRestaurantReviewsQueryHandler;
 
     public OrderApplicationServiceImpl(OrderCreateCommandHandler orderCreateCommandHandler,
                                       OrderTrackCommandHandler orderTrackCommandHandler,
@@ -46,7 +52,13 @@ class OrderApplicationServiceImpl implements OrderApplicationService {
                                       RestaurantOrdersQueryHandler restaurantOrdersQueryHandler,
                                       OrderDetailQueryHandler orderDetailQueryHandler,
                                       PlatformOrderQueryHandler platformOrderQueryHandler,
-                                      RestaurantOrdersSummaryQueryHandler restaurantOrdersSummaryQueryHandler) {
+                                      RestaurantOrdersSummaryQueryHandler restaurantOrdersSummaryQueryHandler,
+                                      com.berkay.order.service.domain.review.CreateOrderReviewCommandHandler createOrderReviewCommandHandler,
+                                      com.berkay.order.service.domain.review.GetCustomerOrderReviewQueryHandler getCustomerOrderReviewQueryHandler,
+                                      com.berkay.order.service.domain.review.ReplyOrderReviewCommandHandler replyOrderReviewCommandHandler,
+                                      com.berkay.order.service.domain.review.DeactivateOrderReviewCommandHandler deactivateOrderReviewCommandHandler,
+                                      com.berkay.order.service.domain.review.GetRestaurantReviewsQueryHandler getRestaurantReviewsQueryHandler,
+                                      com.berkay.order.service.domain.review.GetAdminRestaurantReviewsQueryHandler getAdminRestaurantReviewsQueryHandler) {
         this.orderCreateCommandHandler = orderCreateCommandHandler;
         this.orderTrackCommandHandler = orderTrackCommandHandler;
         this.customerOrderQueryHandler = customerOrderQueryHandler;
@@ -61,6 +73,12 @@ class OrderApplicationServiceImpl implements OrderApplicationService {
         this.orderDetailQueryHandler = orderDetailQueryHandler;
         this.platformOrderQueryHandler = platformOrderQueryHandler;
         this.restaurantOrdersSummaryQueryHandler = restaurantOrdersSummaryQueryHandler;
+        this.createOrderReviewCommandHandler = createOrderReviewCommandHandler;
+        this.getCustomerOrderReviewQueryHandler = getCustomerOrderReviewQueryHandler;
+        this.replyOrderReviewCommandHandler = replyOrderReviewCommandHandler;
+        this.deactivateOrderReviewCommandHandler = deactivateOrderReviewCommandHandler;
+        this.getRestaurantReviewsQueryHandler = getRestaurantReviewsQueryHandler;
+        this.getAdminRestaurantReviewsQueryHandler = getAdminRestaurantReviewsQueryHandler;
     }
 
     @Override
@@ -137,5 +155,40 @@ class OrderApplicationServiceImpl implements OrderApplicationService {
     @Override
     public RestaurantOrdersSummaryResponse getRestaurantOrdersSummary(java.util.UUID restaurantId) {
         return restaurantOrdersSummaryQueryHandler.getRestaurantOrdersSummary(restaurantId);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.CreateOrderReviewResponse createReview(
+            com.berkay.order.service.domain.dto.review.CreateOrderReviewCommand command) {
+        return createOrderReviewCommandHandler.createReview(command);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.CustomerOrderReviewResponse getCustomerOrderReview(java.util.UUID orderId) {
+        return getCustomerOrderReviewQueryHandler.getReview(orderId);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.ReplyOrderReviewResponse replyReview(
+            com.berkay.order.service.domain.dto.review.ReplyOrderReviewCommand command) {
+        return replyOrderReviewCommandHandler.replyReview(command);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.DeactivateOrderReviewResponse deactivateReview(
+            com.berkay.order.service.domain.dto.review.DeactivateOrderReviewCommand command) {
+        return deactivateOrderReviewCommandHandler.deactivateReview(command);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.GetRestaurantReviewsResponse getRestaurantReviews(
+            com.berkay.order.service.domain.dto.review.GetRestaurantReviewsQuery query) {
+        return getRestaurantReviewsQueryHandler.getRestaurantReviews(query);
+    }
+
+    @Override
+    public com.berkay.order.service.domain.dto.review.GetAdminRestaurantReviewsResponse getAdminRestaurantReviews(
+            com.berkay.order.service.domain.dto.review.GetAdminRestaurantReviewsQuery query) {
+        return getAdminRestaurantReviewsQueryHandler.getAdminRestaurantReviews(query);
     }
 }

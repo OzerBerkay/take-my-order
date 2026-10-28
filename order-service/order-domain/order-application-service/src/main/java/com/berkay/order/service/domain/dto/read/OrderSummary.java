@@ -26,4 +26,6 @@ public class OrderSummary {
     private final String failureMessages;
     private final CancelReason cancelReason;
     private final ZonedDateTime createdAt;
+    private final ZonedDateTime deliveredAt;
+    private final boolean isReviewed;
 }

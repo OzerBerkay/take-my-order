@@ -28,6 +28,8 @@ public class OrderEntity {
     private BigDecimal price;
     private BigDecimal deliveryFee;
     private java.time.ZonedDateTime createdAt;
+    private java.time.ZonedDateTime deliveredAt;
+    private boolean isReviewed;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;

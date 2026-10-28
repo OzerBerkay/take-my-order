@@ -136,6 +136,8 @@ public class CustomerOrderQueryHandler {
                 .failureMessages(failureMessages)
                 .cancelReason(order.getCancelReason())
                 .createdAt(order.getCreatedAt())
+                .deliveredAt(order.getDeliveredAt())
+                .isReviewed(order.isReviewed())
                 .build();
     }
 }

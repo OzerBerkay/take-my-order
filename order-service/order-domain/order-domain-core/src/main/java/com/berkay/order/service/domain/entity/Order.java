@@ -23,6 +23,8 @@ public class Order extends AggregateRoot<OrderId> {
     private TrackingId trackingId;
     private OrderStatus orderStatus;
     private java.time.ZonedDateTime createdAt;
+    private java.time.ZonedDateTime deliveredAt;
+    private boolean isReviewed;
 
     private CancelReason cancelReason;
     private MaterialAction materialAction;
@@ -90,6 +92,7 @@ public class Order extends AggregateRoot<OrderId> {
             throw new OrderDomainException("Order is not in correct state for deliver operation! Current state: " + orderStatus);
         }
         orderStatus = OrderStatus.DELIVERED;
+        deliveredAt = java.time.ZonedDateTime.now(java.time.ZoneId.of("UTC"));
     }
 
     public void initCancel(CancelReason cancelReason, MaterialAction materialAction, String internalNote) {
@@ -197,14 +200,28 @@ public class Order extends AggregateRoot<OrderId> {
         trackingId = builder.trackingId;
         orderStatus = builder.orderStatus;
         createdAt = builder.createdAt;
+        deliveredAt = builder.deliveredAt;
+        isReviewed = builder.isReviewed;
         cancelReason = builder.cancelReason;
         materialAction = builder.materialAction;
         internalNote = builder.internalNote;
         version = builder.version;
     }
 
+    public void markAsReviewed() {
+        this.isReviewed = true;
+    }
+
     public java.time.ZonedDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public java.time.ZonedDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public boolean isReviewed() {
+        return isReviewed;
     }
 
     public CustomerId getCustomerId() {
@@ -281,6 +298,8 @@ public class Order extends AggregateRoot<OrderId> {
         private TrackingId trackingId;
         private OrderStatus orderStatus;
         private java.time.ZonedDateTime createdAt;
+        private java.time.ZonedDateTime deliveredAt;
+        private boolean isReviewed;
         private CancelReason cancelReason;
         private MaterialAction materialAction;
         private String internalNote;
@@ -336,6 +355,16 @@ public class Order extends AggregateRoot<OrderId> {
 
         public Builder createdAt(java.time.ZonedDateTime val) {
             createdAt = val;
+            return this;
+        }
+
+        public Builder deliveredAt(java.time.ZonedDateTime val) {
+            deliveredAt = val;
+            return this;
+        }
+
+        public Builder isReviewed(boolean val) {
+            isReviewed = val;
             return this;
         }
 

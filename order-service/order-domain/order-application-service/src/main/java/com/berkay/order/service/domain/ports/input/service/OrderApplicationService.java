@@ -43,4 +43,21 @@ public interface OrderApplicationService {
     RestaurantOrderResponse getPlatformOrder(@Valid PlatformOrderQuery query);
 
     RestaurantOrdersSummaryResponse getRestaurantOrdersSummary(java.util.UUID restaurantId);
+
+    com.berkay.order.service.domain.dto.review.CreateOrderReviewResponse createReview(
+            @Valid com.berkay.order.service.domain.dto.review.CreateOrderReviewCommand command);
+
+    com.berkay.order.service.domain.dto.review.CustomerOrderReviewResponse getCustomerOrderReview(java.util.UUID orderId);
+
+    com.berkay.order.service.domain.dto.review.ReplyOrderReviewResponse replyReview(
+            @Valid com.berkay.order.service.domain.dto.review.ReplyOrderReviewCommand command);
+
+    com.berkay.order.service.domain.dto.review.DeactivateOrderReviewResponse deactivateReview(
+            @Valid com.berkay.order.service.domain.dto.review.DeactivateOrderReviewCommand command);
+
+    com.berkay.order.service.domain.dto.review.GetRestaurantReviewsResponse getRestaurantReviews(
+            @Valid com.berkay.order.service.domain.dto.review.GetRestaurantReviewsQuery query);
+
+    com.berkay.order.service.domain.dto.review.GetAdminRestaurantReviewsResponse getAdminRestaurantReviews(
+            @Valid com.berkay.order.service.domain.dto.review.GetAdminRestaurantReviewsQuery query);
 }

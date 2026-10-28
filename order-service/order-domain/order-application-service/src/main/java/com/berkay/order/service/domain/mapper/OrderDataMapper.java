@@ -190,6 +190,8 @@ public class OrderDataMapper {
                         .collect(Collectors.toList()) : java.util.List.of())
                 .deliveryAddress(streetAddressToDeliveryAddressResponse(order.getDeliveryAddress()))
                 .cancelReason(order.getCancelReason())
+                .deliveredAt(order.getDeliveredAt())
+                .isReviewed(order.isReviewed())
                 .build();
     }
 
