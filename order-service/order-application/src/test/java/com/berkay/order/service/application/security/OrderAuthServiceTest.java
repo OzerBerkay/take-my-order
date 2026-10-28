@@ -154,4 +154,47 @@ public class OrderAuthServiceTest {
 
         assertFalse(result);
     }
+
+    @Test
+    void hasPermissionForRestaurant_ReturnsTrue_WhenUserIsOwnerOfTargetRestaurant() {
+        UUID restaurantId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(userAuth.getRoleIds()).thenReturn(List.of(roleId));
+        when(rolePermissionQueryPort.getOrganizationalUnitIdByRoleId(roleId)).thenReturn(restaurantId);
+        when(rolePermissionQueryPort.getPermissionCodesByRoleId(roleId)).thenReturn(Set.of("can_reply_restaurant_review"));
+
+        boolean result = orderAuthService.hasPermissionForRestaurant(userAuth, "can_reply_restaurant_review", restaurantId);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void hasPermissionForRestaurant_ReturnsFalse_ForReviewReply_WhenUserIsPlatformAdmin() {
+        UUID restaurantId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        JwtAuthenticationToken adminAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(adminAuth.getRoleIds()).thenReturn(List.of(roleId));
+        // Platform admin has null organizational unit id
+        when(rolePermissionQueryPort.getOrganizationalUnitIdByRoleId(roleId)).thenReturn(null);
+        when(rolePermissionQueryPort.getPermissionCodesByRoleId(roleId)).thenReturn(Set.of("can_read_all_orders", "can_reply_restaurant_review"));
+
+        boolean result = orderAuthService.hasPermissionForRestaurant(adminAuth, "can_reply_restaurant_review", restaurantId);
+
+        assertFalse(result, "Platform admin without restaurant org unit must NEVER be allowed to reply to restaurant reviews");
+    }
+
+    @Test
+    void hasPermissionForRestaurant_ReturnsFalse_ForReviewReply_WhenUserBelongsToDifferentRestaurant() {
+        UUID restaurantId = UUID.randomUUID();
+        UUID differentRestaurantId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        JwtAuthenticationToken userAuth = org.mockito.Mockito.mock(JwtAuthenticationToken.class);
+        when(userAuth.getRoleIds()).thenReturn(List.of(roleId));
+        when(rolePermissionQueryPort.getOrganizationalUnitIdByRoleId(roleId)).thenReturn(differentRestaurantId);
+
+        boolean result = orderAuthService.hasPermissionForRestaurant(userAuth, "can_reply_restaurant_review", restaurantId);
+
+        assertFalse(result, "Owner of restaurant A must not be allowed to reply to reviews of restaurant B");
+    }
 }

@@ -107,9 +107,17 @@ public class OrderAuthService {
                 log.info("Evaluating roleId={}: roleOrgUnitId={}, permsCount={}, hasPerm={}",
                         roleId, roleOrgUnitId, permissions.size(), permissions.contains(requiredPermission));
 
+                // can_reply_restaurant_review is strictly restaurant-scoped; platform-level admins cannot reply to reviews
+                if ("can_reply_restaurant_review".equals(requiredPermission)) {
+                    if (roleOrgUnitId != null && roleOrgUnitId.equals(targetRestaurantId) && permissions.contains(requiredPermission)) {
+                        return true;
+                    }
+                    continue;
+                }
+
                 // SYSTEM_ADMIN Platform Duzeyi Izin Kontrolu (Bulgu 9):
                 // Eger rolde orgUnitId null ise (Platform duzeyi) ve izin mevcutsa erisime izin verilir
-                if (roleOrgUnitId == null && (permissions.contains(requiredPermission) || permissions.contains("can_read_all_orders"))) {
+                if (roleOrgUnitId == null && (permissions.contains(requiredPermission) || ("can_read_orders".equals(requiredPermission) && permissions.contains("can_read_all_orders")))) {
                     return true;
                 }
 

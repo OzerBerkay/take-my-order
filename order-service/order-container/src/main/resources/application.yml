@@ -17,6 +17,7 @@ order-service:
   role-topic-name: identity-role-events
   permission-topic-name: identity-permission-events
   order-delivered-topic-name: order-delivered
+  restaurant-rating-updated-topic-name: restaurant-rating-updated
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
