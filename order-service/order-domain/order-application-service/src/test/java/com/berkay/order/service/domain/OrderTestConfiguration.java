@@ -61,6 +61,21 @@ public class OrderTestConfiguration {
     }
 
     @Bean
+    public OrderReviewRepository orderReviewRepository() {
+        return Mockito.mock(OrderReviewRepository.class);
+    }
+
+    @Bean
+    public RestaurantRatingOutboxRepository restaurantRatingOutboxRepository() {
+        return Mockito.mock(RestaurantRatingOutboxRepository.class);
+    }
+
+    @Bean
+    public com.berkay.order.service.domain.ports.output.message.publisher.rating.RestaurantRatingMessagePublisher restaurantRatingMessagePublisher() {
+        return Mockito.mock(com.berkay.order.service.domain.ports.output.message.publisher.rating.RestaurantRatingMessagePublisher.class);
+    }
+
+    @Bean
     public OrderDomainService orderDomainService() {
         return new OrderDomainServiceImpl();
     }

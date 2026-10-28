@@ -119,4 +119,14 @@ public class OrderMessagingDataMapper {
                 .setCreatedAt(payload.getCreatedAt().toInstant())
                 .build();
     }
+
+    public RestaurantRatingUpdatedAvroModel restaurantRatingEventToRestaurantRatingUpdatedAvroModel(com.berkay.order.service.domain.outbox.model.rating.RestaurantRatingEventPayload payload) {
+        return RestaurantRatingUpdatedAvroModel.newBuilder()
+                .setId(payload.getId())
+                .setRestaurantId(payload.getRestaurantId())
+                .setAverageRating(payload.getAverageRating())
+                .setTotalReviews(payload.getTotalReviews())
+                .setUpdatedAt(payload.getUpdatedAt() != null ? payload.getUpdatedAt().toInstant() : java.time.Instant.now())
+                .build();
+    }
 }

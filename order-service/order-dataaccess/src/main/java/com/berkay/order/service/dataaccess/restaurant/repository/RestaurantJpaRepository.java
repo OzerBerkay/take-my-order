@@ -21,4 +21,8 @@ public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity,
     Optional<RestaurantEntity> findByRestaurantIdAndProductIds(
             @Param("restaurantId") UUID restaurantId,
             @Param("productIds") List<UUID> productIds);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM RestaurantEntity r WHERE r.restaurantId = :restaurantId")
+    Optional<RestaurantEntity> findByIdWithLock(@Param("restaurantId") UUID restaurantId);
 }
