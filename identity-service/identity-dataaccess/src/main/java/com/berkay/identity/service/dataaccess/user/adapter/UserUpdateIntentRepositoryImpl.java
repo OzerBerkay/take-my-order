@@ -32,7 +32,7 @@ public class UserUpdateIntentRepositoryImpl implements UserUpdateIntentRepositor
         });
 
         return userUpdateIntentDataAccessMapper.userUpdateIntentEntityToUserUpdateIntent(
-                userUpdateIntentJpaRepository.save(entity)
+                userUpdateIntentJpaRepository.saveAndFlush(entity)
         );
     }
 

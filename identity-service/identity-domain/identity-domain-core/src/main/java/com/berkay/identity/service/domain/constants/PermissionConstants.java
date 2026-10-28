@@ -31,6 +31,10 @@ public final class PermissionConstants {
     public static final String CAN_FORCE_CANCEL_ORDER = "can_force_cancel_order";
     public static final String CAN_READ_ALL_ORDERS = "can_read_all_orders";
 
+    // Review Permissions
+    public static final String CAN_REPLY_RESTAURANT_REVIEW = "can_reply_restaurant_review";
+    public static final String CAN_DELETE_RESTAURANT_REVIEW = "can_delete_restaurant_review";
+
     // Restaurant Permissions
     public static final String CAN_MANAGE_RESTAURANT = "can_manage_restaurant";
     public static final String CAN_MANAGE_CATEGORY = "can_manage_category";
