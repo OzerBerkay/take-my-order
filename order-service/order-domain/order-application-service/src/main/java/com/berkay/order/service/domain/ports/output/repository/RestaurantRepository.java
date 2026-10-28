@@ -12,6 +12,8 @@ public interface RestaurantRepository {
 
     Optional<Restaurant> findRestaurantByRestaurantId(UUID restaurantId);
 
+    Optional<Restaurant> findRestaurantByIdWithLock(UUID restaurantId);
+
     java.util.Map<UUID, String> findRestaurantNamesByIds(List<UUID> restaurantIds);
 
     Restaurant save(Restaurant restaurant);
