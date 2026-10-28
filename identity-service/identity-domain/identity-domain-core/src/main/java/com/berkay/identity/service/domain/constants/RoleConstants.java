@@ -27,7 +27,8 @@ public class RoleConstants {
                     PermissionConstants.PAYMENT_SERVICE_CAN_SYNC_ROLES,
                     PermissionConstants.ORDER_SERVICE_CAN_SYNC_ROLES,
                     PermissionConstants.CAN_FORCE_CANCEL_ORDER,
-                    PermissionConstants.CAN_READ_ALL_ORDERS
+                    PermissionConstants.CAN_READ_ALL_ORDERS,
+                    PermissionConstants.CAN_DELETE_RESTAURANT_REVIEW
             ),
             CUSTOMER_BASE, List.of(
             ),
@@ -62,7 +63,8 @@ public class RoleConstants {
                     PermissionConstants.CAN_START_DELIVERY,
                     PermissionConstants.CAN_CANCEL_READY_ORDER,
                     PermissionConstants.CAN_DELIVER_ORDER,
-                    PermissionConstants.CAN_CANCEL_IN_DELIVERY_ORDER
+                    PermissionConstants.CAN_CANCEL_IN_DELIVERY_ORDER,
+                    PermissionConstants.CAN_REPLY_RESTAURANT_REVIEW
             )
     );
 }

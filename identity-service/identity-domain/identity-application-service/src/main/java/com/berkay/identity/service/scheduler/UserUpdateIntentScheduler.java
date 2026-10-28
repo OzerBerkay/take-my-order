@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,6 +47,15 @@ public class UserUpdateIntentScheduler {
 
         for (UserUpdateIntent intent : intents) {
             try {
+                // If an intent has been stuck for more than 15 minutes, discard it to prevent permanently locking the user
+                if (intent.getCreatedAt() != null && intent.getCreatedAt().isBefore(ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(15))) {
+                    log.warn("Intent {} for user {} is stale (created at {}). Discarding to unblock user.",
+                            intent.getId().getValue(), intent.getUserId().getValue(), intent.getCreatedAt());
+                    intent.discard();
+                    userUpdateIntentRepository.save(intent);
+                    continue;
+                }
+
                 if (intent.getStatus() == IntentStatus.STARTED) {
                     processStartedIntent(intent);
                 } else if (intent.getStatus() == IntentStatus.KEYCLOAK_DONE) {
@@ -73,7 +84,9 @@ public class UserUpdateIntentScheduler {
             identityProviderPort.updateUserStatus(user.getExternalId(), isEnabled);
 
         } else {
-            log.warn("Unknown commandType for intent recovery: {}", commandType);
+            log.warn("Unknown commandType for intent recovery: {}. Discarding intent id: {}", commandType, intent.getId().getValue());
+            intent.discard();
+            userUpdateIntentRepository.save(intent);
             return;
         }
 
