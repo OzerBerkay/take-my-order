@@ -100,6 +100,13 @@ public class SecurityConfigTest {
     }
 
     @Test
+    void shouldPermitRestaurantReviews() {
+        webTestClient.get().uri("/orders/restaurants/5a2d67d9-3f0e-473d-8d9e-1f58a8a29b41/reviews")
+                .exchange()
+                .expectStatus().value(status -> org.junit.jupiter.api.Assertions.assertNotEquals(401, status));
+    }
+
+    @Test
     void shouldAllowCorsForCustomerPort4200() {
         webTestClient.options().uri("/auth/login")
                 .header("Origin", "http://localhost:4200")

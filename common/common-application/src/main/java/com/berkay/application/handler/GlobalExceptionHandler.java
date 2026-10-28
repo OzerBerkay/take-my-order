@@ -107,9 +107,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {org.springframework.security.access.AccessDeniedException.class, org.springframework.security.authorization.AuthorizationDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDTO handleAccessDeniedException(Exception exception) {
-        log.warn("Access denied! Message: {}", exception.getMessage(), exception);
+        log.warn("Access denied! Message: {}", exception.getMessage());
         return ErrorDTO.builder()
-                .code(HttpStatus.FORBIDDEN.getReasonPhrase())
+                .code("ACCESS_DENIED")
+                .errorCode("ACCESS_DENIED")
                 .message("Access Denied!")
                 .build();
     }

@@ -14,4 +14,5 @@ public class OrderServiceConfigData {
     private String restaurantApprovalResponseTopicName;
     private String restaurantInformationTopicName;
     private String orderDeliveredTopicName;
+    private String restaurantRatingUpdatedTopicName;
 }

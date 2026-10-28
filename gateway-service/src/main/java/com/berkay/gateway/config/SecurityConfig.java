@@ -35,7 +35,8 @@ public class SecurityConfig {
                         new PathPatternParserServerWebExchangeMatcher("/swagger-ui/**"),
                         new PathPatternParserServerWebExchangeMatcher("/webjars/**"),
                         new PathPatternParserServerWebExchangeMatcher("/api-docs/**"),
-                        new PathPatternParserServerWebExchangeMatcher("/public/**")
+                        new PathPatternParserServerWebExchangeMatcher("/public/**"),
+                        new PathPatternParserServerWebExchangeMatcher("/orders/restaurants/*/reviews", HttpMethod.GET)
                 ))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(Customizer.withDefaults())
