@@ -8,6 +8,11 @@
             "key": "gateway_url",
             "value": "http://localhost:8080",
             "type": "string"
+        },
+        {
+            "key": "review_id",
+            "value": "b6d4957e-3998-4447-9f79-e56ee36fb881",
+            "type": "string"
         }
     ],
     "item": [
@@ -3337,7 +3342,7 @@
                             "status": "OK",
                             "code": 200,
                             "_postman_previewlanguage": "json",
-                            "body": "{\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"trackingId\": \"ca77402f-bda5-4f40-8fb4-e1b2ab1ff03b\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"restaurantName\": \"Burger King\",\n  \"orderStatus\": \"DELIVERED\",\n  \"price\": 340.0,\n  \"deliveryFee\": 25.0,\n  \"createdAt\": \"2026-10-10T14:30:00Z\",\n  \"items\": [\n    {\n      \"id\": \"11111111-1111-1111-1111-111111111111\",\n      \"name\": \"Whopper Men\\u00fc\",\n      \"quantity\": 2,\n      \"price\": 150.0,\n      \"subTotal\": 300.0\n    },\n    {\n      \"id\": \"22222222-2222-2222-2222-222222222222\",\n      \"name\": \"Patates K\\u0131zartmas\\u0131\",\n      \"quantity\": 1,\n      \"price\": 40.0,\n      \"subTotal\": 40.0\n    }\n  ],\n  \"deliveryAddress\": {\n    \"city\": \"Istanbul\",\n    \"district\": \"Kadikoy\",\n    \"neighborhood\": \"Moda\",\n    \"street\": \"Sair Nefi Sokak\",\n    \"buildingNumber\": \"10\",\n    \"doorNumber\": \"4\",\n    \"floor\": \"2\",\n    \"addressInstructions\": \"Zile basmayin\",\n    \"contactFirstName\": \"Ahmet\",\n    \"contactLastName\": \"Yilmaz\",\n    \"contactPhone\": \"+905551234567\"\n  },\n  \"cancelReason\": null\n}"
+                            "body": "{\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"trackingId\": \"ca77402f-bda5-4f40-8fb4-e1b2ab1ff03b\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"restaurantName\": \"Burger King\",\n  \"orderStatus\": \"DELIVERED\",\n  \"price\": 340.0,\n  \"deliveryFee\": 25.0,\n  \"createdAt\": \"2026-10-10T14:30:00Z\",\n  \"items\": [\n    {\n      \"id\": \"11111111-1111-1111-1111-111111111111\",\n      \"name\": \"Whopper Menü\",\n      \"quantity\": 2,\n      \"price\": 150.0,\n      \"subTotal\": 300.0\n    },\n    {\n      \"id\": \"22222222-2222-2222-2222-222222222222\",\n      \"name\": \"Patates Kızartması\",\n      \"quantity\": 1,\n      \"price\": 40.0,\n      \"subTotal\": 40.0\n    }\n  ],\n  \"deliveryAddress\": {\n    \"city\": \"Istanbul\",\n    \"district\": \"Kadikoy\",\n    \"neighborhood\": \"Moda\",\n    \"street\": \"Sair Nefi Sokak\",\n    \"buildingNumber\": \"10\",\n    \"doorNumber\": \"4\",\n    \"floor\": \"2\",\n    \"addressInstructions\": \"Zile basmayin\",\n    \"contactFirstName\": \"Ahmet\",\n    \"contactLastName\": \"Yilmaz\",\n    \"contactPhone\": \"+905551234567\"\n  },\n  \"cancelReason\": null,\n  \"isReviewed\": false,\n  \"deliveredAt\": \"2026-10-10T15:15:00Z\"\n}"
                         }
                     ]
                 },
@@ -3712,6 +3717,553 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Reviews",
+                    "item": [
+                        {
+                            "name": "Create Order Review",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Siparişim çok hızlı ve sıcacık geldi. Kurye de çok nazikti, elinize sağlık!\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/{{order_id}}/reviews",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "{{order_id}}",
+                                        "reviews"
+                                    ]
+                                },
+                                "description": "Siparişi teslim edilen müşterinin restorana puan (1-5) ve yorum vermesini sağlar. Teslimattan sonraki 7 gün içerisinde yapılabilir ve her siparişe tek bir değerlendirme girilebilir."
+                            },
+                            "response": [
+                                {
+                                    "name": "201 Created - Review Created Successfully",
+                                    "originalRequest": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Siparişim çok hızlı ve sıcacık geldi. Kurye de çok nazikti, elinize sağlık!\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/{{order_id}}/reviews",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "{{order_id}}",
+                                                "reviews"
+                                            ]
+                                        }
+                                    },
+                                    "status": "Created",
+                                    "code": 201,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"rating\": 5,\n  \"comment\": \"Siparişim çok hızlı ve sıcacık geldi. Kurye de çok nazikti, elinize sağlık!\",\n  \"customerNameMasked\": \"B*** Ö***\",\n  \"restaurantReply\": null,\n  \"restaurantRepliedAt\": null,\n  \"createdAt\": \"2026-10-10T15:30:00Z\"\n}"
+                                },
+                                {
+                                    "name": "400 Bad Request - Order Not Delivered",
+                                    "status": "Bad Request",
+                                    "code": 400,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"code\": \"ORDER_NOT_DELIVERED\",\n  \"errorCode\": \"ORDER_NOT_DELIVERED\",\n  \"message\": \"Order must be delivered before it can be reviewed! Current status: IN_DELIVERY\"\n}"
+                                },
+                                {
+                                    "name": "400 Bad Request - Review Time Expired",
+                                    "status": "Bad Request",
+                                    "code": 400,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"code\": \"REVIEW_TIME_EXPIRED\",\n  \"errorCode\": \"REVIEW_TIME_EXPIRED\",\n  \"message\": \"The 7-day window to review this order has expired!\"\n}"
+                                },
+                                {
+                                    "name": "409 Conflict - Review Already Exists",
+                                    "status": "Conflict",
+                                    "code": 409,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"code\": \"REVIEW_ALREADY_EXISTS\",\n  \"errorCode\": \"REVIEW_ALREADY_EXISTS\",\n  \"message\": \"This order has already been reviewed!\"\n}"
+                                },
+                                {
+                                    "name": "403 Forbidden - Access Denied",
+                                    "status": "Forbidden",
+                                    "code": 403,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"code\": \"ACCESS_DENIED\",\n  \"errorCode\": \"ACCESS_DENIED\",\n  \"message\": \"Access Denied!\"\n}"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Get Customer Order Review",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/{{order_id}}/review",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "{{order_id}}",
+                                        "review"
+                                    ]
+                                },
+                                "description": "Müşterinin belirli bir siparişe ait yaptığı değerlendirmeyi, maskelenmiş müşteri ismini ve restoran yanıtını görüntüler."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Customer Order Review",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/{{order_id}}/review",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "{{order_id}}",
+                                                "review"
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"rating\": 5,\n  \"comment\": \"Siparişim çok hızlı ve sıcacık geldi. Kurye de çok nazikti, elinize sağlık!\",\n  \"customerNameMasked\": \"A*** Y***\",\n  \"restaurantReply\": \"Bizi tercih ettiğiniz için çok teşekkür ederiz, afiyet olsun!\",\n  \"restaurantRepliedAt\": \"2026-10-10T15:45:00Z\",\n  \"createdAt\": \"2026-10-10T15:30:00Z\"\n}"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Reply To Order Review (Merchant)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"reply\": \"Bizi tercih ettiğiniz için çok teşekkür ederiz, afiyet olsun!\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews/{{review_id}}/reply",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "reviews",
+                                        "{{review_id}}",
+                                        "reply"
+                                    ]
+                                },
+                                "description": "Restoran sahibinin/yetkilisinin (can_reply_restaurant_review yetkisi ile) müşteri yorumunu yanıtlamasını sağlar. Her yoruma 1 kez yanıt verilebilir."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Reply Added Successfully",
+                                    "originalRequest": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"reply\": \"Bizi tercih ettiğiniz için çok teşekkür ederiz, afiyet olsun!\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews/{{review_id}}/reply",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "reviews",
+                                                "{{review_id}}",
+                                                "reply"
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"rating\": 5,\n  \"comment\": \"Harika lezzet, hızlı kurye.\",\n  \"customerNameMasked\": \"A*** K***\",\n  \"restaurantReply\": \"Geri bildiriminiz ve nazik sözleriniz için teşekkür eder, tekrar bekleriz!\",\n  \"restaurantRepliedAt\": \"2026-10-10T16:00:00Z\",\n  \"createdAt\": \"2026-10-10T15:30:00Z\"\n}"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deactivate Order Review (Admin)",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"reason\": \"Uygunsuz ve hakaret içeren ifadeler tespiti nedeniyle moderasyon tarafından kaldırılmıştır.\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews/{{review_id}}",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "reviews",
+                                        "{{review_id}}"
+                                    ]
+                                },
+                                "description": "Sistem yöneticisinin (can_delete_restaurant_review yetkisi ile) uygunsuz bir yorumu pasife çekmesini (soft-delete) sağlar. Pasife çekilen yorum genel listeden gizlenir ve restoran puan ortalamasından düşülür."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Review Deactivated Successfully",
+                                    "originalRequest": {
+                                        "method": "DELETE",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"reason\": \"Uygunsuz ve hakaret içeren ifadeler tespiti nedeniyle moderasyon tarafından kaldırılmıştır.\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews/{{review_id}}",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "reviews",
+                                                "{{review_id}}"
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n  \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n  \"customerId\": \"8f2a1b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c\",\n  \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n  \"rating\": 1,\n  \"comment\": \"Topluluk kurallarını ihlal eden küfür ve hakaret içerikli yorum.\",\n  \"customerNameMasked\": \"B*** Ö***\",\n  \"restaurantReply\": null,\n  \"restaurantRepliedAt\": null,\n  \"isActive\": false,\n  \"deactivationReason\": \"Topluluk kurallarını ihlal eden küfür ve hakaret içerikli yorum.\",\n  \"deactivatedAt\": \"2026-10-10T17:00:00Z\",\n  \"deactivatedBy\": \"11223344-5566-7788-99aa-bbccddeeff00\",\n  \"createdAt\": \"2026-10-10T15:30:00Z\",\n  \"updatedAt\": \"2026-10-10T17:00:00Z\"\n}"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Get Restaurant Reviews (Public)",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews?status=ALL&page=0&size=10",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "reviews"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "ALL",
+                                            "description": "Filtreleme kriteri: ALL (Tümü), PENDING veya AWAITING_REPLY (Son 7 gün içinde henüz yanıtlanmamış olanlar), REPLIED (Yanıtlanmış olanlar)"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "0",
+                                            "description": "Sayfa indeksi (0-based)"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10",
+                                            "description": "Sayfa başına kayıt sayısı"
+                                        }
+                                    ]
+                                },
+                                "description": "Restoranın aktif değerlendirmelerini sayfalanmış ve filtrelenmiş şekilde listeler. status parametresi: ALL (Tümü), PENDING / AWAITING_REPLY (Son 7 gün içinde yanıt bekleyenler), REPLIED (Yanıtlananlar). Response içerisinde genel sayaç istatistikleri (totalElements, repliedCount, pendingReplyCount) ve her değerlendirme için restoranın yanıt verip veremeyeceğini belirten canReply boolean flag yer alır."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - All Reviews with Stats",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews?status=ALL&page=0&size=10",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "reviews"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "status",
+                                                    "value": "ALL"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviews\": [\n    {\n      \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n      \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n      \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n      \"rating\": 5,\n      \"comment\": \"Harika lezzet, hızlı kurye.\",\n      \"customerNameMasked\": \"A*** K***\",\n      \"restaurantReply\": \"Teşekkür ederiz, afiyet olsun!\",\n      \"restaurantRepliedAt\": \"2026-10-10T16:00:00Z\",\n      \"createdAt\": \"2026-10-10T15:30:00Z\",\n      \"canReply\": false\n    },\n    {\n      \"reviewId\": \"c7e5068f-4aa9-5558-a080-67ff477ac992\",\n      \"orderId\": \"8e7039bb-1a36-50d2-b079-49cc21a13d4b\",\n      \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n      \"rating\": 4,\n      \"comment\": \"Porsiyonlar gayet doyurucu.\",\n      \"customerNameMasked\": \"M*** D***\",\n      \"restaurantReply\": null,\n      \"restaurantRepliedAt\": null,\n      \"createdAt\": \"2026-10-28T14:00:00Z\",\n      \"canReply\": true\n    }\n  ],\n  \"page\": 0,\n  \"size\": 10,\n  \"totalElements\": 24,\n  \"repliedCount\": 18,\n  \"pendingReplyCount\": 6,\n  \"totalPages\": 3,\n  \"last\": false\n}"
+                                },
+                                {
+                                    "name": "200 OK - Pending Reviews Filtered",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/restaurants/{{restaurant_id}}/reviews?status=PENDING&page=0&size=10",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "reviews"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "status",
+                                                    "value": "PENDING"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviews\": [\n    {\n      \"reviewId\": \"c7e5068f-4aa9-5558-a080-67ff477ac992\",\n      \"orderId\": \"8e7039bb-1a36-50d2-b079-49cc21a13d4b\",\n      \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n      \"rating\": 4,\n      \"comment\": \"Porsiyonlar gayet doyurucu.\",\n      \"customerNameMasked\": \"M*** D***\",\n      \"restaurantReply\": null,\n      \"restaurantRepliedAt\": null,\n      \"createdAt\": \"2026-10-28T14:00:00Z\",\n      \"canReply\": true\n    }\n  ],\n  \"page\": 0,\n  \"size\": 10,\n  \"totalElements\": 6,\n  \"repliedCount\": 18,\n  \"pendingReplyCount\": 6,\n  \"totalPages\": 1,\n  \"last\": true\n}"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Get Restaurant Reviews (Admin)",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{access_token}}",
+                                        "type": "text"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{gateway_url}}/orders/admin/restaurants/{{restaurant_id}}/reviews?status=ALL&page=0&size=10",
+                                    "host": [
+                                        "{{gateway_url}}"
+                                    ],
+                                    "path": [
+                                        "orders",
+                                        "admin",
+                                        "restaurants",
+                                        "{{restaurant_id}}",
+                                        "reviews"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "ALL"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        }
+                                    ]
+                                },
+                                "description": "Sistem yöneticisinin (can_delete_restaurant_review yetkisi ile) bir restorana ait tüm değerlendirmeleri (aktif, pasif veya hepsi) denetim meta verileriyle birlikte listelemesini sağlar."
+                            },
+                            "response": [
+                                {
+                                    "name": "200 OK - Admin Restaurant Reviews",
+                                    "originalRequest": {
+                                        "method": "GET",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{gateway_url}}/orders/admin/restaurants/{{restaurant_id}}/reviews?status=ALL&page=0&size=10",
+                                            "host": [
+                                                "{{gateway_url}}"
+                                            ],
+                                            "path": [
+                                                "orders",
+                                                "admin",
+                                                "restaurants",
+                                                "{{restaurant_id}}",
+                                                "reviews"
+                                            ],
+                                            "query": [
+                                                {
+                                                    "key": "status",
+                                                    "value": "ALL"
+                                                },
+                                                {
+                                                    "key": "page",
+                                                    "value": "0"
+                                                },
+                                                {
+                                                    "key": "size",
+                                                    "value": "10"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "_postman_previewlanguage": "json",
+                                    "body": "{\n  \"reviews\": [\n    {\n      \"reviewId\": \"b6d4957e-3998-4447-9f79-e56ee36fb881\",\n      \"orderId\": \"7d6928aa-0925-4fc1-a968-38bb10902c3a\",\n      \"customerId\": \"81234567-89ab-cdef-0123-456789abcdef\",\n      \"restaurantId\": \"50c8e378-02fe-45ab-858a-f4efb7ea75e4\",\n      \"rating\": 1,\n      \"comment\": \"Berbat hizmet\",\n      \"customerNameMasked\": \"M*** K***\",\n      \"restaurantReply\": null,\n      \"restaurantRepliedAt\": null,\n      \"active\": false,\n      \"deactivationReason\": \"Uygunsuz ve hakaret içeren ifadeler tespiti nedeniyle moderasyon tarafından kaldırılmıştır.\",\n      \"deactivatedAt\": \"2026-10-11T10:00:00Z\",\n      \"deactivatedBy\": \"99999999-9999-9999-9999-999999999999\",\n      \"createdAt\": \"2026-10-10T16:00:00Z\",\n      \"updatedAt\": \"2026-10-11T10:00:00Z\"\n    }\n  ],\n  \"page\": 0,\n  \"size\": 10,\n  \"totalElements\": 1,\n  \"totalPages\": 1,\n  \"last\": true\n}"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
