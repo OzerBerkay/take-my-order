@@ -14,6 +14,7 @@ restaurant-service:
   restaurant-information-topic-name: restaurant-information
   role-topic-name: identity-role-events
   permission-events-topic-name: identity-permission-events
+  restaurant-rating-updated-topic-name: restaurant-rating-updated
   outbox-scheduler-fixed-rate: 10000
   outbox-scheduler-initial-delay: 10000
 
@@ -78,6 +79,7 @@ kafka-consumer-config:
   restaurant-approval-consumer-group-id: restaurant-approval-topic-consumer
   role-consumer-group-id: restaurant-role-topic-consumer
   permission-consumer-group-id: restaurant-permission-topic-consumer
+  restaurant-rating-consumer-group-id: restaurant-rating-topic-consumer
   auto-offset-reset: earliest
   specific-avro-reader-key: specific.avro.reader
   specific-avro-reader: true

@@ -8,8 +8,6 @@ import java.util.UUID;
 
 public interface RestaurantRepository {
 
-
-
     Optional<Restaurant> findRestaurantById(UUID restaurantId);
     Optional<Restaurant> findRestaurantByIdWithoutMenu(UUID restaurantId);
     Optional<Restaurant> findRestaurantByIdWithLock(UUID restaurantId);
@@ -19,4 +17,6 @@ public interface RestaurantRepository {
     List<Restaurant> findAllByIdIn(List<UUID> restaurantIds);
     
     com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, List<String> cuisineCodes, Boolean available, java.math.BigDecimal maxMinimumOrderAmount, Integer maxDeliveryTime, int page, int size);
+
+    int updateRestaurantRating(UUID restaurantId, java.math.BigDecimal averageRating, Integer totalReviews, java.time.ZonedDateTime ratingUpdatedAt);
 }
