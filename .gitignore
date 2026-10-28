@@ -146,3 +146,6 @@ infrastructure/k8s/overlays/central-hub/monitoring-secrets.env
 infrastructure/k8s/overlays/central-hub/central-secrets.env
 # Local developer notes and context (Not for Git)
 .local-notes/
+
+# AI Agent Rules and Configurations
+.agents/
