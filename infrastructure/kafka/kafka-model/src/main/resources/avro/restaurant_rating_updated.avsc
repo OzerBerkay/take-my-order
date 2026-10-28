@@ -1,0 +1,38 @@
+{
+  "namespace": "com.berkay.kafka.order.avro.model",
+  "type": "record",
+  "name": "RestaurantRatingUpdatedAvroModel",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "restaurantId",
+      "type": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "averageRating",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null
+    },
+    {
+      "name": "totalReviews",
+      "type": "int"
+    },
+    {
+      "name": "updatedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
