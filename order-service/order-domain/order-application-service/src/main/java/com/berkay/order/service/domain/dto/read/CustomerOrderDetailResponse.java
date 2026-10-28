@@ -30,4 +30,6 @@ public class CustomerOrderDetailResponse {
     private List<RestaurantOrderItemResponse> items;
     private DeliveryAddressResponse deliveryAddress;
     private CancelReason cancelReason;
+    private ZonedDateTime deliveredAt;
+    private boolean isReviewed;
 }
