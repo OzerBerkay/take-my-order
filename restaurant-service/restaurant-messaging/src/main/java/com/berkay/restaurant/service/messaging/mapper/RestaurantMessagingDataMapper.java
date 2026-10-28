@@ -80,4 +80,14 @@ public class RestaurantMessagingDataMapper {
                 .build();
     }
 
+    public com.berkay.restaurant.service.domain.dto.message.RestaurantRatingUpdateModel
+    restaurantRatingUpdatedAvroModelToRestaurantRatingUpdateModel(com.berkay.kafka.order.avro.model.RestaurantRatingUpdatedAvroModel avroModel) {
+        return com.berkay.restaurant.service.domain.dto.message.RestaurantRatingUpdateModel.builder()
+                .id(avroModel.getId())
+                .restaurantId(avroModel.getRestaurantId())
+                .averageRating(avroModel.getAverageRating())
+                .totalReviews(avroModel.getTotalReviews())
+                .updatedAt(avroModel.getUpdatedAt())
+                .build();
+    }
 }

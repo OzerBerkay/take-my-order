@@ -92,4 +92,10 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                 pagedResult.isLast()
         );
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public int updateRestaurantRating(UUID restaurantId, java.math.BigDecimal averageRating, Integer totalReviews, java.time.ZonedDateTime ratingUpdatedAt) {
+        return restaurantJpaRepository.updateRestaurantRating(restaurantId, averageRating, totalReviews, ratingUpdatedAt);
+    }
 }

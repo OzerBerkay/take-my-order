@@ -30,4 +30,12 @@ public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity,
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM RestaurantEntity r WHERE r.restaurantId = :id")
     java.util.Optional<RestaurantEntity> findByIdWithLock(@Param("id") UUID id);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE RestaurantEntity r SET r.averageRating = :averageRating, r.totalReviews = :totalReviews, r.ratingUpdatedAt = :ratingUpdatedAt " +
+           "WHERE r.restaurantId = :restaurantId AND (r.ratingUpdatedAt IS NULL OR r.ratingUpdatedAt <= :ratingUpdatedAt)")
+    int updateRestaurantRating(@Param("restaurantId") UUID restaurantId,
+                               @Param("averageRating") java.math.BigDecimal averageRating,
+                               @Param("totalReviews") Integer totalReviews,
+                               @Param("ratingUpdatedAt") java.time.ZonedDateTime ratingUpdatedAt);
 }

@@ -57,6 +57,15 @@ public class RestaurantEntity {
     @Column(name = "closing_time")
     private LocalTime closingTime;
 
+    @Column(name = "average_rating")
+    private BigDecimal averageRating;
+
+    @Column(name = "total_reviews")
+    private Integer totalReviews;
+
+    @Column(name = "rating_updated_at")
+    private java.time.ZonedDateTime ratingUpdatedAt;
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductEntity> menu;
 

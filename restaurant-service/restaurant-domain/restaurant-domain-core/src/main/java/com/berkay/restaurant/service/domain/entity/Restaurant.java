@@ -45,6 +45,17 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
     private String bannerUrl;
     private LocalTime openingTime;
     private LocalTime closingTime;
+    private java.math.BigDecimal averageRating;
+    private Integer totalReviews;
+    private ZonedDateTime ratingUpdatedAt;
+
+    public void updateRating(java.math.BigDecimal averageRating, Integer totalReviews, ZonedDateTime ratingUpdatedAt) {
+        if (this.ratingUpdatedAt == null || !this.ratingUpdatedAt.isAfter(ratingUpdatedAt)) {
+            this.averageRating = averageRating;
+            this.totalReviews = totalReviews != null ? totalReviews : 0;
+            this.ratingUpdatedAt = ratingUpdatedAt;
+        }
+    }
 
     public void updateName(String restaurantName) {
         if (restaurantName != null && !restaurantName.isBlank()) {
@@ -443,10 +454,25 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         bannerUrl = builder.bannerUrl;
         openingTime = builder.openingTime;
         closingTime = builder.closingTime;
+        averageRating = builder.averageRating;
+        totalReviews = builder.totalReviews;
+        ratingUpdatedAt = builder.ratingUpdatedAt;
     }
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public java.math.BigDecimal getAverageRating() {
+        return averageRating;
+    }
+
+    public Integer getTotalReviews() {
+        return totalReviews;
+    }
+
+    public ZonedDateTime getRatingUpdatedAt() {
+        return ratingUpdatedAt;
     }
 
     public RestaurantName getRestaurantName() {
@@ -550,6 +576,9 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
         private String bannerUrl;
         private LocalTime openingTime;
         private LocalTime closingTime;
+        private java.math.BigDecimal averageRating;
+        private Integer totalReviews;
+        private ZonedDateTime ratingUpdatedAt;
 
         private Builder() {
         }
@@ -651,6 +680,21 @@ public class Restaurant extends AggregateRoot<RestaurantId> {
 
         public Builder closingTime(LocalTime val) {
             closingTime = val;
+            return this;
+        }
+
+        public Builder averageRating(java.math.BigDecimal val) {
+            averageRating = val;
+            return this;
+        }
+
+        public Builder totalReviews(Integer val) {
+            totalReviews = val;
+            return this;
+        }
+
+        public Builder ratingUpdatedAt(ZonedDateTime val) {
+            ratingUpdatedAt = val;
             return this;
         }
 

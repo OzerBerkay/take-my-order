@@ -183,6 +183,8 @@ public class RestaurantDataMapper {
                         .build()).collect(Collectors.toList()) : java.util.Collections.emptyList())
                 .openingTime(restaurant.getOpeningTime())
                 .closingTime(restaurant.getClosingTime())
+                .averageRating(restaurant.getAverageRating())
+                .totalReviews(restaurant.getTotalReviews() != null ? restaurant.getTotalReviews() : 0)
                 .build();
     }
 
@@ -215,6 +217,8 @@ public class RestaurantDataMapper {
                         .build()).collect(Collectors.toList()) : null)
                 .openingTime(restaurant.getOpeningTime())
                 .closingTime(restaurant.getClosingTime())
+                .averageRating(restaurant.getAverageRating())
+                .totalReviews(restaurant.getTotalReviews() != null ? restaurant.getTotalReviews() : 0)
                 .build();
     }
 }
