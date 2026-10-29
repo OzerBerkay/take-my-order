@@ -41,12 +41,36 @@ public class PublicRestaurantControllerTest {
 
         // Act
         ResponseEntity<GetPublicRestaurantListQueryResponse> responseEntity = 
-                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, null, null, 0, 20);
+                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, null, null, null, null, 0, 20);
 
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());
         verify(restaurantApplicationService, times(1)).getPublicRestaurants(any(GetPublicRestaurantListQuery.class));
+    }
+
+    @Test
+    void shouldReturnPublicRestaurantsWithRatingAndSortSuccessfully() {
+        // Arrange
+        GetPublicRestaurantListQueryResponse expectedResponse = new GetPublicRestaurantListQueryResponse(
+                Collections.emptyList(), 0, 20, 0, 0, true);
+
+        when(restaurantApplicationService.getPublicRestaurants(any(GetPublicRestaurantListQuery.class)))
+                .thenReturn(expectedResponse);
+
+        // Act
+        ResponseEntity<GetPublicRestaurantListQueryResponse> responseEntity = 
+                publicRestaurantController.getPublicRestaurants("test", java.util.List.of("turkish"), true, 
+                        java.math.BigDecimal.valueOf(100), 45, java.math.BigDecimal.valueOf(4.5), "MOST_REVIEWS", 0, 20);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResponse, responseEntity.getBody());
+        verify(restaurantApplicationService, times(1)).getPublicRestaurants(argThat(query -> 
+                java.math.BigDecimal.valueOf(4.5).equals(query.getMinRating()) &&
+                "MOST_REVIEWS".equals(query.getSortBy()) &&
+                "test".equals(query.getSearchName())
+        ));
     }
 
     @Test

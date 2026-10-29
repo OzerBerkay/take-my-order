@@ -30,13 +30,16 @@ public class PublicRestaurantController {
             @org.springframework.web.bind.annotation.RequestParam(required = false) Boolean available,
             @org.springframework.web.bind.annotation.RequestParam(required = false) java.math.BigDecimal maxMinimumOrderAmount,
             @org.springframework.web.bind.annotation.RequestParam(required = false) Integer maxDeliveryTime,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) java.math.BigDecimal minRating,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String sortBy,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
             @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size) {
         
-        log.info("Getting public restaurants with searchName: {}, cuisineCodes: {}, available: {}, maxMinimumOrderAmount: {}, maxDeliveryTime: {}, page: {}, size: {}", 
-                searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, page, size);
+        log.info("Getting public restaurants with searchName: {}, cuisineCodes: {}, available: {}, maxMinimumOrderAmount: {}, maxDeliveryTime: {}, minRating: {}, sortBy: {}, page: {}, size: {}", 
+                searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, minRating, sortBy, page, size);
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery query = 
-                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, page, size);
+                new com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQuery(
+                        searchName, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, minRating, sortBy, page, size);
         
         com.berkay.restaurant.service.domain.dto.read.GetPublicRestaurantListQueryResponse response = 
                 restaurantApplicationService.getPublicRestaurants(query);
