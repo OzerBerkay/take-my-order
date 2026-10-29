@@ -16,7 +16,7 @@ public interface RestaurantRepository {
     
     List<Restaurant> findAllByIdIn(List<UUID> restaurantIds);
     
-    com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, List<String> cuisineCodes, Boolean available, java.math.BigDecimal maxMinimumOrderAmount, Integer maxDeliveryTime, int page, int size);
+    com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, List<String> cuisineCodes, Boolean available, java.math.BigDecimal maxMinimumOrderAmount, Integer maxDeliveryTime, java.math.BigDecimal minRating, String sortBy, int page, int size);
 
     int updateRestaurantRating(UUID restaurantId, java.math.BigDecimal averageRating, Integer totalReviews, java.time.ZonedDateTime ratingUpdatedAt);
 }
