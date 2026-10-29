@@ -125,6 +125,7 @@ public class RestaurantQueryHandler {
         RestaurantPageResult restaurantPage = restaurantRepository.findPublicRestaurants(
                 query.getSearchName(), query.getCuisineCodes(), query.getAvailable(), 
                 query.getMaxMinimumOrderAmount(), query.getMaxDeliveryTime(), 
+                query.getMinRating(), query.getSortBy(),
                 query.getPage(), query.getSize());
 
         List<com.berkay.restaurant.service.domain.dto.read.RestaurantModel> items = restaurantPage.getRestaurants().stream()

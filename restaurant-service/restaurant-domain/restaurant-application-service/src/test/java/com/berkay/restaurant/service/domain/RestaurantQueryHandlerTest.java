@@ -95,7 +95,7 @@ public class RestaurantQueryHandlerTest {
         GetPublicRestaurantListQuery query = new GetPublicRestaurantListQuery(null, List.of("fast_food"), true, null, null, 0, 10);
         RestaurantPageResult pageResult = new RestaurantPageResult(List.of(restaurant), 0, 10, 1, 1, true);
 
-        when(restaurantRepository.findPublicRestaurants(null, List.of("fast_food"), true, null, null, 0, 10))
+        when(restaurantRepository.findPublicRestaurants(null, List.of("fast_food"), true, null, null, null, null, 0, 10))
                 .thenReturn(pageResult);
 
         GetPublicRestaurantListQueryResponse response = restaurantQueryHandler.getPublicRestaurants(query);
@@ -104,6 +104,22 @@ public class RestaurantQueryHandlerTest {
         assertEquals(1, response.getItems().size());
         assertEquals(1, response.getTotalElements());
         assertTrue(response.isLast());
+    }
+
+    @Test
+    public void testGetPublicRestaurants_WithRatingAndSort() {
+        GetPublicRestaurantListQuery query = new GetPublicRestaurantListQuery(
+                "burger", List.of("fast_food"), true, java.math.BigDecimal.valueOf(100), 30, java.math.BigDecimal.valueOf(4.5), "HIGHEST_RATING", 0, 10);
+        RestaurantPageResult pageResult = new RestaurantPageResult(List.of(restaurant), 0, 10, 1, 1, true);
+
+        when(restaurantRepository.findPublicRestaurants("burger", List.of("fast_food"), true, java.math.BigDecimal.valueOf(100), 30, java.math.BigDecimal.valueOf(4.5), "HIGHEST_RATING", 0, 10))
+                .thenReturn(pageResult);
+
+        GetPublicRestaurantListQueryResponse response = restaurantQueryHandler.getPublicRestaurants(query);
+
+        assertNotNull(response);
+        assertEquals(1, response.getItems().size());
+        assertEquals(1, response.getTotalElements());
     }
 
     @Test
