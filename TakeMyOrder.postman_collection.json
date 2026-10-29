@@ -2794,6 +2794,18 @@
                                             "disabled": true
                                         },
                                         {
+                                            "key": "minRating",
+                                            "value": "4.0",
+                                            "description": "Filtre: 3.5, 4.0, 4.5 (veya Tümü için parametresiz)",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "sortBy",
+                                            "value": "HIGHEST_RATING",
+                                            "description": "Sıralama: MOST_REVIEWS, HIGHEST_RATING, LOWEST_DELIVERY_FEE, FASTEST_DELIVERY",
+                                            "disabled": true
+                                        },
+                                        {
                                             "key": "page",
                                             "value": "0"
                                         },
