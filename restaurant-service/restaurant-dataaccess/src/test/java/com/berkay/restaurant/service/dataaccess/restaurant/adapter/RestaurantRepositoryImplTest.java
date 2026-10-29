@@ -119,4 +119,47 @@ public class RestaurantRepositoryImplTest {
         verify(entityManager, times(1)).detach(existingEntity);
         verify(entityManager, times(1)).merge(mappedEntity);
     }
+
+    @Test
+    void shouldFindPublicRestaurantsWithDefaultSortWhenSortByIsNull() {
+        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = new org.springframework.data.domain.PageImpl<>(List.of());
+        when(restaurantJpaRepository.findPublicRestaurants(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(pagedResult);
+
+        com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult result = 
+                restaurantRepositoryImpl.findPublicRestaurants(null, null, null, null, null, null, null, 0, 10);
+
+        assertNotNull(result);
+        verify(restaurantJpaRepository, times(1)).findPublicRestaurants(
+                eq(null), eq(null), eq(null), eq(null), eq(null), eq(null),
+                argThat(pageable -> {
+                    org.springframework.data.domain.Sort.Order first = pageable.getSort().getOrderFor("available");
+                    org.springframework.data.domain.Sort.Order second = pageable.getSort().getOrderFor("restaurantName");
+                    return first != null && first.isDescending() && second != null && second.isAscending();
+                })
+        );
+    }
+
+    @Test
+    void shouldFindPublicRestaurantsWithHighestRatingSort() {
+        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = new org.springframework.data.domain.PageImpl<>(List.of());
+        when(restaurantJpaRepository.findPublicRestaurants(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(pagedResult);
+
+        com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult result = 
+                restaurantRepositoryImpl.findPublicRestaurants(null, null, null, null, null, java.math.BigDecimal.valueOf(4.0), "HIGHEST_RATING", 0, 10);
+
+        assertNotNull(result);
+        verify(restaurantJpaRepository, times(1)).findPublicRestaurants(
+                eq(null), eq(null), eq(null), eq(null), eq(null), eq(java.math.BigDecimal.valueOf(4.0)),
+                argThat(pageable -> {
+                    org.springframework.data.domain.Sort.Order availableOrder = pageable.getSort().getOrderFor("available");
+                    org.springframework.data.domain.Sort.Order ratingOrder = pageable.getSort().getOrderFor("averageRating");
+                    org.springframework.data.domain.Sort.Order nameOrder = pageable.getSort().getOrderFor("restaurantName");
+                    return availableOrder != null && availableOrder.isDescending()
+                            && ratingOrder != null && ratingOrder.isDescending()
+                            && nameOrder != null && nameOrder.isAscending();
+                })
+        );
+    }
 }

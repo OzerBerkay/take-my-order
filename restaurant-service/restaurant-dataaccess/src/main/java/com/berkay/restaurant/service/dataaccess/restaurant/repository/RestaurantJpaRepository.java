@@ -24,8 +24,14 @@ public interface RestaurantJpaRepository extends JpaRepository<RestaurantEntity,
            "AND (:available IS NULL OR r.available = :available) " +
            "AND (CAST(:maxMinimumOrderAmount AS bigdecimal) IS NULL OR r.minimumOrderAmount <= :maxMinimumOrderAmount) " +
            "AND (CAST(:maxDeliveryTime AS int) IS NULL OR r.averageDeliveryTimeInMinutes <= :maxDeliveryTime) " +
-           "ORDER BY r.available DESC, r.restaurantName ASC")
-    Page<RestaurantEntity> findPublicRestaurants(@Param("name") String name, @Param("cuisineCodes") List<String> cuisineCodes, @Param("available") Boolean available, @Param("maxMinimumOrderAmount") java.math.BigDecimal maxMinimumOrderAmount, @Param("maxDeliveryTime") Integer maxDeliveryTime, Pageable pageable);
+           "AND (CAST(:minRating AS bigdecimal) IS NULL OR r.averageRating >= :minRating)")
+    Page<RestaurantEntity> findPublicRestaurants(@Param("name") String name, 
+                                                 @Param("cuisineCodes") List<String> cuisineCodes, 
+                                                 @Param("available") Boolean available, 
+                                                 @Param("maxMinimumOrderAmount") java.math.BigDecimal maxMinimumOrderAmount, 
+                                                 @Param("maxDeliveryTime") Integer maxDeliveryTime, 
+                                                 @Param("minRating") java.math.BigDecimal minRating, 
+                                                 Pageable pageable);
 
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM RestaurantEntity r WHERE r.restaurantId = :id")
