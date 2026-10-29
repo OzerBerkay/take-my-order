@@ -75,13 +75,18 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
     }
 
     @Override
-    public com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(String name, java.util.List<String> cuisineCodes, Boolean available, java.math.BigDecimal maxMinimumOrderAmount, Integer maxDeliveryTime, int page, int size) {
-        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size);
-        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(name, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, pageRequest);
+    public com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult findPublicRestaurants(
+            String name, java.util.List<String> cuisineCodes, Boolean available, 
+            java.math.BigDecimal maxMinimumOrderAmount, Integer maxDeliveryTime, 
+            java.math.BigDecimal minRating, String sortBy, int page, int size) {
+        org.springframework.data.domain.Sort sort = buildSort(sortBy);
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, size, sort);
+        org.springframework.data.domain.Page<RestaurantEntity> pagedResult = restaurantJpaRepository.findPublicRestaurants(
+                name, cuisineCodes, available, maxMinimumOrderAmount, maxDeliveryTime, minRating, pageRequest);
         
         java.util.List<Restaurant> restaurants = pagedResult.getContent().stream()
-                .map(restaurantDataAccessMapper::restaurantEntityToRestaurantWithoutMenu)
-                .collect(java.util.stream.Collectors.toList());
+                 .map(restaurantDataAccessMapper::restaurantEntityToRestaurantWithoutMenu)
+                 .collect(java.util.stream.Collectors.toList());
 
         return new com.berkay.restaurant.service.domain.dto.read.RestaurantPageResult(
                 restaurants,
@@ -91,6 +96,42 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
                 pagedResult.getTotalPages(),
                 pagedResult.isLast()
         );
+    }
+
+    private org.springframework.data.domain.Sort buildSort(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) {
+            return org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+        }
+
+        return switch (sortBy.toUpperCase().trim()) {
+            case "MOST_REVIEWS" -> org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.desc("totalReviews").nullsLast(),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+            case "HIGHEST_RATING" -> org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.desc("averageRating").nullsLast(),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+            case "LOWEST_DELIVERY_FEE" -> org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.asc("deliveryFee").nullsLast(),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+            case "FASTEST_DELIVERY" -> org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.asc("averageDeliveryTimeInMinutes").nullsLast(),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+            default -> org.springframework.data.domain.Sort.by(
+                    org.springframework.data.domain.Sort.Order.desc("available"),
+                    org.springframework.data.domain.Sort.Order.asc("restaurantName")
+            );
+        };
     }
 
     @Override
