@@ -63,7 +63,7 @@ data:
         static_configs:
           # Servis İsimleri ve Portları (Hepsi Port 80'de)
           - targets: ['gateway-service.take-my-order.svc.cluster.local:80']
-          - targets: ['customer-service.take-my-order.svc.cluster.local:80']
+          - targets: ['identity-service.take-my-order.svc.cluster.local:80']
           - targets: ['order-service.take-my-order.svc.cluster.local:80']
           - targets: ['payment-service.take-my-order.svc.cluster.local:80']
           - targets: ['restaurant-service.take-my-order.svc.cluster.local:80']

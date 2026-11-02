@@ -14,12 +14,13 @@ resources:
   - platform/init-kafka.yaml
   - platform/keycloak.yaml
   - platform/schema-registry.yaml
+  - platform/kafka-ui.yaml
 
   # Mikroservisler (İş Mantığı)
   - services/order.yaml
   - services/payment.yaml
   - services/restaurant.yaml
-  - services/customer.yaml
+  - services/identity.yaml
   - services/gateway.yaml
 
   # Monitoring
