@@ -87,21 +87,6 @@ identity-service:
     # Canlı (Production) ortamlarda KESİNLİKLE false kalmalıdır.
     reset-db: ${RESET_DB:false}
     reset-keycloak: ${RESET_KEYCLOAK:false}
-    # Test amaçlı örnek müşteri ve satıcı (Sample Users) hesaplarının açılışta yaratılması:
-    create-samples: ${CREATE_SAMPLES:false}
-  sample:
-    customer:
-      email: ${SAMPLE_CUSTOMER_EMAIL:customer@takemyorder.com}
-      password: ${SAMPLE_CUSTOMER_PASSWORD:Customer123!}
-      first-name: ${SAMPLE_CUSTOMER_FIRST_NAME:Test}
-      last-name: ${SAMPLE_CUSTOMER_LAST_NAME:Customer}
-      phone-number: ${SAMPLE_CUSTOMER_PHONE:+905551111111}
-    merchant:
-      email: ${SAMPLE_MERCHANT_EMAIL:merchant@takemyorder.com}
-      password: ${SAMPLE_MERCHANT_PASSWORD:Merchant123!}
-      first-name: ${SAMPLE_MERCHANT_FIRST_NAME:Test}
-      last-name: ${SAMPLE_MERCHANT_LAST_NAME:Merchant}
-      phone-number: ${SAMPLE_MERCHANT_PHONE:+905552222222}
 
 
 # ==========================================
