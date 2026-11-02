@@ -7,6 +7,11 @@ metadata:
     app: order-service
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Önce yeni versiyon pod'unu eski pod'un yanında ayağa kaldır
+      maxUnavailable: 0  # Yeni pod hazır (Ready) olana kadar eski pod'u asla kapatma (Sıfır Kesinti)
   selector:
     matchLabels:
       app: order-service
@@ -20,7 +25,9 @@ spec:
       containers:
         - name: order-service
           image: berkayozr/order-service:v1
-          imagePullPolicy: Always
+          # Jenkins ile doğrudan K3s içine aktarılan yerel imajı kullanır (Docker Hub'a ASLA çıkmaz).
+          # NOT: Eğer GitHub Actions Push-Based & Docker Hub stratejisi kullanılacaksa bu değer "Always" yapılmalıdır.
+          imagePullPolicy: Never
           ports:
             - containerPort: 8181
           resources:
