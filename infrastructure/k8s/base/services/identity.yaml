@@ -126,6 +126,18 @@ spec:
                   name: service-secrets
                   key: KEYCLOAK_ADMIN_PASSWORD
 
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: KEYCLOAK_CLIENT_ID
+
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_CLIENT_SECRET
+
 
               # --- compression type ---
             - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
