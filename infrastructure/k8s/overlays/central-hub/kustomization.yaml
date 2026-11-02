@@ -12,7 +12,7 @@ resources:
   # 3. Monitoring (Gözlem Kulesi)
   - ../../base/monitoring
 
-  # 4. Servisler (Gateway, Order, Customer, Payment, Restaurant)
+  # 4. Servisler (Gateway, Order, Identity, Payment, Restaurant)
   - ../../base/services
 
 patches:
