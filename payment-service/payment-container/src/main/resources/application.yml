@@ -39,7 +39,7 @@ spring:
   datasource:
     # Not: Bare metal olarak kurulu olan Postgres ile Docker üzerine kurulu Postgres'in birbirinden ayrılması için DB_PORT 5433 olarak ayarlanmıştır.
     url: jdbc:postgresql://${MASTER_PRIVATE_IP:localhost}:${DB_PORT:5433}/takemyorder?currentSchema=payment&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
-    username: ${DB_USER:postgres}
+    username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
