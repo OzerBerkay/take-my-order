@@ -53,6 +53,8 @@ spec:
 
             - name: KAFKA_HEAP_OPTS
               value: "-Xmx400M -Xms400M"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "false"
 
           resources:
             requests:
@@ -135,6 +137,8 @@ spec:
               value: "producer"
             - name: KAFKA_HEAP_OPTS
               value: "-Xmx400M -Xms400M"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "false"
           resources:
             requests:
               memory: "300Mi"
@@ -213,6 +217,8 @@ spec:
               value: "producer"
             - name: KAFKA_HEAP_OPTS
               value: "-Xmx400M -Xms400M"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "false"
           resources:
             requests:
               memory: "300Mi"
