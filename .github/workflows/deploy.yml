@@ -1,12 +1,15 @@
 name: Build and Push Microservices
 
 on:
-  push:
-    branches: [ "prod" ]  # Sadece prod branch'e push gelince çalışır
-    paths-ignore:
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'README.md'
+  # Aktif CI/CD süreçleri Self-Hosted Jenkins (Jenkinsfile) üzerinden yürütüldüğü için
+  # otomatik push tetikleyicisi devre dışı bırakılmıştır. İhtiyaç halinde GitHub Actions
+  # arayüzünden manuel (workflow_dispatch) olarak tetiklenebilir.
+  # push:
+  #   branches: [ "prod" ]  # Sadece prod branch'e push gelince çalışır
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - 'mkdocs.yml'
+  #     - 'README.md'
   workflow_dispatch:      # GitHub arayüzünden manuel tetiklemek için
 
 jobs:
@@ -57,16 +60,16 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/gateway-service:v1
           no-cache: true
 
-      # 8. Customer Service (Build & Push)
-      - name: Build & Push Customer Service
+      # 8. Identity Service (Build & Push)
+      - name: Build & Push Identity Service
         uses: docker/build-push-action@v5
         with:
-          context: ./customer-service
-          file: ./customer-service/Dockerfile
+          context: ./identity-service
+          file: ./identity-service/Dockerfile
           push: true
           # Hem Intel hem ARM için build al:
           platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKER_USERNAME }}/customer-service:v1
+          tags: ${{ secrets.DOCKER_USERNAME }}/identity-service:v1
           no-cache: true
 
       # 9. Order Service (Build & Push)
