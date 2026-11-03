@@ -1,0 +1,112 @@
+# =================================================================================================
+# YATAY OTOMATİK ÖLÇEKLEYİCİ (Horizontal Pod Autoscaler - HPA) TANIMLARI
+# =================================================================================================
+# K3s içerisinde varsayılan olarak çalışan "metrics-server", pod'ların anlık CPU tüketimini izler.
+# Bir mikroservisin ortalama CPU kullanımı (requests.cpu baz alınarak) %70 eşiğini aştığında:
+# 1. HPA otomatik olarak yeni Pod kopyaları (replica) oluşturur.
+# 2. Deployment içindeki "podAntiAffinity" kuralı sayesinde yeni kopyalar farklı App Worker
+#    düğümlerine (k8s-worker-01, k8s-worker-02, k8s-worker-03) dağıtılır.
+# 3. Kubernetes Service (ClusterIP / kube-proxy) gelen trafiği aktif kopyalar arasında eşit
+#    olarak (Round-Robin) dengeler. Yük azaldığında kopya sayısı tekrar 1'e düşürülür.
+# =================================================================================================
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gateway-service-hpa
+  namespace: take-my-order
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gateway-service
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: identity-service-hpa
+  namespace: take-my-order
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: identity-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: order-service-hpa
+  namespace: take-my-order
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: payment-service-hpa
+  namespace: take-my-order
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payment-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: restaurant-service-hpa
+  namespace: take-my-order
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: restaurant-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+

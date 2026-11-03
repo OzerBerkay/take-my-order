@@ -14,7 +14,7 @@ spec:
         app: zipkin
     spec:
       nodeSelector:
-        node-type: infra
+        node-type: monitoring
       containers:
         - name: zipkin
           image: openzipkin/zipkin
