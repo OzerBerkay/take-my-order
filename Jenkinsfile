@@ -127,8 +127,8 @@ pipeline {
         // -----------------------------------------------------------------------------------------
         // Jenkins (ARM64) üzerinde derlenen imajlar, "docker save | gzip" ile sıkıştırılarak
         // doğrudan hedef K3s düğümlerinin containerd ("k8s.io" namespace) imaj havuzuna aktarılır:
-        // - gateway-service -> k8s-gateway-node düğümüne aktarılır.
-        // - uygulama servisleri -> k8s-worker-01 ve k8s-worker-02 düğümlerine aktarılır.
+        // - gateway-service -> k8s-worker-edge düğümüne aktarılır.
+        // - uygulama servisleri -> k8s-worker-01, k8s-worker-02 ve k8s-worker-03 düğümlerine aktarılır.
         // -----------------------------------------------------------------------------------------
         stage('3. Build & Distribute Images to K3s Nodes') {
             steps {
@@ -138,6 +138,7 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'k8s-worker1-ip', variable: 'WORKER1_IP'),
                     string(credentialsId: 'k8s-worker2-ip', variable: 'WORKER2_IP'),
+                    string(credentialsId: 'k8s-worker3-ip', variable: 'WORKER3_IP'),
                     string(credentialsId: 'k8s-gateway-ip', variable: 'GATEWAY_IP'),
                     string(credentialsId: 'k8s-master-user', variable: 'SERVER_USER'),
                     sshUserPrivateKey(credentialsId: 'k8s-master-ssh-key', keyFileVariable: 'SSH_KEY')
@@ -155,7 +156,7 @@ pipeline {
                             // Servisin nodeSelector etiketine uygun hedef K3s düğümlerini belirle:
                             def targetNodeIps = (service == 'gateway-service')
                                 ? [env.GATEWAY_IP]
-                                : [env.WORKER1_IP, env.WORKER2_IP]
+                                : [env.WORKER1_IP, env.WORKER2_IP, env.WORKER3_IP]
 
                             for (nodeIp in targetNodeIps) {
                                 echo "Streaming ${fullImageName} directly into K3s containerd on node ${nodeIp}..."

@@ -93,11 +93,11 @@ spec:
 
             # Keycloak'a dış adresini söylüyoruz (Browser buna güvenecek)
             - name: KC_HOSTNAME_URL
-              value: "http://${KC_PUBLIC_IP}:30080"
+              value: "http://$(KC_PUBLIC_IP):30080"
 
             # Admin paneli için de aynısını zorluyoruz
             - name: KC_HOSTNAME_ADMIN_URL
-              value: "http://${KC_PUBLIC_IP}:30080"
+              value: "http://$(KC_PUBLIC_IP):30080"
 
             - name: JAVA_OPTS
               value: "-Xms1024m -Xmx1536m"

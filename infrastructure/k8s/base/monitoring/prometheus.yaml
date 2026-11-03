@@ -85,7 +85,7 @@ spec:
         app: prometheus-server
     spec:
       nodeSelector:
-        node-type: infra
+        node-type: monitoring
       serviceAccountName: prometheus
       containers:
         - name: prometheus

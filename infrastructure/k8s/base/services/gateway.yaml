@@ -22,6 +22,18 @@ spec:
     spec:
       nodeSelector:
         node-type: gateway
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - gateway-service
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: gateway-service
           image: berkayozr/gateway-service:v1
@@ -102,11 +114,14 @@ spec:
                   name: service-config
                   key: KEYCLOAK_SERVER_URL # http://keycloak-service:8080 veya IP
 
-            - name: KEYCLOAK_ISSUER_URI
+            - name: MASTER_PUBLIC_IP
               valueFrom:
-                configMapKeyRef:
-                  name: service-config
-                  key: KEYCLOAK_ISSUER_URI
+                secretKeyRef:
+                  name: service-secrets
+                  key: MASTER_PUBLIC_IP
+
+            - name: KEYCLOAK_ISSUER_URI
+              value: "http://$(MASTER_PUBLIC_IP):30080"
 
             - name: KEYCLOAK_REALM
               valueFrom:
@@ -138,6 +153,12 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: SHOW_SQL
+
+            - name: SWAGGER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SWAGGER_ENABLED
 ---
 apiVersion: v1
 kind: Service
@@ -145,10 +166,11 @@ metadata:
   name: gateway-service
   namespace: take-my-order
 spec:
-  type: ClusterIP # Ingress arkasında olduğu için ClusterIP
+  type: NodePort
   selector:
     app: gateway-service
   ports:
     - name: http
       port: 80
       targetPort: 8080
+      nodePort: 30180

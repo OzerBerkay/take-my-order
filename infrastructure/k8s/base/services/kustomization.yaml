@@ -6,3 +6,4 @@ resources:
   - restaurant.yaml
   - gateway.yaml
   - identity.yaml
+  - hpa.yaml

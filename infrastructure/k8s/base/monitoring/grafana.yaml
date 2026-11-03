@@ -16,7 +16,7 @@ spec:
         app: grafana
     spec:
       nodeSelector:
-        node-type: infra
+        node-type: monitoring
       containers:
         - name: grafana
           image: grafana/grafana:latest
