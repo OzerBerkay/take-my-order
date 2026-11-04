@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak
@@ -36,7 +36,9 @@ spec:
 
             # Proxy Ayarı (Ingress arkasında çalışacağı için)
             - name: KC_PROXY
-              value: "edge" # Ben bir Ingress (Nginx) arkasında çalışıyorum, SSL (HTTPS) işlemini o yapıyor, bana düz HTTP geliyor demek
+              value: "none"
+            - name: KC_HTTP_ENABLED
+              value: "true"
 
             # --- DATABASE CONFIGURATION (POSTGRES BAĞLANTISI) ---
             - name: KC_DB

@@ -173,6 +173,19 @@ spec:
                   name: service-config
                   key: ZIPKIN_URL
 
+            # --- Redis Ayarları ---
+            - name: SPRING_DATA_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SPRING_DATA_REDIS_HOST
+
+            - name: SPRING_DATA_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SPRING_DATA_REDIS_PORT
+
             # --- Diğer Ayarlar ---
             - name: LOG_LEVEL
               valueFrom:
