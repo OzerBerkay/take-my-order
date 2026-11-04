@@ -145,6 +145,17 @@ This project leverages a modern, cutting-edge technology stack designed for high
 
 ---
 
+## 📑 Live Interactive API Documentation (Swagger / OpenAPI)
+
+All microservices are unified under an **Aggregated Swagger UI** served directly through the **API Gateway** at `/swagger-ui.html`:
+
+> [!NOTE]
+> **🛡️ Enterprise Security & Showcase Note:**
+> * **Production Standard:** In enterprise commercial environments, OpenAPI/Swagger UI endpoints are strictly disabled or restricted behind corporate VPNs to eliminate information disclosure and minimize attack surfaces.
+> * **Showcase Mode:** For evaluation, portfolio demonstration, and technical leadership review, interactive API documentation is intentionally enabled (`SWAGGER_ENABLED=true`) across all distributed Kubernetes microservices. It can be toggled on or off instantly at runtime via the centralized Kubernetes ConfigMap (`service-config`).
+
+---
+
 ## 🌍 Real-World Production Environment
 
 This project runs on a live **Hybrid Multi-Cloud Cluster** built with **Zero Cost** using Free Tier resources.
