@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Auth (Login/Register/Refresh), Swagger endpointleri herkese açık
-                        .requestMatchers("/auth/login/**", "/auth/register/**", "/auth/refresh", "/internal/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/actuator/**", "/auth/login/**", "/auth/register/**", "/auth/refresh", "/internal/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Geri kalan her yer token gerektirir
                         .anyRequest().authenticated()
                 )

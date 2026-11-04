@@ -21,6 +21,7 @@ public class MicroserviceSecurityConfig {
     private final JwtSecurityFilter jwtSecurityFilter;
 
     @Bean
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean(SecurityFilterChain.class)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)

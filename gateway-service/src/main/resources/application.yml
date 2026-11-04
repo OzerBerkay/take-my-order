@@ -19,7 +19,8 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: ${ALLOWED_ORIGINS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+            allowedOrigins:
+              - ${ALLOWED_ORIGINS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
             allowedMethods:
               - GET
               - POST
@@ -27,7 +28,8 @@ spring:
               - PATCH
               - DELETE
               - OPTIONS
-            allowedHeaders: "*"
+            allowedHeaders:
+              - "*"
             allowCredentials: true
       routes:
         - id: identity-service
@@ -125,6 +127,8 @@ springdoc:
   swagger-ui:
     enabled: ${SWAGGER_ENABLED:true}
     urls:
+      - name: 00 - Architecture & Security Hub
+        url: /v3/api-docs
       - name: Identity API
         url: /api-docs/identity
       - name: Order API

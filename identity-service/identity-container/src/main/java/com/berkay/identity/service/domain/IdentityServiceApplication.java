@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 // Component Scan "com.berkay" seviyesinden başlar ki altyapıdaki (infrastructure) Kafka producer bean'leri bulunabilsin.
 @EnableScheduling
-@SpringBootApplication(scanBasePackages = "com.berkay")
+@SpringBootApplication(scanBasePackages = {"com.berkay.identity", "com.berkay.kafka", "com.berkay.application.handler"})
 @EnableJpaRepositories(basePackages = "com.berkay.identity.service.dataaccess")
 @EntityScan(basePackages = "com.berkay.identity.service.dataaccess")
 public class IdentityServiceApplication {

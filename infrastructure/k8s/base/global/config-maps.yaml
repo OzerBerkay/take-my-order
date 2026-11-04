@@ -7,7 +7,7 @@ data:
   MASTER_PRIVATE_IP: "private-ip"
   LOG_LEVEL: "INFO"
   SHOW_SQL: "false"
-  SWAGGER_ENABLED: "false"
+  SWAGGER_ENABLED: "true"
 
   # Veritabanı Ayarları
   DB_NAME: "takemyorder"
