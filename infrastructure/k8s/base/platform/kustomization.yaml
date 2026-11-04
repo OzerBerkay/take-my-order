@@ -7,3 +7,4 @@ resources:
   - keycloak.yaml
   - schema-registry.yaml
   - kafka-ui.yaml
+  - redis.yaml
