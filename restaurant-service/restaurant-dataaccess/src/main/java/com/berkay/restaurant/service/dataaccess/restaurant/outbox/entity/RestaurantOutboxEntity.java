@@ -27,7 +27,8 @@ public class RestaurantOutboxEntity {
 
     private String type;
 
-    @Column(columnDefinition = "TEXT")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     private String payload;
 
     @Enumerated(EnumType.STRING)
