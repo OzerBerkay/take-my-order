@@ -221,7 +221,7 @@ pipeline {
                                 sh """
                                     ssh -i "\$SSH_KEY" -o StrictHostKeyChecking=no \${SERVER_USER}@\${MASTER_IP} "
                                         sudo kubectl rollout restart deployment/${service} -n ${K8S_NAMESPACE} &&
-                                        sudo kubectl rollout status deployment/${service} -n ${K8S_NAMESPACE} --timeout=180s
+                                        sudo kubectl rollout status deployment/${service} -n ${K8S_NAMESPACE} --timeout=300s
                                     "
                                 """
                                 echo "Deployment completed successfully for ${service}."
