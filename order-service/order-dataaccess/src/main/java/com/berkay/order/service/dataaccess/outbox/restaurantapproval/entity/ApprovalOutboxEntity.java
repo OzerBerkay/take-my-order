@@ -25,8 +25,7 @@ public class ApprovalOutboxEntity {
     private ZonedDateTime createdAt;
     private ZonedDateTime processedAt;
     private String type;
-    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "TEXT")
     private String payload;
     @Enumerated(EnumType.STRING)
     private SagaStatus sagaStatus;
