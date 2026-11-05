@@ -12,7 +12,7 @@ spec:
   ingressClassName: nginx
   rules:
     # 1. KURAL: API (Gateway)
-    - host: api.takemyorder.com
+    - host: api.definitivecode.com
       http:
         paths:
           - path: /
@@ -23,7 +23,7 @@ spec:
                 port:
                   number: 80
     # 2. KURAL: AUTH (Keycloak)
-    - host: auth.takemyorder.com
+    - host: tmokeycloak.definitivecode.com
       http:
         paths:
           - path: /
