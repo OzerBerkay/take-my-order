@@ -92,7 +92,10 @@ spec:
                   key: MASTER_PUBLIC_IP
 
             - name: KEYCLOAK_ISSUER_URI
-              value: "http://$(MASTER_PUBLIC_IP):30080"
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ISSUER_URI
 
             - name: KEYCLOAK_REALM
               valueFrom:

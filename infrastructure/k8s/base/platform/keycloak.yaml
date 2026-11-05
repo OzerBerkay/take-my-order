@@ -1,4 +1,4 @@
-﻿apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak
@@ -36,7 +36,10 @@ spec:
 
             # Proxy Ayarı (Ingress arkasında çalışacağı için)
             - name: KC_PROXY
-              value: "none"
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KC_PROXY
             - name: KC_HTTP_ENABLED
               value: "true"
 
@@ -95,11 +98,17 @@ spec:
 
             # Keycloak'a dış adresini söylüyoruz (Browser buna güvenecek)
             - name: KC_HOSTNAME_URL
-              value: "http://$(KC_PUBLIC_IP):30080"
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ISSUER_URI
 
             # Admin paneli için de aynısını zorluyoruz
             - name: KC_HOSTNAME_ADMIN_URL
-              value: "http://$(KC_PUBLIC_IP):30080"
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: KEYCLOAK_ISSUER_URI
 
             - name: JAVA_OPTS
               value: "-Xms1024m -Xmx1536m"
