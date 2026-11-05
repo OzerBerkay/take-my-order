@@ -163,6 +163,19 @@ spec:
                   name: service-secrets
                   key: KEYCLOAK_CLIENT_SECRET
 
+            # --- System Super Admin Credentials ---
+            - name: SYSTEM_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: SYSTEM_ADMIN_EMAIL
+
+            - name: SYSTEM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: SYSTEM_ADMIN_PASSWORD
+
 
               # --- compression type ---
             - name: KAFKA_PRODUCER_CONFIG_COMPRESSION_TYPE
