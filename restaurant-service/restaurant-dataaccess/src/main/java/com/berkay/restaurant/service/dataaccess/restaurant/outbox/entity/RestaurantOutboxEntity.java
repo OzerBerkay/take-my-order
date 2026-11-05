@@ -20,8 +20,6 @@ public class RestaurantOutboxEntity {
     @Id
     private UUID id;
 
-    private UUID sagaId;
-
     private ZonedDateTime createdAt;
     private ZonedDateTime processedAt;
 
