@@ -50,12 +50,22 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Transactional
     @CacheEvict(value = {"roles", "roleOrgUnits"}, key = "#payload.roleId")
     public void save(RoleEventPayload payload) {
-        // 1. Rolü Kaydet (Upsert)
+        // 1. Versiyon Kontrolü ve Rolü Kaydet (Upsert)
+        java.util.Optional<RoleReplicaEntity> existingRoleOpt = roleReplicaRepository.findById(payload.getRoleId());
+        if (existingRoleOpt.isPresent() && existingRoleOpt.get().getVersion() != null && payload.getVersion() != null) {
+            if (payload.getVersion() <= existingRoleOpt.get().getVersion()) {
+                log.info("Ignoring role sync for id: {} because incoming version {} is <= existing version {}",
+                        payload.getRoleId(), payload.getVersion(), existingRoleOpt.get().getVersion());
+                return;
+            }
+        }
+
         RoleReplicaEntity entity = RoleReplicaEntity.builder()
                 .id(payload.getRoleId())
                 .name(payload.getName())
                 .userType(payload.getUserType())
                 .organizationalUnitId(payload.getOrganizationalUnitId())
+                .version(payload.getVersion() != null ? payload.getVersion() : 0L)
                 .build();
         roleReplicaRepository.save(entity);
 
