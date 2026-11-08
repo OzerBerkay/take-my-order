@@ -48,7 +48,6 @@ public class RoleConstants {
                     PermissionConstants.CAN_ADD_PERSONNEL,
                     PermissionConstants.CAN_REMOVE_PERSONNEL,
                     PermissionConstants.CAN_VIEW_MERCHANT_USERS,
-                    PermissionConstants.CAN_VIEW_USERS,
                     PermissionConstants.CAN_VIEW_ROLES,
                     PermissionConstants.CAN_VIEW_PERMISSIONS,
                     PermissionConstants.CAN_MANAGE_PAYMENT,
