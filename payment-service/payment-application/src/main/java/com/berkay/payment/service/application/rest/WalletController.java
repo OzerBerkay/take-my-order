@@ -27,7 +27,7 @@ public class WalletController {
     @PreAuthorize("@paymentAuthService.hasPermissionForWallet(authentication, 'can_manage_payment', #ownerId)")
     public ResponseEntity<WalletBalanceResponse> deposit(@PathVariable("ownerId") UUID ownerId,
                                         @RequestHeader("Idempotency-Key") String idempotencyKey,
-                                        @RequestBody WalletDepositCommand command) {
+                                        @jakarta.validation.Valid @RequestBody WalletDepositCommand command) {
         log.info("Received deposit request for owner id: {}", ownerId);
         command.setOwnerId(ownerId);
         command.setIdempotencyKey(idempotencyKey);

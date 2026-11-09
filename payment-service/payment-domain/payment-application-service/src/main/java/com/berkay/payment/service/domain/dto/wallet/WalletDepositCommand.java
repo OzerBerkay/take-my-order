@@ -1,5 +1,6 @@
 package com.berkay.payment.service.domain.dto.wallet;
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -17,10 +18,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WalletDepositCommand {
-    @NotNull
     private UUID ownerId;
-    @NotNull
-    @Positive
+    @NotNull(message = "Deposit amount is required")
+    @Positive(message = "Deposit amount must be greater than zero")
+    @DecimalMax(value = "99999.99", message = "Deposit amount cannot exceed 99,999.99")
     private BigDecimal amount;
     private String idempotencyKey;
 }

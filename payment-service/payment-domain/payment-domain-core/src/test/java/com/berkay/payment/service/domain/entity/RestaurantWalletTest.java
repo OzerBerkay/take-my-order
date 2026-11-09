@@ -44,4 +44,52 @@ class RestaurantWalletTest {
         
         assertEquals("Restaurant does not have enough balance for this transaction!", exception.getMessage());
     }
+
+    @Test
+    void testAddBalance_WithMaxAllowedAmount_ShouldAddSuccessfully() {
+        // Given
+        RestaurantWallet wallet = new RestaurantWallet(
+                new WalletId(UUID.randomUUID()),
+                UUID.randomUUID(),
+                new Money(new BigDecimal("100.00"))
+        );
+
+        // When
+        wallet.addBalance(new Money(new BigDecimal("99999.99")));
+
+        // Then
+        assertEquals(new BigDecimal("100099.99"), wallet.getBalance().getAmount());
+    }
+
+    @Test
+    void testAddBalance_ExceedingMaxAllowedAmount_ShouldThrowException() {
+        // Given
+        RestaurantWallet wallet = new RestaurantWallet(
+                new WalletId(UUID.randomUUID()),
+                UUID.randomUUID(),
+                new Money(new BigDecimal("100.00"))
+        );
+
+        // When / Then
+        PaymentDomainException exception = assertThrows(PaymentDomainException.class, () -> {
+            wallet.addBalance(new Money(new BigDecimal("100000.00")));
+        });
+
+        assertEquals("Deposit amount cannot exceed 99999.99!", exception.getMessage());
+    }
+
+    @Test
+    void testAddBalance_WithZeroOrNegativeAmount_ShouldThrowException() {
+        // Given
+        RestaurantWallet wallet = new RestaurantWallet(
+                new WalletId(UUID.randomUUID()),
+                UUID.randomUUID(),
+                new Money(new BigDecimal("100.00"))
+        );
+
+        // When / Then
+        assertThrows(PaymentDomainException.class, () -> wallet.addBalance(new Money(BigDecimal.ZERO)));
+        assertThrows(PaymentDomainException.class, () -> wallet.addBalance(new Money(new BigDecimal("-10.00"))));
+        assertThrows(PaymentDomainException.class, () -> wallet.addBalance(null));
+    }
 }
