@@ -6,6 +6,7 @@ import com.berkay.payment.service.domain.entity.CustomerWallet;
 import com.berkay.payment.service.domain.entity.Wallet;
 import com.berkay.payment.service.domain.entity.WalletTransaction;
 import com.berkay.payment.service.domain.exception.PaymentApplicationServiceException;
+import com.berkay.payment.service.domain.exception.PaymentDomainException;
 import com.berkay.payment.service.domain.ports.output.repository.OrderEscrowRepository;
 import com.berkay.payment.service.domain.ports.output.repository.OrderEscrowSummaryProjection;
 import com.berkay.payment.service.domain.ports.output.repository.WalletRepository;
@@ -73,6 +74,24 @@ public class WalletApplicationServiceImplTest {
         assertEquals(new BigDecimal("150.00"), response.getBalance());
         verify(walletRepository).save(wallet);
         verify(walletTransactionRepository).save(any(WalletTransaction.class));
+    }
+
+    @Test
+    void testDepositExceedsMaxLimitThrowsException() {
+        when(walletRepository.findByOwnerIdWithLock(OWNER_ID)).thenReturn(Optional.of(wallet));
+
+        WalletDepositCommand command = WalletDepositCommand.builder()
+                .ownerId(OWNER_ID)
+                .amount(new BigDecimal("100000.00"))
+                .idempotencyKey("deposit-exceed")
+                .build();
+
+        PaymentDomainException exception = assertThrows(PaymentDomainException.class, () ->
+                walletApplicationService.deposit(command));
+
+        assertEquals("Deposit amount cannot exceed 99999.99!", exception.getMessage());
+        verify(walletRepository, never()).save(any());
+        verify(walletTransactionRepository, never()).save(any());
     }
 
     @Test

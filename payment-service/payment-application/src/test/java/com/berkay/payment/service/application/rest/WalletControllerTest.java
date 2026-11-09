@@ -17,10 +17,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -129,5 +132,65 @@ class WalletControllerTest {
                 .andExpect(jsonPath("$.last").value(true));
 
         verify(walletApplicationService).getHistory(ownerId, com.berkay.payment.service.domain.valueobject.WalletTransactionType.PAYMENT, 0, 10);
+    }
+
+    @Test
+    @DisplayName("POST /wallets/{ownerId}/deposit returns 200 OK for valid amount within limit")
+    void testDeposit_WithValidAmount_Returns200() throws Exception {
+        UUID ownerId = UUID.randomUUID();
+        WalletBalanceResponse response = WalletBalanceResponse.builder()
+                .ownerId(ownerId)
+                .balance(new BigDecimal("99999.99"))
+                .build();
+
+        when(walletApplicationService.deposit(any())).thenReturn(response);
+
+        mockMvc.perform(post("/wallets/{ownerId}/deposit", ownerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "key-123")
+                        .content("{\"amount\": 99999.99}")
+                        .accept("application/vnd.api.v1+json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ownerId").value(ownerId.toString()))
+                .andExpect(jsonPath("$.balance").value(99999.99));
+
+        verify(walletApplicationService).deposit(any());
+    }
+
+    @Test
+    @DisplayName("POST /wallets/{ownerId}/deposit returns 400 Bad Request when amount exceeds 99,999.99 limit")
+    void testDeposit_ExceedingMaxLimit_Returns400() throws Exception {
+        UUID ownerId = UUID.randomUUID();
+
+        mockMvc.perform(post("/wallets/{ownerId}/deposit", ownerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "key-123")
+                        .content("{\"amount\": 100000.00}")
+                        .accept("application/vnd.api.v1+json"))
+                .andExpect(status().isBadRequest());
+
+        verify(walletApplicationService, never()).deposit(any());
+    }
+
+    @Test
+    @DisplayName("POST /wallets/{ownerId}/deposit returns 400 Bad Request when amount is negative or zero")
+    void testDeposit_WithNegativeOrZeroAmount_Returns400() throws Exception {
+        UUID ownerId = UUID.randomUUID();
+
+        mockMvc.perform(post("/wallets/{ownerId}/deposit", ownerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "key-123")
+                        .content("{\"amount\": -50.00}")
+                        .accept("application/vnd.api.v1+json"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post("/wallets/{ownerId}/deposit", ownerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "key-123")
+                        .content("{\"amount\": 0.00}")
+                        .accept("application/vnd.api.v1+json"))
+                .andExpect(status().isBadRequest());
+
+        verify(walletApplicationService, never()).deposit(any());
     }
 }
