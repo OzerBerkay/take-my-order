@@ -138,4 +138,31 @@ class OrderGlobalExceptionHandlerTest {
         assertEquals("ACCESS_DENIED", dto.getErrorCode());
         assertEquals("Access Denied!", dto.getMessage());
     }
+
+    @Test
+    @DisplayName("Should return MISSING_REQUEST_HEADER for MissingRequestHeaderException")
+    void testMissingRequestHeaderException() throws NoSuchMethodException {
+        java.lang.reflect.Method method = OrderGlobalExceptionHandlerTest.class.getDeclaredMethod("dummyMethod", String.class);
+        org.springframework.core.MethodParameter parameter = new org.springframework.core.MethodParameter(method, 0);
+        org.springframework.web.bind.MissingRequestHeaderException ex =
+                new org.springframework.web.bind.MissingRequestHeaderException("Idempotency-Key", parameter);
+        ErrorDTO dto = exceptionHandler.handleMissingRequestHeaderException(ex);
+
+        assertNotNull(dto);
+        assertEquals("MISSING_REQUEST_HEADER", dto.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("Should return DATA_INTEGRITY_VIOLATION for DataIntegrityViolationException")
+    void testDataIntegrityViolationException() {
+        org.springframework.dao.DataIntegrityViolationException ex =
+                new org.springframework.dao.DataIntegrityViolationException("duplicate key value violates unique constraint");
+        ErrorDTO dto = exceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertNotNull(dto);
+        assertEquals("DATA_INTEGRITY_VIOLATION", dto.getErrorCode());
+        assertEquals("This request has already been processed or violates data integrity.", dto.getMessage());
+    }
+
+    private void dummyMethod(String header) {}
 }

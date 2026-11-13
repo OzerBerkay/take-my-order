@@ -31,6 +31,7 @@ public class OrderDataMapper {
                 .price(new Money(createOrderCommand.getPrice()))
                 .deliveryFee(new Money(createOrderCommand.getDeliveryFee()))
                 .items(orderItemsToOrderItemEntities(createOrderCommand.getItems()))
+                .idempotencyKey(createOrderCommand.getIdempotencyKey())
                 .build();
     }
 

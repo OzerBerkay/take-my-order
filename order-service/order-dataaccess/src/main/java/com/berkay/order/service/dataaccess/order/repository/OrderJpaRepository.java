@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID>,
         org.springframework.data.jpa.repository.JpaSpecificationExecutor<OrderEntity> {
     Optional<OrderEntity> findByTrackingId(UUID trackingId);
+    Optional<OrderEntity> findByIdempotencyKey(String idempotencyKey);
 
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @org.springframework.data.jpa.repository.Query("SELECT o FROM OrderEntity o WHERE o.id = :id")
@@ -20,6 +21,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID>,
 
     org.springframework.data.domain.Page<OrderEntity> findByCustomerId(UUID customerId, org.springframework.data.domain.Pageable pageable);
 
+    @SuppressWarnings("SqlResolve")
     @org.springframework.data.jpa.repository.Query(value = """
             SELECT o FROM OrderEntity o
             WHERE o.customerId = :customerId
@@ -41,6 +43,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID>,
             java.util.Collection<com.berkay.domain.valueobject.OrderStatus> orderStatuses,
             org.springframework.data.domain.Pageable pageable);
 
+    @SuppressWarnings("SqlResolve")
     @org.springframework.data.jpa.repository.Query(value = """
             SELECT
                 COUNT(*) AS "allCount",
@@ -55,6 +58,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, UUID>,
     
     Optional<java.util.List<OrderEntity>> findByRestaurantIdAndOrderStatus(UUID restaurantId, com.berkay.domain.valueobject.OrderStatus orderStatus);
 
+    @SuppressWarnings("SqlResolve")
     @org.springframework.data.jpa.repository.Query(value = """
             SELECT
                 COUNT(*) FILTER (WHERE order_status NOT IN ('PENDING', 'PAID')) AS "totalCount",

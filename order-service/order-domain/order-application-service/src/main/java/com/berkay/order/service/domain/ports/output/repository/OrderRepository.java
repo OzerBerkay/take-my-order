@@ -15,6 +15,8 @@ public interface OrderRepository {
     Optional<Order> findByIdWithLock(OrderId orderId);
 
     Optional<Order> findByTrackingId(TrackingId trackingId);
+    
+    Optional<Order> findByIdempotencyKey(String idempotencyKey);
 
     com.berkay.order.service.domain.dto.read.OrderPageResult findByCustomerId(com.berkay.domain.valueobject.CustomerId customerId, int page, int size);
 

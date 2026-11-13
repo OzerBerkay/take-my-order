@@ -30,6 +30,7 @@ public class Order extends AggregateRoot<OrderId> {
     private MaterialAction materialAction;
     private String internalNote;
     private Integer version;
+    private String idempotencyKey;
 
     public void initializeOrder() {
         setId(new OrderId(UUID.randomUUID()));
@@ -206,10 +207,15 @@ public class Order extends AggregateRoot<OrderId> {
         materialAction = builder.materialAction;
         internalNote = builder.internalNote;
         version = builder.version;
+        idempotencyKey = builder.idempotencyKey;
     }
 
     public void markAsReviewed() {
         this.isReviewed = true;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
     }
 
     public java.time.ZonedDateTime getCreatedAt() {
@@ -304,6 +310,7 @@ public class Order extends AggregateRoot<OrderId> {
         private MaterialAction materialAction;
         private String internalNote;
         private Integer version;
+        private String idempotencyKey;
 
         private Builder() {
         }
@@ -385,6 +392,11 @@ public class Order extends AggregateRoot<OrderId> {
 
         public Builder version(Integer val) {
             version = val;
+            return this;
+        }
+
+        public Builder idempotencyKey(String val) {
+            idempotencyKey = val;
             return this;
         }
 

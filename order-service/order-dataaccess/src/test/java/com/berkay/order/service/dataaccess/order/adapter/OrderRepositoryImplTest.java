@@ -113,4 +113,21 @@ class OrderRepositoryImplTest {
         assertNotNull(pageableCaptor.getValue().getSort().getOrderFor("createdAt"));
         assertTrue(pageableCaptor.getValue().getSort().getOrderFor("createdAt").isDescending());
     }
+
+    @Test
+    @DisplayName("findByIdempotencyKey maps entity to domain order when found")
+    void testFindByIdempotencyKey() {
+        String key = "test-key-123";
+        OrderEntity entity = OrderEntity.builder().id(UUID.randomUUID()).idempotencyKey(key).build();
+        Order domainOrder = mock(Order.class);
+
+        when(orderJpaRepository.findByIdempotencyKey(key)).thenReturn(java.util.Optional.of(entity));
+        when(orderDataAccessMapper.orderEntityToOrder(entity)).thenReturn(domainOrder);
+
+        java.util.Optional<Order> result = orderRepository.findByIdempotencyKey(key);
+
+        assertTrue(result.isPresent());
+        assertEquals(domainOrder, result.get());
+        verify(orderJpaRepository).findByIdempotencyKey(key);
+    }
 }

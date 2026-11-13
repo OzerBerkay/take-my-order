@@ -14,6 +14,7 @@ import com.berkay.order.service.domain.dto.restaurant.RestaurantOrderResponse;
 import com.berkay.order.service.domain.dto.track.TrackOrderQuery;
 import com.berkay.order.service.domain.dto.track.TrackOrderResponse;
 import com.berkay.order.service.domain.ports.input.service.OrderApplicationService;
+import com.berkay.order.service.domain.exception.OrderDomainException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -40,7 +41,12 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<CreateOrderResponse> createOrder(
             @AuthenticationPrincipal UUID customerId,
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
             @RequestBody @Valid CreateOrderCommand createOrderCommand) {
+
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw new OrderDomainException("Idempotency-Key header cannot be blank!");
+        }
 
         CreateOrderCommand commandWithCustomerId = CreateOrderCommand.builder()
                 .customerId(customerId)
@@ -49,6 +55,7 @@ public class OrderController {
                 .deliveryFee(createOrderCommand.getDeliveryFee())
                 .items(createOrderCommand.getItems())
                 .address(createOrderCommand.getAddress())
+                .idempotencyKey(idempotencyKey.trim())
                 .build();
 
         log.info("Creating order for customer: {} at restaurant: {}", customerId,

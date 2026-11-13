@@ -40,6 +40,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Optional<Order> findByIdempotencyKey(String idempotencyKey) {
+        return orderJpaRepository.findByIdempotencyKey(idempotencyKey)
+                .map(orderDataAccessMapper::orderEntityToOrder);
+    }
+
+    @Override
     public Optional<Order> findByTrackingId(TrackingId trackingId) {
         return orderJpaRepository.findByTrackingId(trackingId.getValue())
                 .map(orderDataAccessMapper::orderEntityToOrder);

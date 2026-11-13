@@ -31,6 +31,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import com.berkay.order.service.application.exception.handler.OrderGlobalExceptionHandler;
+import com.berkay.order.service.domain.dto.create.CreateOrderCommand;
+import com.berkay.order.service.domain.dto.create.CreateOrderResponse;
+import com.berkay.order.service.domain.dto.create.OrderAddress;
+import com.berkay.order.service.domain.dto.create.OrderItem;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,11 +48,14 @@ class OrderControllerTest {
     private OrderApplicationService orderApplicationService;
 
     private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         OrderController controller = new OrderController(orderApplicationService);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new OrderGlobalExceptionHandler())
+                .build();
     }
 
     @Test
@@ -211,5 +221,116 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.allCount").value(16));
 
         verify(orderApplicationService).getOrders(any(com.berkay.order.service.domain.dto.read.GetOrdersQuery.class));
+    }
+
+    @Test
+    @DisplayName("POST /orders returns 200 OK when Idempotency-Key header is present")
+    void testCreateOrderSuccess() throws Exception {
+        UUID trackingId = UUID.randomUUID();
+        CreateOrderResponse response = CreateOrderResponse.builder()
+                .orderTrackingId(trackingId)
+                .orderStatus(OrderStatus.PENDING)
+                .message("Order created successfully")
+                .build();
+
+        when(orderApplicationService.createOrder(any(CreateOrderCommand.class))).thenReturn(response);
+
+        CreateOrderCommand command = CreateOrderCommand.builder()
+                .restaurantId(UUID.randomUUID())
+                .price(new BigDecimal("100.00"))
+                .deliveryFee(new BigDecimal("10.00"))
+                .address(OrderAddress.builder()
+                        .city("Istanbul")
+                        .district("Kadikoy")
+                        .street("Moda")
+                        .buildingNumber("1")
+                        .doorNumber("2")
+                        .contactFirstName("Ali")
+                        .contactLastName("Veli")
+                        .contactPhone("+905551234567")
+                        .build())
+                .items(List.of(OrderItem.builder()
+                        .productId(UUID.randomUUID())
+                        .quantity(1)
+                        .price(new BigDecimal("100.00"))
+                        .subTotal(new BigDecimal("100.00"))
+                        .build()))
+                .build();
+
+        mockMvc.perform(post("/orders")
+                        .header("Idempotency-Key", "idemp-key-123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(command)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderTrackingId").value(trackingId.toString()))
+                .andExpect(jsonPath("$.orderStatus").value("PENDING"))
+                .andExpect(jsonPath("$.message").value("Order created successfully"));
+
+        verify(orderApplicationService).createOrder(any(CreateOrderCommand.class));
+    }
+
+    @Test
+    @DisplayName("POST /orders returns 400 Bad Request when Idempotency-Key header is missing")
+    void testCreateOrderMissingIdempotencyKey() throws Exception {
+        CreateOrderCommand command = CreateOrderCommand.builder()
+                .restaurantId(UUID.randomUUID())
+                .price(new BigDecimal("100.00"))
+                .deliveryFee(new BigDecimal("10.00"))
+                .address(OrderAddress.builder()
+                        .city("Istanbul")
+                        .district("Kadikoy")
+                        .street("Moda")
+                        .buildingNumber("1")
+                        .doorNumber("2")
+                        .contactFirstName("Ali")
+                        .contactLastName("Veli")
+                        .contactPhone("+905551234567")
+                        .build())
+                .items(List.of(OrderItem.builder()
+                        .productId(UUID.randomUUID())
+                        .quantity(1)
+                        .price(new BigDecimal("100.00"))
+                        .subTotal(new BigDecimal("100.00"))
+                        .build()))
+                .build();
+
+        mockMvc.perform(post("/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(command)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("MISSING_REQUEST_HEADER"));
+    }
+
+    @Test
+    @DisplayName("POST /orders returns 400 Bad Request when Idempotency-Key header is blank")
+    void testCreateOrderBlankIdempotencyKey() throws Exception {
+        CreateOrderCommand command = CreateOrderCommand.builder()
+                .restaurantId(UUID.randomUUID())
+                .price(new BigDecimal("100.00"))
+                .deliveryFee(new BigDecimal("10.00"))
+                .address(OrderAddress.builder()
+                        .city("Istanbul")
+                        .district("Kadikoy")
+                        .street("Moda")
+                        .buildingNumber("1")
+                        .doorNumber("2")
+                        .contactFirstName("Ali")
+                        .contactLastName("Veli")
+                        .contactPhone("+905551234567")
+                        .build())
+                .items(List.of(OrderItem.builder()
+                        .productId(UUID.randomUUID())
+                        .quantity(1)
+                        .price(new BigDecimal("100.00"))
+                        .subTotal(new BigDecimal("100.00"))
+                        .build()))
+                .build();
+
+        mockMvc.perform(post("/orders")
+                        .header("Idempotency-Key", "   ")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(command)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Idempotency-Key header cannot be blank!"));
     }
 }
