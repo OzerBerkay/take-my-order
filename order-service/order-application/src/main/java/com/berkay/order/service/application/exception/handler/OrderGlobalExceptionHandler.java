@@ -102,6 +102,30 @@ public class OrderGlobalExceptionHandler extends GlobalExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(value = {org.springframework.web.bind.MissingRequestHeaderException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleMissingRequestHeaderException(org.springframework.web.bind.MissingRequestHeaderException exception) {
+        log.warn("Missing request header: {}", exception.getMessage());
+        return ErrorDTO.builder()
+                .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .errorCode("MISSING_REQUEST_HEADER")
+                .message(exception.getMessage())
+                .build();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {org.springframework.dao.DataIntegrityViolationException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorDTO handleDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException exception) {
+        log.warn("Data integrity violation occurred, possibly duplicate idempotency key: {}", exception.getMessage());
+        return ErrorDTO.builder()
+                .code(HttpStatus.CONFLICT.getReasonPhrase())
+                .errorCode("DATA_INTEGRITY_VIOLATION")
+                .message("This request has already been processed or violates data integrity.")
+                .build();
+    }
+
+    @ResponseBody
     @ExceptionHandler(value = {OrderDomainException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleException(OrderDomainException orderDomainException) {

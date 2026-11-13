@@ -103,6 +103,7 @@ public class CustomerOrderSortingIntegrationTest {
                 .deliveryFee(new BigDecimal("15.00"))
                 .orderStatus(status)
                 .createdAt(createdAt)
+                .idempotencyKey(UUID.randomUUID().toString())
                 .address(address)
                 .items(List.of())
                 .build();

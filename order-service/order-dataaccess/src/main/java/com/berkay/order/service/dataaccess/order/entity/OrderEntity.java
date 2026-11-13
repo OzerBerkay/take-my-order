@@ -32,15 +32,22 @@ public class OrderEntity {
     private boolean isReviewed;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
     private OrderStatus orderStatus;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "cancel_reason")
     private CancelReason cancelReason;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "material_action")
     private MaterialAction materialAction;
 
+    @Column(name = "internal_note")
     private String internalNote;
+
+    @Column(name = "idempotency_key", unique = true, nullable = false)
+    private String idempotencyKey;
 
     @Version
     private Integer version;
@@ -51,6 +58,13 @@ public class OrderEntity {
     @org.hibernate.annotations.BatchSize(size = 20)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItemEntity> items;
+
+    @PrePersist
+    public void prePersist() {
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            idempotencyKey = "legacy-" + (id != null ? id.toString() : UUID.randomUUID().toString());
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

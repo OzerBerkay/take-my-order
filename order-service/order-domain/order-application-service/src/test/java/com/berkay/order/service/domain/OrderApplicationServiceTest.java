@@ -106,6 +106,7 @@ public class OrderApplicationServiceTest {
                                 .price(new BigDecimal("50.00"))
                                 .subTotal(new BigDecimal("150.00"))
                                 .build()))
+                .idempotencyKey("idempotency-key-test")
                 .build();
 
         createOrderCommandWrongPrice = CreateOrderCommand.builder()
@@ -136,6 +137,7 @@ public class OrderApplicationServiceTest {
                                 .price(new BigDecimal("50.00"))
                                 .subTotal(new BigDecimal("150.00"))
                                 .build()))
+                .idempotencyKey("idempotency-key-test")
                 .build();
 
         createOrderCommandWrongProductPrice = CreateOrderCommand.builder()
@@ -166,6 +168,7 @@ public class OrderApplicationServiceTest {
                                 .price(new BigDecimal("50.00"))
                                 .subTotal(new BigDecimal("150.00"))
                                 .build()))
+                .idempotencyKey("idempotency-key-test")
                 .build();
 
         createOrderCommandNegativeQuantity = CreateOrderCommand.builder()
@@ -196,6 +199,7 @@ public class OrderApplicationServiceTest {
                                 .price(new BigDecimal("50.00"))
                                 .subTotal(new BigDecimal("150.00"))
                                 .build()))
+                .idempotencyKey("idempotency-key-test")
                 .build();
 
         Customer customer = new Customer(new CustomerId(CUSTOMER_ID));
@@ -225,6 +229,40 @@ public class OrderApplicationServiceTest {
         assertEquals(OrderStatus.PENDING, createOrderResponse.getOrderStatus());
         assertEquals("Order created successfully", createOrderResponse.getMessage());
         assertNotNull(createOrderResponse.getOrderTrackingId());
+    }
+
+    @Test
+    public void testCreateOrderWithExistingIdempotencyKey() {
+        String duplicateKey = "idempotency-key-duplicate";
+        CreateOrderCommand duplicateCommand = CreateOrderCommand.builder()
+                .customerId(CUSTOMER_ID)
+                .restaurantId(RESTAURANT_ID)
+                .address(createOrderCommand.getAddress())
+                .price(PRICE)
+                .deliveryFee(BigDecimal.ZERO)
+                .items(createOrderCommand.getItems())
+                .idempotencyKey(duplicateKey)
+                .build();
+
+        Order existingOrder = orderDataMapper.createOrderCommandToOrder(duplicateCommand);
+        existingOrder.setId(new OrderId(ORDER_ID));
+        existingOrder.initializeOrder();
+        when(orderRepository.findByIdempotencyKey(duplicateKey)).thenReturn(Optional.of(existingOrder));
+
+        int savesBefore = (int) org.mockito.Mockito.mockingDetails(orderRepository).getInvocations().stream()
+                .filter(inv -> inv.getMethod().getName().equals("save"))
+                .count();
+
+        CreateOrderResponse createOrderResponse = orderApplicationService.createOrder(duplicateCommand);
+
+        assertEquals(OrderStatus.PENDING, createOrderResponse.getOrderStatus());
+        assertEquals("Order already created successfully", createOrderResponse.getMessage());
+        assertEquals(existingOrder.getTrackingId().getValue(), createOrderResponse.getOrderTrackingId());
+
+        int savesAfter = (int) org.mockito.Mockito.mockingDetails(orderRepository).getInvocations().stream()
+                .filter(inv -> inv.getMethod().getName().equals("save"))
+                .count();
+        assertEquals(savesBefore, savesAfter);
     }
 
     @Test
