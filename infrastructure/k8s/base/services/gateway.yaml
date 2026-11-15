@@ -162,6 +162,12 @@ spec:
                 configMapKeyRef:
                   name: service-config
                   key: SWAGGER_ENABLED
+
+            - name: SWAGGER_SUPPORTED_SUBMIT_METHODS
+              valueFrom:
+                configMapKeyRef:
+                  name: service-config
+                  key: SWAGGER_SUPPORTED_SUBMIT_METHODS
 ---
 apiVersion: v1
 kind: Service

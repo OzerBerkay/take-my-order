@@ -8,6 +8,7 @@ data:
   LOG_LEVEL: "INFO"
   SHOW_SQL: "false"
   SWAGGER_ENABLED: "true"
+  SWAGGER_SUPPORTED_SUBMIT_METHODS: ""
 
   # Veritabanı Ayarları
   DB_NAME: "takemyorder"
