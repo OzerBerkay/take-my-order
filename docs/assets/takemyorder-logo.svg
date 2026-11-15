@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 76" width="420" height="76" role="img" aria-label="TakeMyOrder">
+  <defs>
+    <linearGradient id="tmo-flame" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ea580c" />
+      <stop offset="50%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </linearGradient>
+  </defs>
+  <text
+    x="50%"
+    y="54"
+    text-anchor="middle"
+    fill="url(#tmo-flame)"
+    font-family="'Plus Jakarta Sans', 'Montserrat', 'Poppins', 'Segoe UI', Roboto, Arial, sans-serif"
+    font-size="54"
+    font-weight="800"
+    letter-spacing="-1.5">TakeMyOrder</text>
+</svg>
