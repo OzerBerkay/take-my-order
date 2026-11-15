@@ -126,6 +126,7 @@ springdoc:
     enabled: ${SWAGGER_ENABLED:true}
   swagger-ui:
     enabled: ${SWAGGER_ENABLED:true}
+    supported-submit-methods: ${SWAGGER_SUPPORTED_SUBMIT_METHODS:get,put,post,delete,options,head,patch,trace}
     urls:
       - name: 00 - Architecture & Security Hub
         url: /v3/api-docs

@@ -11,3 +11,4 @@ data:
   KEYCLOAK_ISSUER_URI: "http://localhost:30080"
   SPRING_PROFILES_ACTIVE: "dev"
   SWAGGER_ENABLED: "true"
+  SWAGGER_SUPPORTED_SUBMIT_METHODS: "get,put,post,delete,options,head,patch,trace"

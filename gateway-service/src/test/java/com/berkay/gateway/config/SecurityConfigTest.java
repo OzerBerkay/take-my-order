@@ -147,4 +147,14 @@ public class SecurityConfigTest {
                 .exchange()
                 .expectHeader().doesNotExist("Access-Control-Allow-Origin");
     }
+
+    @Test
+    void shouldEnableAllSubmitMethodsInDefaultDevSwaggerConfig() {
+        webTestClient.get().uri("/v3/api-docs/swagger-config")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.supportedSubmitMethods").isArray()
+                .jsonPath("$.supportedSubmitMethods.length()").isEqualTo(8);
+    }
 }
