@@ -1,174 +1,1532 @@
-/* --- 1. Modern Fontlar --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* ==========================================================================
+   Take My Order — Official Engineering Publication & Brand Theme
+   Brand Palette: Deep Orange / Warm Amber / Slate Obsidian
+   High-Contrast Syntax Highlighting & Comfortable Editorial Canvas
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   1. DESIGN TOKENS & BRAND PALETTE
+   ========================================================================== */
 
 :root {
-    --md-text-font: "Inter", sans-serif;
-    --md-code-font: "JetBrains Mono", monospace;
-    /* Geçişlerin yumuşak olması için */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-serif: "Newsreader", Georgia, Cambria, "Times New Roman", serif;
+    --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --md-text-font: var(--font-sans);
+    --md-code-font: var(--font-mono);
+    --md-typeset-font-size: 0.875rem; /* ~14px Crisp Compact Reading */
+    --md-typeset-line-height: 1.65;
 }
 
-/* --- 2. LIGHT MODE ÖZEL AYARLARI (Sorun Çözücü) --- */
+/* --- LIGHT MODE: WARM EDITORIAL CANVAS (Take My Order Warmth) --- */
 [data-md-color-scheme="default"] {
-    /* Header Yazılarını ve İkonlarını Koyu Yap */
-    --md-primary-fg-color: #2c3e50;      /* Koyu Lacivert */
-    --md-primary-fg-color--light: #34495e;
-    --md-primary-fg-color--dark: #1a252f;
+    --md-default-bg-color: #f8fafc; /* Warm, eye-friendly off-white canvas (not blinding #fff) */
+    --md-default-fg-color: #1e293b; /* Deep slate, crystal-clear readability */
+    --md-default-fg-color--light: #64748b;
+    --md-default-fg-color--lighter: #94a3b8;
+    --md-default-fg-color--lightest: #f1f5f9;
+
+    --md-primary-fg-color: #ea580c; /* Take My Order Flame Orange */
     --md-primary-bg-color: #ffffff;
+    --md-accent-fg-color: #ea580c;
 
-    /* Link Renkleri */
-    --md-accent-fg-color: #ff5722;       /* Turuncu vurgu */
+    /* Footer Light Mode Typography & Surfaces */
+    --md-footer-bg-color: #ffffff;
+    --md-footer-bg-color--dark: #f8fafc;
+    --md-footer-fg-color: #1e293b;
+    --md-footer-fg-color--light: #64748b;
+    --md-footer-fg-color--lighter: #94a3b8;
 
-    /* Header Arka Planı (Hafif Şeffaf Beyaz) */
-    --md-header-bg-color: rgba(255, 255, 255, 0.85);
+    --brand-title-color: #0f172a;
+    --headline-color: #0f172a;
+    --header-border-color: #e2e8f0;
+    --header-bg-glass: rgba(248, 250, 252, 0.94);
+    --header-nav-text: #475569;
+    --header-nav-active: #ea580c;
 
-    /* Arama Çubuğu Arka Planını Belirginleştir */
-    --md-search-bg-color: rgba(0, 0, 0, 0.05);
+    --card-bg: #ffffff; /* Elevated white cards on soft slate canvas */
+    --card-border: #e2e8f0;
+    --card-border-hover: #ea580c;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --card-shadow-hover: 0 10px 25px -5px rgba(234, 88, 12, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+    --border-subtle: #e2e8f0;
+    --border-divider: #e2e8f0;
+    --table-header-bg: #f1f5f9;
+    --table-row-hover: #f8fafc;
+
+    /* High-contrast code block styling */
+    --code-block-bg: #0d1117;
+    --code-block-border: #1e293b;
+    --code-block-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.14), 0 4px 8px -2px rgba(15, 23, 42, 0.08);
+
+    --badge-bg: #fff7ed; /* Warm culinary amber tint */
+    --badge-text: #c2410c;
+    --badge-border: #ffedd5;
+
+    --quote-color: #0f172a;
+    --lead-color: #475569;
 }
 
-/* --- 3. DARK MODE AYARLARI (Premium Görünüm) --- */
+/* --- DARK MODE: OBSIDIAN SLATE FLAME (Take My Order Midnight) --- */
 [data-md-color-scheme="slate"] {
-    --md-header-bg-color: rgba(15, 23, 42, 0.8); /* Koyu Slate Şeffaf */
-    --md-default-bg-color: transparent; /* Arka planı CSS'ten alsın */
+    --md-default-bg-color: #090d16; /* Deep obsidian midnight */
+    --md-default-fg-color: #cbd5e1;
+    --md-default-fg-color--light: #94a3b8;
+    --md-default-fg-color--lighter: #64748b;
+    --md-default-fg-color--lightest: #1e293b;
+
+    /* Primary & Accent - Must be bright/vibrant in dark mode! */
+    --md-primary-fg-color: #fb923c; /* Take My Order Flame Orange */
+    --md-primary-bg-color: #090d16;
+    --md-accent-fg-color: #fb923c; /* Bright flame orange */
+    --md-typeset-a-color: #fb923c;
+
+    --md-code-fg-color: #f1f5f9;
+    --md-code-bg-color: #0f172a;
+
+    /* Mermaid Dark Theme Variables */
+    --md-mermaid-node-bg-color: #1e293b;
+    --md-mermaid-node-fg-color: #f8fafc;
+    --md-mermaid-edge-color: #94a3b8;
+    --md-mermaid-label-bg-color: #090d16;
+    --md-mermaid-label-fg-color: #f1f5f9;
+    --md-mermaid-sequence-actor-bg-color: #1e293b;
+    --md-mermaid-sequence-actor-fg-color: #f1f5f9;
+    --md-mermaid-sequence-actor-border-color: #ea580c;
+    --md-mermaid-sequence-note-bg-color: #1e293b;
+    --md-mermaid-sequence-note-fg-color: #fed7aa;
+    --md-mermaid-sequence-note-border-color: #f59e0b;
+
+    /* Footer Dark Mode Typography & Surfaces */
+    --md-footer-bg-color: #111827;
+    --md-footer-bg-color--dark: #090d16;
+    --md-footer-fg-color: #f1f5f9;
+    --md-footer-fg-color--light: #94a3b8;
+    --md-footer-fg-color--lighter: #64748b;
+
+    --brand-title-color: #f8fafc;
+    --headline-color: #ffffff;
+    --header-border-color: rgba(255, 255, 255, 0.08);
+    --header-bg-glass: rgba(9, 13, 22, 0.94);
+    --header-nav-text: #94a3b8;
+    --header-nav-active: #fb923c;
+
+    --card-bg: #111827;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-border-hover: #fb923c;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --card-shadow-hover: 0 12px 30px rgba(251, 146, 60, 0.15);
+
+    --border-subtle: #1e293b;
+    --border-divider: rgba(255, 255, 255, 0.06);
+    --table-header-bg: #1f2937;
+    --table-row-hover: rgba(255, 255, 255, 0.02);
+
+    --code-block-bg: #070a12;
+    --code-block-border: rgba(255, 255, 255, 0.12);
+    --code-block-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+
+    --badge-bg: rgba(251, 146, 60, 0.12);
+    --badge-text: #fed7aa;
+    --badge-border: rgba(251, 146, 60, 0.25);
+
+    --quote-color: #e2e8f0;
+    --lead-color: #94a3b8;
 }
 
-/* --- 4. ARKA PLANLAR (BACKGROUNDS) --- */
+/* ==========================================================================
+   2. GLOBAL CANVAS & LAYOUT ARCHITECTURE
+   ========================================================================== */
 
-/* Arka planı sabitle ki scroll yaparken kaysın (Parallax etkisi) */
 body {
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light Mode Arka Planı: Temiz, Gri Mikro Grid */
-[data-md-color-scheme="default"] body {
-    background-color: #f8f9fa;
-    background-image: linear-gradient(#e5e7eb 1px, transparent 1px),
-    linear-gradient(to right, #e5e7eb 1px, transparent 1px);
-    background-size: 30px 30px; /* Grid karelerinin boyutu */
+.md-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 1rem 3rem 1rem !important;
 }
 
-/* Dark Mode Arka Planı: Derin Uzay / Cyberpunk Gradient */
-[data-md-color-scheme="slate"] body {
-    background-color: #0f172a; /* Slate 900 */
-    background-image:
-            radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
-            radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%),
-            radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-}
-
-/* --- 5. İÇERİK KUTUSU (Okunabilirlik İçin) --- */
-/* Arka plan desenli olduğu için yazıların altına hafif bir kart koyalım */
 .md-main__inner {
     margin-top: 1rem;
 }
 
-.md-content {
-    /* İçerik alanına hafif bir zemin ve radius ver */
-    background: var(--md-default-bg-color); /* Temaya göre değişir */
-    border-radius: 16px;
-    padding: 1.5rem;
+.md-grid {
+    max-width: 80rem;
 }
 
-/* Light mode'da içerik kutusu beyaz olsun */
-[data-md-color-scheme="default"] .md-content {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.05);
+.md-content__inner {
+    max-width: 48rem;
+    margin: 0 auto;
 }
 
-/* Dark mode'da içerik kutusu hafif koyu olsun */
-[data-md-color-scheme="slate"] .md-content {
-    background: rgba(30, 41, 59, 0.6); /* Yarı saydam */
-    backdrop-filter: blur(10px);        /* Buzlu cam efekti */
-    border: 1px solid rgba(255,255,255,0.05);
+/* Expand content on the blog homepage */
+.md-content:has(.pub-masthead) .md-content__inner,
+.md-main__inner:has(.pub-masthead) .md-content__inner,
+.md-sidebar--primary[hidden] ~ .md-content .md-content__inner,
+[data-md-component="sidebar"][hidden] ~ .md-content .md-content__inner {
+    max-width: 74rem !important;
+    margin: 0 auto;
 }
 
-/* --- 6. HEADER & SEARCH DÜZELTMELERİ --- */
+/* ==========================================================================
+   3. HEADER & BAELDUNG-STYLE NAVIGATION
+   ========================================================================== */
 
-/* Header Bluru */
 .md-header {
+    background-color: var(--header-bg-glass) !important;
+    border-bottom: 1px solid var(--header-border-color) !important;
+    box-shadow: none !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+    color: var(--brand-title-color) !important;
 }
 
-/* Light Mode'da Arama Çubuğu Girişi */
-[data-md-color-scheme="default"] .md-search__input {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #333;
-}
-[data-md-color-scheme="default"] .md-search__icon {
-    color: #555 !important; /* Büyüteç ikonu gri olsun */
-}
-
-/* Proje Başlığı (Title) Tasarımı */
 .md-header__title {
+    color: var(--brand-title-color) !important;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    font-size: 0.95rem;
+    letter-spacing: -0.015em;
 }
 
-/* --- 7. Gradient Başlıklar (H1) --- */
-h1 {
-    font-weight: 800;
-    background: -webkit-linear-gradient(45deg, #FF5722, #FFC107);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
+.md-header__button {
+    color: var(--header-nav-text) !important;
+    transition: color 0.15s ease;
 }
 
-[data-md-color-scheme="slate"] h1 {
-    background: -webkit-linear-gradient(45deg, #818cf8, #22d3ee);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.md-header__button:hover {
+    color: var(--brand-title-color) !important;
 }
 
-/* --- 8. Kartlar (Anasayfa İçin) --- */
-.grid-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
+.md-header__button.md-logo svg {
+    fill: var(--md-accent-fg-color) !important;
 }
 
-.card {
-    /* Kart renklerini temaya göre otomatik ayarla */
-    background: var(--md-default-bg-color);
-    border: 1px solid var(--md-default-fg-color--lightest);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+/* Top Navigation Tabs - Baeldung Minimalist Pill */
+.md-tabs {
+    background-color: var(--header-bg-glass) !important;
+    border-bottom: 1px solid var(--header-border-color) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 0.2rem 0;
 }
 
-/* Light mode kart arka planı */
-[data-md-color-scheme="default"] .card {
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.md-tabs__list {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
-/* Dark mode kart arka planı */
-[data-md-color-scheme="slate"] .card {
-    background: rgba(255,255,255,0.03);
+.md-tabs__item {
+    padding: 0;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
-    border-color: var(--md-accent-fg-color);
+.md-tabs__link {
+    color: var(--header-nav-text) !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border-radius: 4px;
+    opacity: 0.85;
+    background: transparent !important;
+    background-color: transparent !important;
+    transition: color 0.15s ease;
+    border-bottom: 2px solid transparent !important;
 }
 
-.card h3 {
-    margin-top: 0;
-    color: var(--md-primary-fg-color);
+/* Hover: NO ugly orange square! Clean, smooth text color shift to Take My Order flame orange */
+.md-tabs__link:hover {
+    opacity: 1 !important;
+    color: #ea580c !important;
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Active Tab: Permanently vibrant Take My Order orange with a clean underline! */
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link--active {
+    opacity: 1 !important;
+    font-weight: 700 !important;
+    color: #ea580c !important; /* SABİT VURGULU TURUNCU */
+    background: transparent !important;
+    background-color: transparent !important;
+    border-bottom: 2px solid #ea580c !important;
+}
+
+/* Dark mode active tab */
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link,
+[data-md-color-scheme="slate"] .md-tabs__link--active {
+    color: #fb923c !important;
+    border-bottom: 2px solid #fb923c !important;
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link:hover {
+    color: #fb923c !important;
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Search Pill */
+.md-search__inner {
+    padding: 0.2rem 0;
+}
+
+.md-search__form {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 9999px !important;
+    height: 1.85rem;
+    transition: all 0.15s ease;
+}
+
+.md-search__form:hover,
+.md-search__form:focus-within {
+    border-color: var(--md-accent-fg-color) !important;
+    box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15) !important;
+}
+
+.md-search__input {
+    color: var(--brand-title-color) !important;
+    font-size: 0.78rem !important;
+    padding-left: 2rem !important;
+}
+
+.md-search__input::placeholder {
+    color: var(--md-default-fg-color--lighter) !important;
+}
+
+.md-search__icon {
+    color: var(--md-default-fg-color--lighter) !important;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ==========================================================================
+   4. HOMEPAGE COMPONENTS
+   ========================================================================== */
+
+.pub-masthead {
+    padding: 1rem 0 0.85rem 0;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-divider);
+}
+
+.pub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    background-color: var(--badge-bg);
+    border: 1px solid var(--badge-border);
+    color: var(--md-accent-fg-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.65rem;
+}
+
+.pub-badge .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--md-accent-fg-color);
+}
+
+.pub-headline {
+    font-family: var(--font-sans);
+    font-size: 1.65rem !important;
+    font-weight: 750 !important;
+    letter-spacing: -0.025em !important;
+    line-height: 1.25 !important;
+    color: var(--headline-color) !important;
+    margin: 0 0 0.4rem 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.pub-subhead {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--lead-color);
+    max-width: 52rem;
+    margin: 0 0 0.85rem 0;
+}
+
+.pub-meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border-divider);
+}
+
+.pub-author-pill {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-/* Tablo Tasarımı */
+.avatar-ring {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
+}
+
+.avatar-ring-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ea580c;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
+    flex-shrink: 0;
+}
+
+.author-details {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.author-name {
+    font-weight: 700;
+    font-size: 0.825rem;
+    color: var(--brand-title-color);
+}
+
+.author-title {
+    font-size: 0.75rem;
+    color: var(--md-default-fg-color--light);
+}
+
+.pub-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--md-default-fg-color--light);
+}
+
+.pub-stats strong {
+    color: var(--brand-title-color);
+}
+
+.stat-divider {
+    color: var(--border-subtle);
+}
+
+/* Quick Access Runbooks Bar */
+.setup-quickbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    margin: 0.75rem 0 0.85rem 0;
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--card-shadow);
+    font-size: 0.78rem;
+}
+
+.setup-quickbar-label {
+    font-weight: 700;
+    color: var(--brand-title-color);
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+}
+
+.setup-quickbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background-color: var(--badge-bg);
+    color: var(--md-accent-fg-color) !important;
+    border: 1px solid var(--badge-border);
+    font-weight: 600;
+    font-size: 0.74rem;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.setup-quickbar-btn:hover {
+    background-color: var(--md-accent-fg-color);
+    color: #ffffff !important;
+    border-color: var(--md-accent-fg-color);
+    transform: translateY(-1px);
+}
+
+/* Topic Filters */
+.pub-topics-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.5rem 0 1.25rem 0;
+}
+
+.topic-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    color: var(--md-default-fg-color) !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+
+.topic-pill:hover {
+    background-color: var(--md-accent-fg-color);
+    color: #ffffff !important;
+    border-color: var(--md-accent-fg-color);
+    transform: translateY(-1px);
+}
+
+.topic-pill.active {
+    background-color: var(--brand-title-color);
+    color: var(--md-default-bg-color) !important;
+    border-color: var(--brand-title-color);
+}
+
+/* Featured Lead Story Card */
+.featured-story-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-story-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ea580c, #f97316, #f59e0b);
+}
+
+.featured-story-card:hover {
+    border-color: var(--card-border-hover);
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.featured-story-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--md-accent-fg-color);
+    margin-bottom: 0.4rem;
+}
+
+.featured-story-badge .star-icon {
+    color: #f59e0b;
+}
+
+.featured-story-title {
+    font-size: 1.18rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em !important;
+    line-height: 1.35 !important;
+    margin: 0 0 0.45rem 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.featured-story-title a {
+    color: var(--brand-title-color) !important;
+    text-decoration: none !important;
+    transition: color 0.15s ease;
+}
+
+.featured-story-title a:hover {
+    color: var(--md-accent-fg-color) !important;
+}
+
+.featured-story-excerpt {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--lead-color);
+    margin-bottom: 0.85rem;
+}
+
+.featured-story-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-divider);
+}
+
+.featured-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.card-tag {
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    border: 1px solid var(--badge-border);
+}
+
+.read-story-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--md-accent-fg-color) !important;
+    text-decoration: none !important;
+    transition: transform 0.15s ease;
+}
+
+.read-story-btn:hover {
+    transform: translateX(2px);
+}
+
+/* Editorial Sections & Story Cards Grid */
+.editorial-section {
+    margin-bottom: 2.25rem;
+}
+
+.section-masthead {
+    margin-bottom: 0.75rem;
+}
+
+.section-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em !important;
+    color: var(--brand-title-color) !important;
+    margin: 0 0 0.2rem 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.section-desc {
+    font-size: 0.8rem;
+    color: var(--md-default-fg-color--light);
+    margin: 0;
+}
+
+.stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1rem;
+}
+
+.story-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--card-shadow);
+    transition: all 0.18s ease;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.story-card:hover {
+    border-color: var(--card-border-hover);
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.story-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.45rem;
+}
+
+.story-card-title {
+    font-size: 0.925rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.35 !important;
+    color: var(--brand-title-color) !important;
+    margin: 0 0 0.4rem 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    transition: color 0.15s ease;
+}
+
+.story-card:hover .story-card-title {
+    color: var(--md-accent-fg-color) !important;
+}
+
+.story-card-excerpt {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--md-default-fg-color--light);
+    margin-bottom: 0.75rem;
+    flex-grow: 1;
+}
+
+.story-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-divider);
+    font-size: 0.725rem;
+    color: var(--md-default-fg-color--lighter);
+}
+
+.reading-time {
+    font-weight: 500;
+    font-size: 0.72rem;
+}
+
+.story-arrow {
+    font-weight: 700;
+    color: var(--md-accent-fg-color);
+    transition: transform 0.15s ease;
+}
+
+.story-card:hover .story-arrow {
+    transform: translateX(2px);
+}
+
+/* Author Profile Card */
+.pub-author-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0 1rem 0;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    box-shadow: var(--card-shadow);
+}
+
+.author-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
+}
+
+.author-card-avatar-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ea580c;
+    box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
+    flex-shrink: 0;
+}
+
+.author-card-body {
+    flex-grow: 1;
+}
+
+.author-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.author-card-name {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: var(--brand-title-color) !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.author-card-role {
+    font-size: 0.78rem;
+    color: var(--md-default-fg-color--light);
+    margin: 0.1rem 0 0 0;
+}
+
+.author-card-follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    background-color: var(--brand-title-color);
+    color: var(--md-default-bg-color) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: opacity 0.15s ease;
+}
+
+.author-card-follow-btn:hover {
+    opacity: 0.88;
+}
+
+.author-card-bio {
+    font-size: 0.825rem;
+    line-height: 1.55;
+    color: var(--lead-color);
+    margin-bottom: 0.75rem;
+}
+
+.author-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.bio-tag {
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    border: 1px solid var(--badge-border);
+}
+
+/* ==========================================================================
+   5. ARTICLE READING EXPERIENCE & TYPOGRAPHY
+   ========================================================================== */
+
+.article-byline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0 0.85rem 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-divider);
+}
+
+.byline-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.byline-avatar-img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ea580c;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
+    flex-shrink: 0;
+}
+
+.byline-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.byline-author {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--brand-title-color);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.byline-badge {
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background-color: var(--badge-bg);
+    color: var(--md-accent-fg-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.byline-meta {
+    font-size: 0.75rem;
+    color: var(--md-default-fg-color--light);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.md-typeset {
+    font-size: var(--md-typeset-font-size);
+    line-height: var(--md-typeset-line-height);
+    color: var(--md-default-fg-color);
+}
+
+.md-typeset p {
+    margin-bottom: 1rem;
+    letter-spacing: -0.005em;
+}
+
+.md-typeset h1 {
+    font-family: var(--font-sans);
+    font-weight: 750;
+    font-size: 1.65rem;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+    margin-top: 0.5rem;
+    margin-bottom: 0.85rem;
+    color: var(--headline-color);
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.md-typeset h2 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1.22rem;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--brand-title-color);
+}
+
+.md-typeset h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1.025rem;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    margin-top: 1.4rem;
+    margin-bottom: 0.5rem;
+    color: var(--brand-title-color);
+}
+
+.md-typeset blockquote {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    line-height: 1.55;
+    font-style: italic;
+    color: var(--quote-color);
+    border-left: 3px solid var(--md-accent-fg-color);
+    padding: 0.4rem 0 0.4rem 1rem;
+    margin: 1.5rem 0;
+    background: transparent;
+}
+
+.md-typeset hr {
+    margin: 2.25rem 0;
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.md-typeset a {
+    color: var(--md-accent-fg-color);
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+}
+
+.md-typeset a:hover {
+    text-decoration: underline;
+    opacity: 0.88;
+}
+
+/* ==========================================================================
+   6. TABLES (Stripe / GitHub Clean Minimalist Style)
+   ========================================================================== */
+
 .md-typeset table:not([class]) {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin: 1.5rem 0;
+    font-size: 0.825rem;
+    background-color: var(--card-bg);
+    box-shadow: var(--card-shadow);
 }
+
+.md-typeset table:not([class]) th {
+    background-color: var(--table-header-bg);
+    color: var(--brand-title-color);
+    font-weight: 600;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.md-typeset table:not([class]) td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--md-default-fg-color);
+    line-height: 1.5;
+}
+
+.md-typeset table:not([class]) tr:last-child td {
+    border-bottom: none;
+}
+
+.md-typeset table:not([class]) tr:hover td {
+    background-color: var(--table-row-hover);
+}
+
+/* ==========================================================================
+   7. HIGH-CONTRAST CODE BLOCKS & SYNTAX HIGHLIGHTING (VS Code / Tokyo Night)
+   ========================================================================== */
+
+/* Pre / Code Container Frame */
+.md-typeset pre {
+    border-radius: 10px;
+    margin: 1.35rem 0;
+    border: 1px solid var(--code-block-border);
+    background-color: var(--code-block-bg) !important;
+    box-shadow: var(--code-block-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Top accent flame gradient indicator */
+.md-typeset pre::before {
+    content: "";
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, #ea580c, #f97316, #f59e0b);
+}
+
+.md-typeset pre > code {
+    background-color: var(--code-block-bg) !important;
+    color: #f0f6fc !important; /* Pure high-contrast readable white */
+    font-family: var(--font-mono) !important;
+    font-size: 0.825rem !important;
+    line-height: 1.6 !important;
+    padding: 0.95rem 1.15rem !important;
+    display: block;
+}
+
+/* Inline Code Pills (Readable & Soft Accent) */
+.md-typeset :not(pre) > code {
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 0.12rem 0.38rem;
+    border-radius: 4px;
+    font-size: 0.82em;
+    font-family: var(--font-mono);
+    border: 1px solid var(--badge-border);
+    font-weight: 500;
+}
+
+/* Crystal-Clear Syntax Highlighting Tokens (GitHub Dark / Neon Vivid) */
+.md-typeset pre code .k,
+.md-typeset pre code .kd,
+.md-typeset pre code .kn,
+.md-typeset pre code .kp,
+.md-typeset pre code .kr {
+    color: #ff7b72 !important; /* Vibrant coral red keyword */
+    font-weight: 600;
+}
+
+.md-typeset pre code .s,
+.md-typeset pre code .s1,
+.md-typeset pre code .s2,
+.md-typeset pre code .sb,
+.md-typeset pre code .sc,
+.md-typeset pre code .sd {
+    color: #7ee787 !important; /* Crisp electric mint string */
+}
+
+.md-typeset pre code .nf,
+.md-typeset pre code .fm {
+    color: #d2a8ff !important; /* Bright lilac function */
+    font-weight: 600;
+}
+
+.md-typeset pre code .nc,
+.md-typeset pre code .nn,
+.md-typeset pre code .nt {
+    color: #79c0ff !important; /* Vivid sky blue class/type */
+    font-weight: 600;
+}
+
+.md-typeset pre code .na,
+.md-typeset pre code .nd {
+    color: #ffa657 !important; /* Take My Order Amber annotation */
+}
+
+.md-typeset pre code .m,
+.md-typeset pre code .mi,
+.md-typeset pre code .mf {
+    color: #79c0ff !important; /* Bright numeric cyan */
+}
+
+.md-typeset pre code .o,
+.md-typeset pre code .ow {
+    color: #ff7b72 !important; /* Crisp operator */
+}
+
+.md-typeset pre code .c,
+.md-typeset pre code .c1,
+.md-typeset pre code .cm {
+    color: #8b949e !important; /* Silver gray comment */
+    font-style: italic;
+}
+
+.md-typeset pre code .nv,
+.md-typeset pre code .no {
+    color: #e6edf3 !important;
+}
+
+/* ==========================================================================
+   8. ADMONITIONS & MERMAID HIGH-CONTRAST ENGINE
+   ========================================================================== */
+
+.md-typeset .admonition {
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    border-left-width: 4px;
+    border-left-color: var(--md-accent-fg-color);
+    box-shadow: var(--card-shadow);
+    background-color: var(--card-bg);
+    font-size: 0.84rem;
+    line-height: 1.6;
+    margin: 1.35rem 0;
+    padding: 0.75rem 1rem;
+}
+
+.md-typeset .admonition-title {
+    color: var(--brand-title-color) !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    margin: 0 0 0.5rem 0 !important;
+    padding-bottom: 0.35rem !important;
+    border-bottom: 1px solid var(--border-divider) !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition {
+    background-color: #111827 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-left-color: #fb923c !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition-title {
+    color: #f8fafc !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition p {
+    color: #cbd5e1 !important;
+}
+
+/* Blockquotes Dark Mode Refinement */
+[data-md-color-scheme="slate"] .md-typeset blockquote {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 0 8px 8px 0;
+    border-left-color: #fb923c !important;
+    color: #e2e8f0 !important;
+}
+
+/* Mermaid SVG High-Contrast Display */
+.md-typeset .mermaid {
+    background-color: transparent !important;
+    margin: 1.75rem auto;
+    text-align: center;
+}
+
+.md-typeset .mermaid svg {
+    max-width: 100%;
+    height: auto;
+    font-family: var(--font-sans) !important;
+}
+
+/* Mermaid Dark Mode Overrides (Nodes, Labels, Links, Markers) */
+[data-md-color-scheme="slate"] .md-typeset .mermaid text,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .nodeLabel,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .edgeLabel,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .edgeLabel span,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .cluster-label span,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .actor,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .messageText {
+    fill: #f1f5f9 !important;
+    color: #f1f5f9 !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .node rect,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .node polygon,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .node circle,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .node path {
+    fill: #1e293b !important;
+    stroke: #fb923c !important;
+    stroke-width: 1.5px !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .edgePath .path,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .flowchart-link,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .messageLine0,
+[data-md-color-scheme="slate"] .md-typeset .mermaid .messageLine1 {
+    stroke: #94a3b8 !important;
+    stroke-width: 1.8px !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .marker,
+[data-md-color-scheme="slate"] .md-typeset .mermaid marker path,
+[data-md-color-scheme="slate"] .md-typeset .mermaid #arrowhead path {
+    fill: #94a3b8 !important;
+    stroke: #94a3b8 !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .edgeLabel {
+    background-color: #090d16 !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .cluster rect {
+    fill: #0c1322 !important;
+    stroke: #334155 !important;
+    stroke-width: 1.5px !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .mermaid .cluster .cluster-label span {
+    fill: #fb923c !important;
+    color: #fb923c !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   9. SIDEBAR & FOOTER
+   ========================================================================== */
+
+.md-sidebar--primary .md-sidebar__inner,
+.md-sidebar--secondary .md-sidebar__inner {
+    padding-top: 0.75rem;
+}
+
+/* Hide redundant top-level section title in left sidebar on desktop */
+.md-sidebar--primary .md-nav--lifted > .md-nav__list > .md-nav__item--section > .md-nav__link,
+.md-sidebar--primary .md-nav--lifted > .md-nav__list > .md-nav__item--section > .md-nav > .md-nav__title {
+    display: none !important;
+}
+
+.md-sidebar--primary .md-nav--lifted > .md-nav__list > .md-nav__item--section > .md-nav {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.md-nav__link {
+    font-size: 0.825rem;
+    color: var(--header-nav-text);
+    padding: 0.3rem 0;
+    line-height: 1.45;
+    transition: color 0.15s ease;
+}
+
+.md-nav__link:hover {
+    color: #ea580c !important;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+    color: #fb923c !important;
+}
+
+.md-nav__link--active {
+    font-weight: 700 !important;
+    color: #ea580c !important;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active {
+    color: #fb923c !important;
+}
+
+.md-nav__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--md-default-fg-color--lighter);
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   FOOTER STYLING (Light & Dark Theme Visibility & Brand Polish)
+   ========================================================================== */
+
+.md-footer {
+    background-color: var(--md-footer-bg-color) !important;
+    border-top: 1px solid var(--border-subtle) !important;
+    margin-top: 3.5rem !important;
+    color: var(--md-footer-fg-color) !important;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.md-footer__inner {
+    padding: 1.25rem 0.5rem;
+}
+
+.md-footer__link {
+    color: var(--md-footer-fg-color) !important;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.md-footer__link:hover {
+    opacity: 1;
+}
+
+.md-footer__direction {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: var(--md-footer-fg-color--light) !important;
+    margin-bottom: 0.25rem;
+}
+
+.md-footer__title {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: var(--brand-title-color) !important;
+    transition: color 0.2s ease;
+}
+
+.md-footer__title .md-ellipsis {
+    color: inherit !important;
+}
+
+.md-footer__link:hover .md-footer__title {
+    color: #ea580c !important;
+}
+
+.md-footer__link:hover .md-footer__direction {
+    color: #ea580c !important;
+}
+
+.md-footer__button svg {
+    fill: var(--md-footer-fg-color--light) !important;
+    transition: fill 0.2s ease;
+}
+
+.md-footer__link:hover .md-footer__button svg {
+    fill: #ea580c !important;
+}
+
+.md-footer-meta {
+    background-color: var(--md-footer-bg-color--dark) !important;
+    border-top: 1px solid var(--border-subtle) !important;
+}
+
+.md-footer-meta__inner {
+    padding: 1.25rem 0.5rem 1.75rem 0.5rem;
+    color: var(--md-footer-fg-color--light) !important;
+}
+
+.md-copyright {
+    font-size: 0.78rem !important;
+    color: var(--md-footer-fg-color--light) !important;
+}
+
+.md-copyright a {
+    color: #ea580c !important;
+    font-weight: 600 !important;
+}
+
+.md-copyright a:hover {
+    text-decoration: underline !important;
+}
+
+.md-social__link {
+    color: var(--md-footer-fg-color--light) !important;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.md-social__link:hover {
+    color: #ea580c !important;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Tech Stack Badges Showcase (Compact & Responsive Flex Grid)
+   ========================================================================== */
+.tech-badge-container {
+    text-align: center;
+    margin: 1rem 0 1.5rem 0;
+}
+
+.tech-badge-container h3 {
+    margin-top: 0 !important;
+    margin-bottom: 1.1rem !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
+}
+
+.tech-badge-group {
+    margin-bottom: 1.5rem;
+}
+
+.tech-badge-group:last-child {
+    margin-bottom: 0;
+}
+
+.tech-badge-group + br {
+    display: none;
+}
+
+.tech-badge-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--md-default-fg-color--light);
+    margin: 0 0 0.65rem 0 !important;
+}
+
+.tech-badge-label small {
+    font-size: inherit;
+}
+
+.tech-badge-label strong {
+    color: inherit !important;
+}
+
+.tech-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.tech-badge-group .tech-badge-row:last-child {
+    margin-bottom: 0;
+}
+
+.tech-badge-row p {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.tech-badge-row img {
+    margin: 0 !important;
+    display: inline-block;
+    height: 26px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tech-badge-row img:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+[data-md-color-scheme="slate"] .tech-badge-row img {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+[data-md-color-scheme="slate"] .tech-badge-row img:hover {
+    border-color: rgba(251, 146, 60, 0.6);
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.25);
+}
+
+/* ==========================================================================
+   Dark Mode Typography & Table Polish
+   ========================================================================== */
+[data-md-color-scheme="slate"] .md-typeset strong {
+    color: #f8fafc !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset ul li::marker,
+[data-md-color-scheme="slate"] .md-typeset ol li::marker {
+    color: #fb923c !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover td {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
