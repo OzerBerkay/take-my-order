@@ -18,20 +18,20 @@ theme:
     logo: material/newspaper-variant-outline
     repo: fontawesome/brands/github
   palette:
-    # 1. Light Mode (Take My Order Brand Warmth)
-    - scheme: default
-      primary: deep orange
-      accent: deep orange
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # 2. Dark Mode (Take My Order Obsidian Flame)
+    # 1. Dark Mode (Take My Order Obsidian Flame — Default)
     - scheme: slate
       primary: black
       accent: deep orange
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+    # 2. Light Mode (Take My Order Brand Warmth)
+    - scheme: default
+      primary: deep orange
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
   features:
     - navigation.instant
     - navigation.instant.prefetch
