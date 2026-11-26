@@ -15,6 +15,7 @@ resources:
   - platform/keycloak.yaml
   - platform/schema-registry.yaml
   - platform/kafka-ui.yaml
+  - platform/redis.yaml
 
   # Mikroservisler (İş Mantığı)
   - services/order.yaml
