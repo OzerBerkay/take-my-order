@@ -2,67 +2,45 @@
   <img src="docs/assets/takemyorder-logo.svg" alt="TakeMyOrder" height="62" />
 </p>
 
-<div class="tech-badge-container" align="center" markdown="1">
+<h3 align="center">Cross-Tenancy &amp; Multi-Cloud Event-Driven Microservices Architecture</h3>
 
-### Cross-Tenancy & Multi-Cloud Event-Driven Microservices Architecture
+<p align="center">
+  <sup><strong>BACKEND &amp; ARCHITECTURE</strong></sup><br>
+  <img src="https://img.shields.io/badge/Java-21_(LTS)-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java">
+  <img src="https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Spring_Cloud-Gateway-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Cloud">
+  <img src="https://img.shields.io/badge/Architecture-Hexagonal_%2F_DDD-00599C?style=for-the-badge" alt="Hexagonal / DDD">
+</p>
 
-<div class="tech-badge-group" align="center">
-  <p class="tech-badge-label" align="center"><small><strong>BACKEND &amp; ARCHITECTURE</strong></small></p>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/Java-21_(LTS)-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java">
-    <img src="https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot">
-    <img src="https://img.shields.io/badge/Spring_Cloud-Gateway-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Cloud">
-    <img src="https://img.shields.io/badge/Architecture-Hexagonal_%2F_DDD-00599C?style=for-the-badge" alt="Hexagonal / DDD">
-  </div>
-</div>
+<p align="center">
+  <sup><strong>CLOUD &amp; EDGE INFRASTRUCTURE</strong></sup><br>
+  <img src="https://img.shields.io/badge/Kubernetes-K3s-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes">
+  <img src="https://img.shields.io/badge/Oracle_Cloud-ARM64-F80000?style=for-the-badge&logo=oracle&logoColor=white" alt="Oracle Cloud">
+  <img src="https://img.shields.io/badge/AWS-x86-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=black" alt="AWS">
+  <img src="https://img.shields.io/badge/Cloudflare-Edge_SSL-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare">
+</p>
 
-<br>
+<p align="center">
+  <sup><strong>DATA, MESSAGING &amp; SECURITY</strong></sup><br>
+  <img src="https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Flyway-Migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white" alt="Flyway">
+  <img src="https://img.shields.io/badge/Caffeine-L1_Cache-D97706?style=for-the-badge" alt="Caffeine">
+  <img src="https://img.shields.io/badge/Redis-L2_Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"><br>
+  <img src="https://img.shields.io/badge/Kafka-Event--Driven-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white" alt="Apache Kafka">
+  <img src="https://img.shields.io/badge/Confluent-Schema_Registry-004088?style=for-the-badge&logo=apachekafka&logoColor=white" alt="Schema Registry">
+  <img src="https://img.shields.io/badge/Keycloak-OIDC-blueviolet?style=for-the-badge&logo=keycloak&logoColor=white" alt="Keycloak">
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger UI">
+</p>
 
-<div class="tech-badge-group" align="center">
-  <p class="tech-badge-label" align="center"><small><strong>CLOUD &amp; EDGE INFRASTRUCTURE</strong></small></p>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/Kubernetes-K3s-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes">
-    <img src="https://img.shields.io/badge/Oracle_Cloud-ARM64-F80000?style=for-the-badge&logo=oracle&logoColor=white" alt="Oracle Cloud">
-    <img src="https://img.shields.io/badge/AWS-x86-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=black" alt="AWS">
-    <img src="https://img.shields.io/badge/Cloudflare-Edge_SSL-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare">
-  </div>
-</div>
-
-<br>
-
-<div class="tech-badge-group" align="center">
-  <p class="tech-badge-label" align="center"><small><strong>DATA, MESSAGING &amp; SECURITY</strong></small></p>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-    <img src="https://img.shields.io/badge/Flyway-Migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white" alt="Flyway">
-    <img src="https://img.shields.io/badge/Caffeine-L1_Cache-D97706?style=for-the-badge" alt="Caffeine">
-    <img src="https://img.shields.io/badge/Redis-L2_Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
-  </div>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/Kafka-Event--Driven-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white" alt="Apache Kafka">
-    <img src="https://img.shields.io/badge/Confluent-Schema_Registry-004088?style=for-the-badge&logo=apachekafka&logoColor=white" alt="Schema Registry">
-    <img src="https://img.shields.io/badge/Keycloak-OIDC-blueviolet?style=for-the-badge&logo=keycloak&logoColor=white" alt="Keycloak">
-    <img src="https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger UI">
-  </div>
-</div>
-
-<br>
-
-<div class="tech-badge-group" align="center">
-  <p class="tech-badge-label" align="center"><small><strong>DEVOPS, CI/CD &amp; OBSERVABILITY</strong></small></p>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/Docker-Buildx_%26_QEMU-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-    <img src="https://img.shields.io/badge/Jenkins-ARM64_CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white" alt="Jenkins">
-    <img src="https://img.shields.io/badge/GitHub_Actions-Multi--Arch-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" alt="GitHub Actions">
-  </div>
-  <div class="tech-badge-row" align="center">
-    <img src="https://img.shields.io/badge/Prometheus-Metrics-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" alt="Prometheus">
-    <img src="https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white" alt="Grafana">
-    <img src="https://img.shields.io/badge/Zipkin-Tracing-316192?style=for-the-badge&logo=openzipkin&logoColor=white" alt="Zipkin">
-  </div>
-</div>
-
-</div>
+<p align="center">
+  <sup><strong>DEVOPS, CI/CD &amp; OBSERVABILITY</strong></sup><br>
+  <img src="https://img.shields.io/badge/Docker-Buildx_%26_QEMU-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Jenkins-ARM64_CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white" alt="Jenkins">
+  <img src="https://img.shields.io/badge/GitHub_Actions-Multi--Arch-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" alt="GitHub Actions"><br>
+  <img src="https://img.shields.io/badge/Prometheus-Metrics-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" alt="Prometheus">
+  <img src="https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white" alt="Grafana">
+  <img src="https://img.shields.io/badge/Zipkin-Tracing-316192?style=for-the-badge&logo=openzipkin&logoColor=white" alt="Zipkin">
+</p>
 
 <p align="center">
   <strong>Production-grade microservices ecosystem</strong> engineered with <strong>Java 21</strong>, <strong>Spring Boot 3</strong>, and <strong>Apache Kafka</strong>;<br>
@@ -71,7 +49,7 @@
 
 <p align="center">
   <a href="https://ozerberkay.github.io/take-my-order/">
-    <img src="https://img.shields.io/badge/📖_Explore_Full_Architecture_&_Docs-ea580c?style=for-the-badge" height="35" alt="Explore Docs"/>
+    <img src="docs/assets/explore-docs-cta.svg" alt="Explore Full Architecture &amp; Docs — Interactive Engineering Portal" width="780" />
   </a>
 </p>
 
