@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <script>
+    (function () {
+      try {
+        var migrationKey = "tmo_palette_default_dark_v1";
+        if (!localStorage.getItem(migrationKey)) {
+          Object.keys(localStorage).forEach(function (k) {
+            if (k.endsWith(".__palette")) {
+              localStorage.removeItem(k);
+            }
+          });
+          localStorage.setItem(migrationKey, "1");
+        }
+      } catch (e) {}
+    })();
+  </script>
+{% endblock %}
