@@ -1,74 +1,116 @@
 site_name: Take My Order
 site_url: https://ozerberkay.github.io/take-my-order/
 site_author: Berkay Özer
-site_description: Production-grade Hybrid Cloud Microservices Ecosystem Documentation.
+site_description: Enterprise-Grade Cross-Tenancy Cloud Microservices Ecosystem — Engineering Journal & Architectural Compendium.
 
-# GitHub repo bağlantıları
 repo_name: OzerBerkay/take-my-order
 repo_url: https://github.com/OzerBerkay/take-my-order
-edit_uri: "" # Sayfalarda 'düzenle' butonunu gizler
+edit_uri: ""
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
   font:
-    text: Inter
+    text: Plus Jakarta Sans
     code: JetBrains Mono
   icon:
+    logo: material/newspaper-variant-outline
     repo: fontawesome/brands/github
   palette:
-    # Light Mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: slate
-      primary: indigo
-      accent: sky
+    # 1. Light Mode (Take My Order Brand Warmth)
+    - scheme: default
+      primary: deep orange
+      accent: deep orange
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    # Dark Mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: default
+    # 2. Dark Mode (Take My Order Obsidian Flame)
+    - scheme: slate
       primary: black
-      accent: cyan
+      accent: deep orange
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
   features:
-    - navigation.instant     # Sayfa yenilenmeden hızlı geçiş
-    - navigation.tracking    # URL'de başlık takibi
-    - navigation.tabs        # Üst ana menü sekmeleri (Geniş ekran)
-    - navigation.tabs.sticky # Menü yukarıda sabit kalsın
-    - navigation.sections    # Yan menü gruplaması
-    - navigation.top         # 'Yukarı çık' butonu
-    - search.suggest         # Arama önerileri
-    - search.highlight       # Arama sonuçlarını vurgulama
-    - content.code.copy      # Kod bloklarında kopyala butonu
-    - content.tabs.link      # Kod sekmelerini linklenebilir yap
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
 
 extra_css:
   - stylesheets/extra.css
 
+extra_javascript:
+  - javascripts/mermaid-zoom.js
+
 markdown_extensions:
-  - admonition               # Uyarı kutuları
-  - pymdownx.details         # Açılır/Kapanır detaylar
-  - pymdownx.superfences     # Mermaid şeması ve kod blokları için
-  - pymdownx.tabbed:         # Kod sekmeleri için stil
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
       alternate_style: true
-  - attr_list                # Resim boyutlandırma
-  - md_in_html               # HTML içinde Markdown kullanımına izin ver
+  - attr_list
+  - md_in_html
+  - tables
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
   - Home: index.md
-  - Architecture:
-      - 'Key Competencies': architecture/competencies.md
-      - 'System Design': architecture/system-design.md
-  - Tech Stack: tech-stack/ecosystem.md
-  - Infrastructure:
-      - 'Environment Overview': infrastructure/environment.md
-  - Installation:
-      - 'Production Setup Guide': installation/production-setup.md
-  - DevOps:
-      - 'CI/CD Pipeline': devops/pipeline.md
+  - 'Local & Prod Setup':
+      - 'Local Development Setup': installation/local-setup.md
+      - 'Production 7-Node Cluster Setup (2x OCI)': installation/seven-node-cluster-setup.md
+      - 'Alternative 4-Node Hybrid Setup (OCI + AWS)': installation/hybrid-cloud-aws-oracle-setup.md
+      - 'Keycloak Realm Configuration': installation/keycloak-setup.md
+  - 'Architecture & Services':
+      - 'Project Overview & Architecture Guide': architecture/project-overview.md
+      - 'System Design & Topology': architecture/system-design.md
+      - 'Subdomains & Multi-Portal': architecture/subdomain-and-portals.md
+      - 'Key Engineering Competencies': architecture/competencies.md
+      - 'Clean & Hexagonal Architecture': architecture/hexagonal-architecture.md
+      - 'Domain-Driven Design (DDD)': architecture/domain-driven-design.md
+      - 'Technology Ecosystem': tech-stack/ecosystem.md
+      - 'Order Service (Saga Orchestrator)': services/order-service.md
+      - 'Payment Service (Escrow Ledger)': services/payment-service.md
+      - 'Restaurant Service': services/restaurant-service.md
+      - 'Verified Review & Rating Engine': services/restaurant-rating-system.md
+      - 'Identity Service': services/identity-service.md
+      - 'Gateway Service (Edge Routing)': services/gateway-service.md
+  - 'Distributed Systems':
+      - 'SAGA Orchestration Pattern': distributed-systems/saga-orchestration.md
+      - 'Cancel SAGA Deep-Dive': distributed-systems/cancel-saga-deep-dive.md
+      - 'Transactional Outbox & Skip Locked': distributed-systems/transactional-outbox.md
+      - 'Order Escrow & Settlement': distributed-systems/escrow-and-settlement.md
+      - 'Idempotency & Message Ordering': distributed-systems/idempotency-and-messaging.md
+      - 'Avro Contracts & Schema Registry': distributed-systems/avro-contracts.md
+  - 'Security & IAM':
+      - 'Keycloak OIDC & Token Architecture': security/keycloak-architecture.md
+      - 'Stateless Zero-SQL IDOR Shield': security/stateless-idor-shield.md
+      - 'Multi-Tier RBAC Governance': security/rbac-governance.md
+      - 'Token Lifecycle & Dynamic Revocation': security/token-lifecycle-and-revocation.md
+      - 'Crash-Safe Distributed Update Engine': security/user-update-engine.md
+  - 'DevOps & Case Studies':
+      - 'Cross-Tenancy Infrastructure (2x OCI)': devops/cross-tenancy-topology.md
+      - 'Native ARM64 Jenkins CI/CD': devops/jenkins-ci-cd-pipeline.md
+      - 'HPA & Resilient Autoscaling': devops/hpa-and-autoscaling.md
+      - 'Architectural Decision Records (ADR)': devops/architectural-decision-records.md
+      - 'Forensic Post-Mortems': case-studies/critical-incidents.md
