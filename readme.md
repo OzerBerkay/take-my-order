@@ -76,7 +76,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/OzerBerkay/take-my-order?style=flat-square&color=blue" alt="License"/>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-All_Rights_Reserved-dc2626?style=flat-square" alt="License: All Rights Reserved"/></a>
   <img src="https://img.shields.io/github/repo-size/OzerBerkay/take-my-order?style=flat-square&color=orange" alt="Repo Size"/>
   <img src="https://img.shields.io/github/last-commit/OzerBerkay/take-my-order?style=flat-square&color=green" alt="Last Commit"/>
 </p>
@@ -146,7 +146,7 @@ This project serves as a practical implementation guide for the following advanc
 *   **Edge OAuth2 Resource Server (JWT Validation & Propagation):** `gateway-service` acts as a reactive OAuth2 Resource Server validating Bearer JWT signatures at the edge and propagating verified tokens downstream.
 *   **Two-Tier Caching Strategy:**
     *   **L1 In-Memory Cache (Caffeine):** Every domain microservice caches local `roles_replica` permissions and organization scopes in JVM memory with **Caffeine** (`@Cacheable`), providing sub-millisecond RBAC lookups without repetitive database queries.
-    *   **L2 Distributed Cache (Redis):** Centralized token blacklist enabling instant multi-device logout (`POST /users/logout-all`), immediate ban enforcement, and cluster-wide RBAC cache invalidation.
+    *   **L2 Distributed Cache (Redis):** Centralized token blacklist enabling instant multi-device logout (`POST /users/logout-all`), immediate ban enforcement, and cluster-wide `O(1)` role-level token revocation (`role:{roleId}:revoke`).
 *   **Decoupled Local Authorization (Zero-SQL IDOR Shield):** Downstream microservices evaluate resource ownership, roles, and merchant branch scopes locally by combining lightweight JWT claims (`internal_id`, `user_type`, `role_ids`, etc.) with role-bound branch scopes in local Caffeine-cached replica tables—enforcing a **Stateless Zero-SQL IDOR Shield** without bloating tokens or making synchronous HTTP calls back to `identity-service`.
 *   **Infrastructure & Database Hardening:** Minimizes the external attack surface by closing PostgreSQL (`:5432`) and internal platform ports to `0.0.0.0/0`, restricting database access strictly to private VCN CIDRs and the K3s Flannel Pod network (`10.42.0.0/16`) via `pg_hba.conf` (`scram-sha-256`).
 
@@ -214,11 +214,11 @@ The platform supports two documented Kubernetes production topologies plus Docke
 | :--- | :--- | :--- | :--- |
 | **7-Node Cross-Tenancy** *(Primary)* | Two **Oracle Cloud (OCI) ARM64** accounts connected via private LPG VCN peering (`8 OCPU / 48 GB RAM` total) | **Jenkins (`Jenkinsfile`)** on ARM64 streaming images directly into K3s `containerd` over SSH | [7-Node Cluster Setup](docs/installation/seven-node-cluster-setup.md) |
 | **4-Node Hybrid Multi-Cloud** *(Alternative)* | **1x OCI ARM64** account (App Workers + DB + Kafka) + **1x AWS x86** node (Gateway) over VXLAN | **GitHub Actions** multi-arch Buildx (`arm64` / `amd64`) via **QEMU** push to Docker Hub + SSH rollout | [Hybrid AWS + OCI Setup](docs/installation/hybrid-cloud-aws-oracle-setup.md) |
-| **Local Environment** | Docker Compose backing infra (`PostgreSQL`, `Kafka`, `Keycloak`, `Redis`, `Zipkin`) | Native IntelliJ IDEA / Maven boot or Hybrid Debug Bridge | [Local Setup Guide](docs/installation/local-setup.md) |
+| **Local Environment** | **Mode A:** Host PostgreSQL 16 *(or optional Compose Postgres)* + Docker Compose (`Kafka`, `Keycloak`, `Redis`, `Zipkin`) · **Mode B:** Docker Desktop K8s (`overlays/dev`) | Native IntelliJ IDEA / Maven boot (**Mode A**) or full local K8s cluster (**Mode B**) | [Local Setup Guide](docs/installation/local-setup.md) |
 
 ### Zero-Cost Cluster Node Specifications
 
-#### Option 1: 7-Node Cross-Tenancy OCI Cluster *(Primary — Private LPG Peering)*
+#### Option B: 7-Node Cross-Tenancy OCI Cluster *(Primary — Private LPG Peering)*
 
 | Account / Provider | Server Name | Specs | Role |
 | :--- | :--- | :--- | :--- |
@@ -230,7 +230,7 @@ The platform supports two documented Kubernetes production topologies plus Docke
 | **Oracle OCI (#2)** | `k8s-worker-obs` | 1 OCPU, 6 GB RAM (ARM64) | Observability Worker (`node-type=monitoring`) |
 | **Oracle OCI (#2)** | `devops-jenkins-server` | 1 OCPU, 6 GB RAM (ARM64) | Stand-Alone CI/CD Server *(Outside K3s)* |
 
-#### Option 2: 4-Node Hybrid Multi-Cloud Cluster *(Alternative — Flannel VXLAN)*
+#### Option A: 4-Node Hybrid Multi-Cloud Cluster *(Alternative — Flannel VXLAN)*
 
 | Provider | Server Name | Specs | Role |
 | :--- | :--- | :--- | :--- |
@@ -243,6 +243,19 @@ The platform supports two documented Kubernetes production topologies plus Docke
 
 ## 📑 Reference Metrics & Deep Dives
 
-*   **Platform Footprint:** `4` domain microservices + `1` edge API Gateway, covering **`90+` REST endpoints** and **`100+` automated integration requests** verified via the [Postman Collection Guide](docs/api-reference/postman-collection-guide.md) alongside the centralized **Swagger UI Hub (`:8080/swagger-ui.html`)** (read-only showcase mode in production, interactive locally).
+*   **Platform Footprint:** `4` domain microservices + `1` edge API Gateway, covering **`90+` REST endpoints** and **`100+` automated integration requests** verified via [`TakeMyOrder.postman_collection.json`](TakeMyOrder.postman_collection.json) alongside the centralized **Swagger UI Hub (`:8080/swagger-ui.html`)** (read-only showcase mode in production, interactive locally).
 *   **Data & Event Topology:** `5` dedicated PostgreSQL schemas and **`10+` Avro-backed Kafka topics** provisioned across a **3-broker cluster** (`3` partitions and replication factor `3`).
 *   **Next Chapters:** Continue to [System Design & Topology](docs/architecture/system-design.md), [Order Service](docs/services/order-service.md), or [SAGA Orchestration](docs/distributed-systems/saga-orchestration.md) for implementation-level deep dives.
+
+---
+
+## 📜 License & Usage Terms
+
+**Copyright © 2026 Berkay Özer. All Rights Reserved.**
+
+This repository is **proprietary (source-available for evaluation only)** and is **not** licensed under an open-source license.
+
+*   **Permitted:** Reading and studying the code for personal learning, and running the unmodified project **strictly on your local machine (`localhost`)** for technical or portfolio evaluation.
+*   **Strictly Prohibited:** Any code modification or derivative works; reusing any part of the codebase, manifests, schemas, or documentation as a source/template in another project; deploying or hosting the project on any remote, cloud, or production server for any purpose (commercial, personal, or educational); or republishing, mirroring, or sharing the project (in whole or in part) on GitHub or any other platform.
+
+See the full binding terms in [LICENSE](LICENSE).

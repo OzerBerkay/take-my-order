@@ -1,0 +1,167 @@
+PROPRIETARY LICENSE — ALL RIGHTS RESERVED
+LIMITED PERSONAL INSPECTION AND LOCAL EVALUATION LICENSE
+
+Copyright (c) 2026 Berkay Özer. All Rights Reserved.
+
+This License Agreement ("License") governs all access to, inspection of, and
+use of the "Take My Order" repository and all of its contents, including but
+not limited to source code, object code, build scripts, Dockerfiles,
+Kubernetes and Kustomize manifests, CI/CD workflow definitions, Avro schemas,
+SQL migration files, configuration templates, API collections, architectural
+documentation, text, diagrams, graphics, and any other files or assets
+contained in this repository (collectively, the "Work"), owned exclusively by
+Berkay Özer (the "Copyright Holder").
+
+By viewing, cloning, downloading, or executing any part of the Work, you
+("User") unconditionally agree to be bound by the terms of this License. If
+you do not agree to all terms below, you are not granted any rights and must
+immediately cease all access to and delete any local copies of the Work.
+
+===============================================================================
+1. OWNERSHIP AND RESERVATION OF RIGHTS
+===============================================================================
+
+The Work is the sole and exclusive intellectual property of the Copyright
+Holder and is protected by applicable copyright laws and international
+copyright treaties. This is NOT an open-source license. Except for the
+strictly narrow permissions expressly granted in Section 2, the Copyright
+Holder reserves all right, title, and interest in and to the Work worldwide.
+
+===============================================================================
+2. STRICTLY LIMITED PERMITTED USES
+===============================================================================
+
+Subject to full compliance with this License, the Copyright Holder grants you
+a non-exclusive, non-transferable, non-sublicensable, revocable, royalty-free
+permission strictly limited to:
+
+  (a) Personal Code Study: Viewing and reading the Work solely for your own
+      private, personal learning and self-development.
+
+  (b) Local Technical & Portfolio Evaluation: Cloning or downloading the Work
+      and executing it strictly on your own private local workstation
+      (localhost / local development machine) solely for the purpose of
+      technical review, recruitment assessment, or portfolio evaluation.
+
+No other use of any kind is permitted without the prior express written
+permission of the Copyright Holder.
+
+===============================================================================
+3. STRICTLY PROHIBITED USES
+===============================================================================
+
+Without the prior express written consent of the Copyright Holder, you shall
+NOT, directly or indirectly, with respect to the Work in whole or in part
+(including any individual file, class, module, configuration, Kubernetes
+manifest, CI/CD pipeline, schema, script, diagram, documentation page, or
+code snippet):
+
+  (a) No Modification or Derivative Works: Modify, edit, adapt, translate,
+      refactor, reverse-engineer for reuse, or create any derivative work
+      based upon the Work, except for transient local environment settings
+      strictly necessary to execute the unmodified application on localhost
+      under Section 2(b) (which local settings may never be saved to any
+      remote repository or distributed).
+
+  (b) No Use as a Source or Component in Other Projects: Copy, extract,
+      incorporate, bundle, reuse, or reference any portion of the Work as
+      source code, a template, boilerplate, architecture scaffold, library,
+      or dependency in any other software project—whether commercial,
+      personal, academic, educational, non-profit, or open-source.
+
+  (c) No Remote, Cloud, Staging, or Production Deployment: Deploy, host,
+      operate, run, or make accessible the Work (in whole or in part) on any
+      remote server, cloud infrastructure (including AWS, Oracle Cloud, GCP,
+      Azure, VPS, or dedicated servers), container hosting platform, staging
+      environment, public network, or SaaS/API endpoint for any purpose
+      whatsoever (including personal, educational, demonstration, or
+      commercial purposes).
+
+  (d) No Redistribution, Republishing, Mirroring, or Sharing: Publish,
+      republish, upload, re-upload, mirror, redistribute, share, sell, lease,
+      sublicense, or otherwise make available the Work (in whole or in part,
+      modified or unmodified) on any platform, service, or medium—including
+      GitHub, GitLab, Bitbucket, Docker Hub, container registries, package
+      repositories, websites, blogs, courses, tutorials, videos, or file
+      sharing services—or present any part of the Work as your own work.
+
+  (e) No Commercial, Educational, or Third-Party Exploitation: Use the Work
+      for any commercial activity, client work, freelance project, internal
+      company tool, paid or free course, workshop, classroom assignment, or
+      third-party service.
+
+  (f) No AI / Machine Learning Training or Scraping: Use, copy, scrape, or
+      ingest the Work, in whole or in part, to train, fine-tune, validate,
+      evaluate, or build any artificial intelligence, machine learning, or
+      large language model or training dataset.
+
+  (g) No Removal of Notices: Remove, obscure, alter, or omit any copyright,
+      authorship, attribution, or license notices appearing anywhere in the
+      Work.
+
+===============================================================================
+4. PUBLIC REPOSITORY VISIBILITY AND GITHUB PLATFORM TERMS
+===============================================================================
+
+This repository is made publicly visible on GitHub solely to facilitate
+portfolio presentation and the limited permissions in Section 2. While
+GitHub's Terms of Service technically permit viewing and platform-level
+repository forking on public repositories, such technical platform
+functionality does NOT grant you any license or right under copyright law to
+modify, reuse, mirror, re-upload under another repository, deploy to any
+server, or redistribute the Work. Any unauthorized upload, clone published to
+another repository, hosted deployment, or redistribution constitutes willful
+copyright infringement and will be enforced through all available remedies,
+including DMCA takedown notices and legal action.
+
+===============================================================================
+5. PRECEDENCE AND NO IMPLIED LICENSE
+===============================================================================
+
+Nothing contained in any README, documentation file, installation or cloud
+deployment runbook, architecture guide, script, comment, or commit history in
+this repository grants, by implication, estoppel, or otherwise, any license or
+right broader than Section 2. Production and cloud deployment runbooks are
+included strictly as technical and architectural documentation demonstrating
+the Copyright Holder's own production infrastructure design. In the event of
+any ambiguity or conflict between this License and any other file in the
+repository, this License strictly prevails.
+
+===============================================================================
+6. AUTOMATIC TERMINATION AND REMEDIES
+===============================================================================
+
+The limited permissions granted under Section 2 terminate automatically and
+immediately, without notice, if you breach any provision of this License. Upon
+termination, you must immediately cease all use of the Work and permanently
+delete and destroy all copies of the Work in your possession or control. The
+Copyright Holder reserves the right to pursue injunctive relief, DMCA takedown
+remedies, damages, and any other legal or equitable remedies available under
+applicable law.
+
+===============================================================================
+7. DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY
+===============================================================================
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, SECURITY, AND NON-INFRINGEMENT.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE ACCESS, INSPECTION, OR
+LOCAL EXECUTION OF THE WORK.
+
+===============================================================================
+8. SEVERABILITY AND WRITTEN PERMISSION
+===============================================================================
+
+If any provision of this License is held invalid or unenforceable by a court
+of competent jurisdiction, the remaining provisions shall remain in full force
+and effect to the maximum extent permitted by law. No waiver or modification
+of this License is valid unless made in writing and explicitly signed by the
+Copyright Holder.
+
+For licensing inquiries or written permission requests, contact the Copyright
+Holder via the official repository profile:
+https://github.com/OzerBerkay
