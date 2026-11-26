@@ -71,26 +71,39 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka:9092,PLAINTEXT://kafka-2:9092,PLAINTEXT://kafka-3:9092'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: takemyorder
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-    # Not: Bare metal (yerel bilgisayarda) kurulu olan PostgreSQL ile
-    # Docker üzerindeki PostgreSQL'in çakışmaması (birbirinden ayrılması)
-    # için dışarıya 5433 portundan açılmıştır.
-    ports:
-      - "5433:5432"
-    volumes:
-      - ./local-env/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres-data:/var/lib/postgresql/data
+  # ============================================================================
+  # OPTIONAL: Containerized PostgreSQL 16 for Mode A (Port 5433)
+  # ============================================================================
+  # By default, Mode A uses a bare-metal host PostgreSQL 16 instance on port 5432.
+  # If you do NOT want to install or touch a local bare-metal PostgreSQL:
+  #   1) Uncomment the `postgres` service block below.
+  #   2) In the `keycloak` service below, swap `KC_DB_URL` to the `postgres:5432` line
+  #      and uncomment `depends_on: - postgres`.
+  #   3) Pass `DB_PORT=5433` in IntelliJ Run Configurations for the 4 domain services.
+  # Note: Always run `docker compose down` before switching to Mode B (Local K8s).
+  #
+  # postgres:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_DB: takemyorder
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: admin
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - ./local-env/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #     - postgres-data:/var/lib/postgresql/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/takemyorder?currentSchema=keycloak
+      # Default (Mode A - Bare-Metal Host PostgreSQL on :5432):
+      KC_DB_URL: jdbc:postgresql://host.docker.internal:5432/takemyorder?currentSchema=keycloak
+      # Optional (Docker Postgres on :5433 — uncomment if enabling the `postgres` service above):
+      # KC_DB_URL: jdbc:postgresql://postgres:5432/takemyorder?currentSchema=keycloak
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: admin
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -100,8 +113,9 @@ services:
     command: start-dev --import-realm
     ports:
       - "30080:8080"
-    depends_on:
-      - postgres
+    # Uncomment if enabling the optional `postgres` service above:
+    # depends_on:
+    #   - postgres
     volumes:
       - ./local-env/keycloak:/opt/keycloak/data/import
 
