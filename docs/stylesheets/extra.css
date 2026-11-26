@@ -1475,36 +1475,38 @@ body {
    ========================================================================== */
 .tech-badge-container {
     text-align: center;
-    margin: 1rem 0 1.5rem 0;
+    margin: 0.5rem 0 1.25rem 0;
 }
 
 .tech-badge-container h3 {
     margin-top: 0 !important;
-    margin-bottom: 1.1rem !important;
+    margin-bottom: 0.85rem !important;
     font-size: 1.15rem !important;
     font-weight: 700 !important;
     letter-spacing: -0.01em;
 }
 
 .tech-badge-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.85rem;
 }
 
 .tech-badge-group:last-child {
     margin-bottom: 0;
 }
 
-.tech-badge-group + br {
+.tech-badge-group + br,
+.tech-badge-group + p:has(> br:only-child) {
     display: none;
 }
 
 .tech-badge-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--md-default-fg-color--light);
-    margin: 0 0 0.65rem 0 !important;
+    margin: 0 0 0.35rem 0 !important;
+    line-height: 1.25;
 }
 
 .tech-badge-label small {
@@ -1520,8 +1522,8 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
+    gap: 5px;
+    margin-bottom: 5px;
 }
 
 .tech-badge-group .tech-badge-row:last-child {

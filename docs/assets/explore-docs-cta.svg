@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 120" width="780" height="120" role="img" aria-label="Explore Full Architecture and Documentation Portal">
+  <defs>
+    <!-- Deep Obsidian Card Background -->
+    <linearGradient id="card-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="55%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#18121e" />
+    </linearGradient>
+
+    <!-- Warm Flame Border Stroke -->
+    <linearGradient id="card-border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ea580c" stop-opacity="0.75" />
+      <stop offset="50%" stop-color="#fb923c" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#f97316" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Ambient Flame Glow on Right Side -->
+    <radialGradient id="ambient-glow" cx="84%" cy="50%" r="48%">
+      <stop offset="0%" stop-color="#ea580c" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#ea580c" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Subtle Left Accent Glow -->
+    <radialGradient id="left-glow" cx="8%" cy="50%" r="28%">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="0.16" />
+      <stop offset="100%" stop-color="#fb923c" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Primary Flame CTA Button Gradient -->
+    <linearGradient id="cta-btn" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#dc2626" />
+    </linearGradient>
+
+    <!-- Icon Badge Surface -->
+    <linearGradient id="icon-box" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c" stop-opacity="0.24" />
+      <stop offset="100%" stop-color="#fb923c" stop-opacity="0.08" />
+    </linearGradient>
+
+    <!-- Subtle Architectural Dot Grid -->
+    <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="0.9" fill="#94a3b8" fill-opacity="0.11" />
+    </pattern>
+
+    <clipPath id="card-clip">
+      <rect x="1.5" y="1.5" width="777" height="117" rx="16" ry="16" />
+    </clipPath>
+  </defs>
+
+  <!-- Base Card Container -->
+  <g clip-path="url(#card-clip)">
+    <rect x="0" y="0" width="780" height="120" fill="url(#card-bg)" />
+    <rect x="0" y="0" width="780" height="120" fill="url(#dot-grid)" />
+    <rect x="0" y="0" width="780" height="120" fill="url(#ambient-glow)" />
+    <rect x="0" y="0" width="780" height="120" fill="url(#left-glow)" />
+    <!-- Top Subtle Specular Highlight Line -->
+    <rect x="24" y="2" width="732" height="1" fill="#ffffff" fill-opacity="0.10" />
+  </g>
+
+  <!-- Outer Glowing Border -->
+  <rect x="1.5" y="1.5" width="777" height="117" rx="16" ry="16" fill="none" stroke="url(#card-border)" stroke-width="1.5" />
+
+  <!-- Left Icon Box -->
+  <rect x="26" y="30" width="60" height="60" rx="14" ry="14" fill="url(#icon-box)" stroke="#fb923c" stroke-opacity="0.45" stroke-width="1.2" />
+
+  <!-- Minimalist Open Book / Blueprint Icon -->
+  <g transform="translate(41, 45)" fill="none" stroke="#fb923c" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 5.5C2 4.1 3.1 3 4.5 3H11c2.2 0 4 1.8 4 4v17.5c0-1.4-1.1-2.5-2.5-2.5H4.5C3.1 22 2 20.9 2 19.5V5.5z" />
+    <path d="M28 5.5C28 4.1 26.9 3 25.5 3H19c-2.2 0-4 1.8-4 4v17.5c0-1.4 1.1-2.5 2.5-2.5h8c1.4 0 2.5-1.1 2.5-2.5V5.5z" />
+    <line x1="6.5" y1="8.5" x2="10.5" y2="8.5" stroke="#fed7aa" stroke-width="1.8" />
+    <line x1="6.5" y1="13" x2="10.5" y2="13" stroke="#fed7aa" stroke-width="1.8" />
+    <line x1="19.5" y1="8.5" x2="23.5" y2="8.5" stroke="#fed7aa" stroke-width="1.8" />
+    <line x1="19.5" y1="13" x2="23.5" y2="13" stroke="#fed7aa" stroke-width="1.8" />
+  </g>
+
+  <!-- Eyebrow Pill Tag -->
+  <rect x="104" y="20" width="318" height="21" rx="10.5" ry="10.5" fill="#ea580c" fill-opacity="0.16" stroke="#fb923c" stroke-opacity="0.38" stroke-width="1" />
+  <circle cx="117" cy="30.5" r="3" fill="#fb923c" />
+  <text x="127" y="34" fill="#fdba74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="0.9">ENGINEERING PORTAL  •  33 DEEP-DIVE CHAPTERS</text>
+
+  <!-- Primary Headline -->
+  <text x="104" y="69" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="21" font-weight="800" letter-spacing="-0.3">Explore Full Architecture &amp; Docs</text>
+
+  <!-- Supporting Technical Highlights -->
+  <text x="104" y="93" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500">SAGA &amp; Cancel Fork-Join  •  Outbox &amp; Escrow  •  Zero-SQL IDOR  •  2x OCI K3s</text>
+
+  <!-- Right High-Contrast CTA Pill Button -->
+  <g transform="translate(592, 36)">
+    <!-- Soft Button Shadow -->
+    <rect x="0" y="4" width="162" height="48" rx="12" ry="12" fill="#ea580c" fill-opacity="0.32" />
+    <!-- Button Surface -->
+    <rect x="0" y="0" width="162" height="48" rx="12" ry="12" fill="url(#cta-btn)" />
+    <!-- Inner Top Glint -->
+    <rect x="1" y="1" width="160" height="46" rx="11" ry="11" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1" />
+    <!-- Label + Crisp Vector Arrow -->
+    <text x="24" y="29" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14.5" font-weight="700" letter-spacing="0.2">Open Portal</text>
+    <g transform="translate(124, 17)" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="0" y1="7" x2="14" y2="7" />
+      <polyline points="8.5,1.5 14,7 8.5,12.5" />
+    </g>
+  </g>
+</svg>

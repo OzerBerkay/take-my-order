@@ -14,8 +14,6 @@
   </div>
 </div>
 
-<br>
-
 <div class="tech-badge-group" align="center">
   <p class="tech-badge-label" align="center"><small><strong>CLOUD &amp; EDGE INFRASTRUCTURE</strong></small></p>
   <div class="tech-badge-row" align="center">
@@ -25,8 +23,6 @@
     <img src="https://img.shields.io/badge/Cloudflare-Edge_SSL-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare">
   </div>
 </div>
-
-<br>
 
 <div class="tech-badge-group" align="center">
   <p class="tech-badge-label" align="center"><small><strong>DATA, MESSAGING &amp; SECURITY</strong></small></p>
@@ -43,8 +39,6 @@
     <img src="https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger UI">
   </div>
 </div>
-
-<br>
 
 <div class="tech-badge-group" align="center">
   <p class="tech-badge-label" align="center"><small><strong>DEVOPS, CI/CD &amp; OBSERVABILITY</strong></small></p>
