@@ -5,6 +5,7 @@ on:
       - prod
     paths:
       - 'docs/**'
+      - 'overrides/**'
       - 'mkdocs.yml'
 
 permissions:
