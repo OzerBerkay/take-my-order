@@ -149,3 +149,5 @@ infrastructure/k8s/overlays/central-hub/central-secrets.env
 
 # AI Agent Rules and Configurations
 .agents/
+
+/site/
